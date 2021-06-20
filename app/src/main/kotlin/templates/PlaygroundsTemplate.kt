@@ -21,15 +21,23 @@ fun PlaygroundsTemplate() {
     Row {
         CompositionLocalProvider(LocalDensity provides Density(1.5f)) {
             LazyVerticalGrid(cells = GridCells.Adaptive(128.dp)) {
-                item { Text("Some Sample") } // replace
-                item { Text("Some Sample") } // remove
-                item { Text("Some Sample") } // remove
-                for (i in 1..15) item { HelloColumn() } // remove
-                for (i in 1..15) item { Text("Some Sample $i") } // remove
+                item { Text("Some Sample") } // REPLACE
+                item { Text("Some Sample") } // REMOVE
+                item { Text("Some Sample") } // REMOVE
+                for (i in 1..15) item { HelloColumn() } // REMOVE
+                for (i in 1..15) item { Text("Some Sample $i") } // REMOVE
             }
         }
     }
 }
+
+
+// BEGIN generated Playgrounds from PlaygroundsTemplate
+
+// TODO: here the stealAndroidx...Samples gradle task will insert generated code
+
+// END generated Playgrounds from PlaygroundsTemplate
+
 
 @Preview(showBackground = true)
 @Composable
