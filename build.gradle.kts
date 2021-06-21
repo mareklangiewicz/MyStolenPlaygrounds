@@ -37,7 +37,14 @@ task("stealAndroidxComposeUiGraphicsSamples") {
             sampleFileContent
         }
 
-
+        // copy samples from animation/animation/samples and collect @Sampled @Composable fun names
+        processAllKtFiles(
+            inputRootDir = androidxSupportDir / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples",
+            outputRootDir = stolenSrcKotlinDir / "animation-samples"
+        ) { sampleFileContent ->
+            sampleFunNames += sampleFileContent.findSampledComposableFunNames()
+            sampleFileContent
+        }
 
         processAllKtFiles(templatesSrcKotlinDir, templatesSrcKotlinDir) { templateFileContent ->
 
