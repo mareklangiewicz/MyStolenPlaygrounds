@@ -1,5 +1,6 @@
 @file:OptIn(okio.ExperimentalFileSystem::class)
 import okio.Path.Companion.toPath
+import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
 
 task("stealAndroidxComposeUiGraphicsSamples") {
@@ -69,22 +70,20 @@ task("stealAndroidxComposeUiGraphicsSamples") {
                 0..MAX of oneCharNotOf("\\n")
             }
 
-            val ureIndentedLine = ure {
+            val ureIndentedLine = ure(MULTILINE) {
                 1 of BOL
                 1 of (ureIndentedNotEmptyLineContent or ureMaybeSomeSpaces)
                 1 of lf
             }
 
-            val ureComposableFunTemplate = ure {
+            val ureComposableFunTemplate = ure(MULTILINE) {
                 1 of ureAnnotationsWithComposable
                 0..MAX of space // annotations can contain ending spaces too
                 1 of BOL // we have to start from new line to easier find ending brace }
                 1 of ir("fun")
                 1 of space
-                1 of named("funName") {
-                    1 of ureBigIdent
-                    1 of ir("Template")
-                }
+                1 of ure("funName") { 1 of ureBigIdent }
+                1 of ir("Template")
                 1 of ureParamsNotNested
                 1 of space
                 1 of ch("\\{")
@@ -95,7 +94,7 @@ task("stealAndroidxComposeUiGraphicsSamples") {
                 1 of lf
             }
 
-            val ureBeginGenerationAreaMarker = ure {
+            val ureBeginGenerationAreaMarker = ure(MULTILINE) {
                 1 of BOL
                 1 of ir("// BEGIN generated ")
                 1 of ref(name = "funName")
@@ -105,7 +104,7 @@ task("stealAndroidxComposeUiGraphicsSamples") {
                 1 of lf
             }
 
-            val ureEndGenerationAreaMarker = ure {
+            val ureEndGenerationAreaMarker = ure(MULTILINE) {
                 1 of BOL
                 1 of ir("// END generated ")
                 1 of ref(name = "funName")
@@ -116,35 +115,40 @@ task("stealAndroidxComposeUiGraphicsSamples") {
 
             }
 
-            val ureGenerationArea = ure {
-                1 of lookBehind(ureBeginGenerationAreaMarker)
-                0..MAX of any
-                1 of lookAhead(ureEndGenerationAreaMarker)
-            }
-
             val ureContentWithTemplate = ure {
-                1 of named("partBeforeTemplate") { 0..MAX of any }
-                1 of named("partTemplate") { 1 of ureComposableFunTemplate }
-                1 of named("partBeforeGenerationArea") { 0..MAX of any }
-                1 of named("partGenerationArea") { 1 of ureGenerationArea }
-                1 of named("partAfterGenerationArea") { 0..MAX of any }
+                1 of ure("partBeforeTemplate", DOT_MATCHES_ALL) { x(0..MAX, reluctant = true) of any }
+                1 of ure("partTemplate") { 1 of ureComposableFunTemplate }
+                1 of ure("partBeforeGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
+                1 of ure("partBeginGenerationAreaMarker") { 1 of ureBeginGenerationAreaMarker }
+                1 of ure("partGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
+                1 of ure("partEndGenerationAreaMarker")  { 1 of ureEndGenerationAreaMarker }
+                1 of ure("partAfterGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
             }
 
-            val groups = ureContentWithTemplate.compile(MULTILINE).matchEntire(templateFileContent)!!.groups
+            println(ureContentWithTemplate.compile())
 
-            println(groups["funName"])
-            println(groups["partBeforeTemplate"])
-            println(groups["partTemplate"])
-            println(groups["partBeforeGenerationArea"])
-            println(groups["partGenerationArea"])
-            println(groups["partAfterGenerationArea"])
+            val result = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("matchEntire failed")
+            val groups = result.groups
+            println(groups)
+
+            println(groups.size)
+            require(groups.size == 9)
+
+            println(groups["funName"]!!.value)
+            println(groups["partBeforeTemplate"]!!.value)
+            println(groups["partTemplate"]!!.value)
+            println(groups["partBeforeGenerationArea"]!!.value)
+            println(groups["partBeginGenerationAreaMarker"]!!.value)
+            println(groups["partGenerationArea"]!!.value)
+            println(groups["partEndGenerationAreaMarker"]!!.value)
+            println(groups["partAfterGenerationArea"]!!.value)
             TODO()
         }
     }
 }
 
 fun String.findSampledComposableFunNames(): Sequence<String> {
-    val ureFunHeader = ure {
+    val ureFunHeader = ure(MULTILINE) {
         1 of BOL
         1 of ir("@Sampled")
         1..MAX of space
@@ -152,14 +156,14 @@ fun String.findSampledComposableFunNames(): Sequence<String> {
         1..MAX of space
         1 of ir("fun")
         1..MAX of space
-        1 of named("funName") {
+        1 of ure("funName") {
             1 of posixUpper
             0..MAX of (word or digit)
         }
         1 of ir("\\(\\)")
     }
 
-    return ureFunHeader.compile(MULTILINE)
+    return ureFunHeader.compile()
         .findAll(this)
         .map { it.groups["funName"]!!.value }
 }
