@@ -34,7 +34,7 @@ fun PlaygroundsTemplate() {
 
 // BEGIN generated Playgrounds from PlaygroundsTemplate
 
-// TODO: here the stealAndroidx...Samples gradle task will insert generated code
+// BLA BLA TODO
 
 // END generated Playgrounds from PlaygroundsTemplate
 

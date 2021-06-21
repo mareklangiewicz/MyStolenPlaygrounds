@@ -129,20 +129,39 @@ task("stealAndroidxComposeUiGraphicsSamples") {
 
             val result = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("matchEntire failed")
             val groups = result.groups
-            println(groups)
+//            println(groups)
 
-            println(groups.size)
-            require(groups.size == 9)
+//            println(groups.size)
+//            require(groups.size == 9)
 
-            println(groups["funName"]!!.value)
-            println(groups["partBeforeTemplate"]!!.value)
-            println(groups["partTemplate"]!!.value)
-            println(groups["partBeforeGenerationArea"]!!.value)
-            println(groups["partBeginGenerationAreaMarker"]!!.value)
-            println(groups["partGenerationArea"]!!.value)
-            println(groups["partEndGenerationAreaMarker"]!!.value)
-            println(groups["partAfterGenerationArea"]!!.value)
-            TODO()
+//            println(groups["funName"]!!.value)
+//            println(groups["partBeforeTemplate"]!!.value)
+//            println(groups["partTemplate"]!!.value)
+//            println(groups["partBeforeGenerationArea"]!!.value)
+//            println(groups["partBeginGenerationAreaMarker"]!!.value)
+//            println(groups["partGenerationArea"]!!.value)
+//            println(groups["partEndGenerationAreaMarker"]!!.value)
+//            println(groups["partAfterGenerationArea"]!!.value)
+
+            val newGenerationArea = processFunTemplate(
+                template = groups["partTemplate"]!!.value,
+                templateFunName = groups["funName"]!!.value,
+                injectFunNames = sampleFunNames
+            )
+
+            val newTemplateFileContent =
+                groups["partBeforeTemplate"]!!.value +
+                groups["partTemplate"]!!.value +
+                groups["partBeforeGenerationArea"]!!.value +
+                groups["partBeginGenerationAreaMarker"]!!.value +
+                newGenerationArea +
+                groups["partEndGenerationAreaMarker"]!!.value +
+                groups["partAfterGenerationArea"]!!.value
+
+            println(newTemplateFileContent)
+//            TODO("unlock")
+
+            newTemplateFileContent
         }
     }
 }
@@ -166,4 +185,8 @@ fun String.findSampledComposableFunNames(): Sequence<String> {
     return ureFunHeader.compile()
         .findAll(this)
         .map { it.groups["funName"]!!.value }
+}
+
+fun processFunTemplate(template: String, templateFunName: String, injectFunNames: List<String>): String {
+    return "\n// BLA BLA TODO\n\n" // TODO
 }
