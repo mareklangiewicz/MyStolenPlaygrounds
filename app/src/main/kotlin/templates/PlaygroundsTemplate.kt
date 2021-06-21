@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.samples.*
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
@@ -33,9 +34,22 @@ fun PlaygroundsTemplate() {
 
 
 // BEGIN generated Playgrounds from PlaygroundsTemplate
-
-// BLA BLA TODO
-
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun Playgrounds() {
+    Row {
+        CompositionLocalProvider(LocalDensity provides Density(1.5f)) {
+            LazyVerticalGrid(cells = GridCells.Adaptive(128.dp)) {
+                item { GradientBrushSample() }
+                item { DrawScopeSample() }
+                item { DrawScopeBatchedTransformSample() }
+                item { DrawScopeOvalBrushSample() }
+                item { DrawScopeOvalColorSample() }
+                item { StampedPathEffectSample() }
+            }
+        }
+    }
+}
 // END generated Playgrounds from PlaygroundsTemplate
 
 

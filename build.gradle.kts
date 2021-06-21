@@ -125,28 +125,13 @@ task("stealAndroidxComposeUiGraphicsSamples") {
                 1 of ure("partAfterGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
             }
 
-            println(ureContentWithTemplate.compile())
-
             val result = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("matchEntire failed")
             val groups = result.groups
-//            println(groups)
-
-//            println(groups.size)
-//            require(groups.size == 9)
-
-//            println(groups["funName"]!!.value)
-//            println(groups["partBeforeTemplate"]!!.value)
-//            println(groups["partTemplate"]!!.value)
-//            println(groups["partBeforeGenerationArea"]!!.value)
-//            println(groups["partBeginGenerationAreaMarker"]!!.value)
-//            println(groups["partGenerationArea"]!!.value)
-//            println(groups["partEndGenerationAreaMarker"]!!.value)
-//            println(groups["partAfterGenerationArea"]!!.value)
 
             val newGenerationArea = processFunTemplate(
                 template = groups["partTemplate"]!!.value,
                 templateFunName = groups["funName"]!!.value,
-                injectFunNames = sampleFunNames
+                newFunNames = sampleFunNames
             )
 
             val newTemplateFileContent =
@@ -157,9 +142,6 @@ task("stealAndroidxComposeUiGraphicsSamples") {
                 newGenerationArea +
                 groups["partEndGenerationAreaMarker"]!!.value +
                 groups["partAfterGenerationArea"]!!.value
-
-            println(newTemplateFileContent)
-//            TODO("unlock")
 
             newTemplateFileContent
         }
@@ -187,6 +169,25 @@ fun String.findSampledComposableFunNames(): Sequence<String> {
         .map { it.groups["funName"]!!.value }
 }
 
-fun processFunTemplate(template: String, templateFunName: String, injectFunNames: List<String>): String {
-    return "\n// BLA BLA TODO\n\n" // TODO
+fun ureWholeLineWith(text: UreIR) = ure(MULTILINE) {
+    1 of BOL
+    0..MAX of any
+    1 of ir(text) // TODO_later: maybe force literal texts
+    0..MAX of any
+    1 of EOL
+    1 of lf
 }
+
+fun processFunTemplate(template: String, templateFunName: String, newFunNames: List<String>) =
+    template
+        .replace(templateFunName + "Template", templateFunName)
+        .replace(ureWholeLineWith("// REMOVE").compile(), "")
+        .replace(ureWholeLineWith("// REPLACE").compile(),
+            newFunNames
+                .joinToString(
+                    prefix = " ".repeat(16),
+                    separator = "\n" + " ".repeat(16),
+                    postfix = "\n",
+                    transform = { "item { $it() }" }
+                )
+        )
