@@ -1,5 +1,6 @@
 package pl.mareklangiewicz.playgrounds
 
+import androidx.compose.animation.core.samples.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,6 +47,15 @@ fun Playgrounds() {
                 item { DrawScopeOvalBrushSample() }
                 item { DrawScopeOvalColorSample() }
                 item { StampedPathEffectSample() }
+                item { AnimatableAnimateToGenericsType() }
+                item { AlphaAnimationSample() }
+                item { ArbitraryValueTypeTransitionSample() }
+                item { DpAnimationSample() }
+                item { InfiniteTransitionSample() }
+                item { InfiniteTransitionAnimateValueSample() }
+                item { GestureAnimationSample() }
+                item { AnimateFloatSample() }
+                item { DoubleTapToLikeSample() }
             }
         }
     }

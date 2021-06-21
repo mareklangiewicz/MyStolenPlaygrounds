@@ -19,17 +19,25 @@ task("stealAndroidxComposeUiGraphicsSamples") {
 
         val sampleFunNames = mutableListOf<String>()
 
-        // copy samples and collect @Sampled @Composable fun names
+        // copy samples from ui/ui-graphics/samples and collect @Sampled @Composable fun names
         processAllKtFiles(
             inputRootDir = androidxSupportDir / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples",
             outputRootDir = stolenSrcKotlinDir / "ui-graphics-samples"
         ) { sampleFileContent ->
-            println("processing next file...")
-            val foundNames = sampleFileContent.findSampledComposableFunNames()
-            sampleFunNames += foundNames
-            println("found fun samples: ${foundNames.toList()}")
+            sampleFunNames += sampleFileContent.findSampledComposableFunNames()
             sampleFileContent
         }
+
+        // copy samples from animation/animation-core/samples and collect @Sampled @Composable fun names
+        processAllKtFiles(
+            inputRootDir = androidxSupportDir / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples",
+            outputRootDir = stolenSrcKotlinDir / "animation-core-samples"
+        ) { sampleFileContent ->
+            sampleFunNames += sampleFileContent.findSampledComposableFunNames()
+            sampleFileContent
+        }
+
+
 
         processAllKtFiles(templatesSrcKotlinDir, templatesSrcKotlinDir) { templateFileContent ->
 
@@ -166,7 +174,7 @@ fun String.findSampledComposableFunNames(): Sequence<String> {
 
     return ureFunHeader.compile()
         .findAll(this)
-        .map { it.groups["funName"]!!.value }
+        .map { it.groups["funName"]!!.value.also { println("found fun: $it") } }
 }
 
 fun ureWholeLineWith(text: UreIR) = ure(MULTILINE) {
