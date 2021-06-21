@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PlaygroundsTheme {
                 Surface(color = MaterialTheme.colors.background) {
-                    PlaygroundsTemplate()
+                    Playgrounds()
                 }
             }
         }
