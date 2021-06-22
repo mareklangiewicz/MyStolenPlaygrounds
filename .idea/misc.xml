@@ -14,6 +14,7 @@
         <entry key="../../../../../layout/compose-model-1624190777799.xml" value="0.22962962962962963" />
         <entry key="../../../../../layout/compose-model-1624309684156.xml" value="0.5824074074074074" />
         <entry key="../../../../../layout/compose-model-1624309718252.xml" value="0.5824074074074074" />
+        <entry key="../../../../../layout/compose-model-1624355194769.xml" value="0.12249163879598662" />
       </map>
     </option>
   </component>
@@ -22,5 +23,8 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="SuppressKotlinCodeStyleNotification">
+    <option name="disableForAll" value="true" />
   </component>
 </project>
