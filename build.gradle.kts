@@ -203,6 +203,7 @@ fun processFunTemplate(template: String, templateFunName: String, newFunNames: L
                     prefix = " ".repeat(16),
                     separator = "\n" + " ".repeat(16),
                     postfix = "\n",
-                    transform = { "item { $it() }" }
+//                    transform = { "item { $it() }" }
+                    transform = { "item { MyFancyFrame(\"$it\") { $it() } }" }
                 )
         )
