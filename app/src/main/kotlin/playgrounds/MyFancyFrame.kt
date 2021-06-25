@@ -1,6 +1,5 @@
 package pl.mareklangiewicz.myfancyframe
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -28,7 +27,7 @@ fun MyFancyFrame(
     highlighted: Boolean = false,
     selected: Boolean = false,
     grayed: Boolean = false,
-    onTitleClick: () -> Unit = {},
+    onClick: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     val col = when {
@@ -38,7 +37,7 @@ fun MyFancyFrame(
         else -> LocalColorNormal.current
     }
     Box(modifier.padding(6.dp)) {
-        Surface(onClick = onTitleClick, shape = CutCornerShape(topStart = 8.dp, bottomEnd = 2.dp), color = col, elevation = 8.dp) {
+        Surface(onClick = onClick, shape = CutCornerShape(topStart = 8.dp, bottomEnd = 2.dp), color = col, elevation = 8.dp) {
             Column {
                 if (title != null)
                     Text(
@@ -72,7 +71,7 @@ fun MyFancyFramePreview() {
     PlaygroundsTheme(darkTheme = false) {
         CompositionLocalProvider(LocalDensity provides Density(4f)) {
             Box(Modifier.padding(20.dp)) {
-                MyFancyFrame(title = "Some box", grayed = false, onTitleClick = { println("click") }) {
+                MyFancyFrame(title = "Some box", grayed = false, onClick = { println("click") }) {
                     Box(
                         Modifier
                             .width(200.dp)

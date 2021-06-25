@@ -11,8 +11,7 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyGridScope
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.samples.*
 import androidx.compose.ui.platform.LocalDensity
