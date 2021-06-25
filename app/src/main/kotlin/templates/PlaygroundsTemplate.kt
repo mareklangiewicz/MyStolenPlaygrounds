@@ -80,10 +80,10 @@ fun Playgrounds() {
 // END generated Playgrounds from PlaygroundsTemplate
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun PlaygroundsTemplatePreview() {
-    PlaygroundsTheme {
+    PlaygroundsTheme(darkTheme = false) {
         PlaygroundsTemplate()
     }
 }

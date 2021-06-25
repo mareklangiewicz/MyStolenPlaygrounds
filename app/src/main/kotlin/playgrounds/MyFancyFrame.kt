@@ -1,7 +1,8 @@
 package pl.mareklangiewicz.myfancyframe
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -27,63 +28,50 @@ fun MyFancyFrame(
     grayed: Boolean = false,
     onTitleClick: () -> Unit = {},
     content: @Composable () -> Unit
-) = MyFancySurface(highlighted, selected, grayed) {
-    Column {
-        if (title != null)
-            Text(text = title, style = MaterialTheme.typography.caption)
-        Box(Modifier.border(2.dp, LocalColorNormal.current).padding(2.dp).fillMaxSize()) {
-            content()
+) {
+    val col = when {
+        highlighted -> LocalColorHighlighted.current
+        grayed -> LocalColorGrayed.current
+        selected -> LocalColorSelected.current
+        else -> LocalColorNormal.current
+    }
+    Box(Modifier.padding(6.dp)) {
+        Surface(shape = CutCornerShape(topStart = 8.dp, bottomEnd = 2.dp), color = col, elevation = 8.dp) {
+            Column {
+                if (title != null)
+                    Text(
+                        text = title,
+                        modifier = Modifier
+                            .clickable(onClick = onTitleClick)
+                            .padding(start = 8.dp, top = 4.dp),
+                        style = MaterialTheme.typography.caption
+                    )
+                MyFancySurface {
+                    content()
+                }
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun MyFancySurface(
-    highlighted: Boolean = false,
-    selected: Boolean = false,
-    grayed: Boolean = false,
-    onClick: (() -> Unit) = {},
-    content: @Composable () -> Unit
-) = Surface(
-    onClick = onClick,
+private fun MyFancySurface(content: @Composable () -> Unit) = Surface(
+    Modifier.padding(1.dp).fillMaxSize(),
+    shape = CutCornerShape(topStart = 8.dp, bottomEnd = 8.dp),
     color = MaterialTheme.colors.surface, // TODO: own "theme" for MyFancyFrame
-    elevation = when {
-        highlighted -> 12.dp
-        selected -> 8.dp
-        grayed -> 2.dp
-        else -> 4.dp
-    }
+    elevation = 1.dp
 ) {
-    val color1 = when {
-        highlighted -> LocalColorHighlighted.current
-        grayed -> LocalColorGrayed.current
-        else -> LocalColorNormal.current
-    }
-    val color2 = when {
-        highlighted -> LocalColorHighlighted.current
-        grayed -> LocalColorGrayed.current
-        selected -> LocalColorSelected.current
-        else -> LocalColorNormal.current
-    }
-    Box(
-        Modifier
-            .border(2.dp, color1)
-            .padding(2.dp)
-            .border(2.dp, color2)
-            .padding(2.dp)
-            .border(2.dp, color1)
-            .padding(6.dp),
-    ) { content() }
+    Box(Modifier.fillMaxSize().padding(8.dp)) { content() }
 }
 
 @Preview
 @Composable
 fun MyFancyFramePreview() {
-    PlaygroundsTheme {
-        CompositionLocalProvider(LocalDensity provides Density(8f)) {
+    PlaygroundsTheme(darkTheme = false) {
+        CompositionLocalProvider(LocalDensity provides Density(4f)) {
             Box(Modifier.padding(20.dp)) {
-                MyFancyFrame("Some box", selected = true, onTitleClick = { println("click") }) {
+                MyFancyFrame("Some box", grayed = false, onTitleClick = { println("click") }) {
                     Box(
                         Modifier
                             .width(200.dp)
@@ -97,10 +85,10 @@ fun MyFancyFramePreview() {
     }
 }
 
-private val LocalColorHighlighted = staticCompositionLocalOf { Color(0.718f, 0.11f, 0.11f, 1.0f) }
-private val LocalColorSelected = staticCompositionLocalOf { Color(0.051f, 0.278f, 0.631f, 1.0f) }
-private val LocalColorNormal = staticCompositionLocalOf { Color(0.31f, 0.506f, 0.667f, 1.0f) }
-private val LocalColorGrayed = staticCompositionLocalOf { Color(0.635f, 0.635f, 0.635f, 1.0f) }
+private val LocalColorHighlighted = staticCompositionLocalOf { Color(0.937f, 0.604f, 0.604f, 1.0f) }
+private val LocalColorSelected = staticCompositionLocalOf { Color(0.255f, 0.498f, 0.875f, 1.0f) }
+private val LocalColorNormal = staticCompositionLocalOf { Color(0.643f, 0.769f, 0.875f, 1.0f) }
+private val LocalColorGrayed = staticCompositionLocalOf { Color(0.812f, 0.812f, 0.812f, 1.0f) }
 
 
 @Composable fun MyFancyFrameTheme(
