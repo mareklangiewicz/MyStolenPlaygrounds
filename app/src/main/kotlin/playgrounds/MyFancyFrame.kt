@@ -20,8 +20,10 @@ import androidx.compose.ui.unit.dp
 import pl.mareklangiewicz.playgrounds.PlaygroundsTheme
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MyFancyFrame(
+    modifier: Modifier = Modifier,
     title: String? = null,
     highlighted: Boolean = false,
     selected: Boolean = false,
@@ -35,15 +37,14 @@ fun MyFancyFrame(
         selected -> LocalColorSelected.current
         else -> LocalColorNormal.current
     }
-    Box(Modifier.padding(6.dp)) {
-        Surface(shape = CutCornerShape(topStart = 8.dp, bottomEnd = 2.dp), color = col, elevation = 8.dp) {
+    Box(modifier.padding(6.dp)) {
+        Surface(onClick = onTitleClick, shape = CutCornerShape(topStart = 8.dp, bottomEnd = 2.dp), color = col, elevation = 8.dp) {
             Column {
                 if (title != null)
                     Text(
                         text = title,
-                        modifier = Modifier
-                            .clickable(onClick = onTitleClick)
-                            .padding(start = 8.dp, top = 4.dp),
+                        modifier = Modifier.padding(start = 8.dp, top = 4.dp),
+                        maxLines = 1,
                         style = MaterialTheme.typography.caption
                     )
                 MyFancySurface {
@@ -71,7 +72,7 @@ fun MyFancyFramePreview() {
     PlaygroundsTheme(darkTheme = false) {
         CompositionLocalProvider(LocalDensity provides Density(4f)) {
             Box(Modifier.padding(20.dp)) {
-                MyFancyFrame("Some box", grayed = false, onTitleClick = { println("click") }) {
+                MyFancyFrame(title = "Some box", grayed = false, onTitleClick = { println("click") }) {
                     Box(
                         Modifier
                             .width(200.dp)

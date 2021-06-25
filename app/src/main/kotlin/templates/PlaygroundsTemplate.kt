@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalFoundationApi::class)
 package pl.mareklangiewicz.playgrounds
 
 import androidx.compose.animation.core.samples.*
@@ -5,74 +6,80 @@ import androidx.compose.animation.samples.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyGridScope
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.samples.*
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import pl.mareklangiewicz.myfancyframe.MyFancyFrame
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlaygroundsTemplate() {
     Row {
-//        val density = Density(1.5f)
+    //  val density = Density(1.5f)
         val density = LocalDensity.current
         CompositionLocalProvider(LocalDensity provides density) {
-            LazyVerticalGrid(cells = GridCells.Adaptive(128.dp)) {
-                item { Text("Some Sample") } // REPLACE
-                item { Text("Some Sample") } // REMOVE
-                item { Text("Some Sample") } // REMOVE
-                for (i in 1..15) item { HelloColumn() } // REMOVE
-                for (i in 1..15) item { Text("Some Sample $i") } // REMOVE
+            LazyVerticalGrid(cells = GridCells.Adaptive(164.dp)) {
+                MyFancyItem("Some Sample") { Text("Some Sample") } // REPLACE
+                MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
+                MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
+                for (i in 1..15) MyFancyItem("Hello Column") { HelloColumn() } // REMOVE
+                for (i in 1..15) MyFancyItem("Another Sample $i") { Text("Some Sample $i") } // REMOVE
             }
         }
     }
 }
 
+fun LazyGridScope.MyFancyItem(title: String, content: @Composable () -> Unit) {
+    item { MyFancyFrame(Modifier.size(164.dp, 256.dp), title = title) { content() } }
+}
+
 
 // BEGIN generated Playgrounds from PlaygroundsTemplate
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Playgrounds() {
     Row {
-        CompositionLocalProvider(LocalDensity provides Density(1.5f)) {
-            LazyVerticalGrid(cells = GridCells.Adaptive(128.dp)) {
-                item { MyFancyFrame("GradientBrushSample") { GradientBrushSample() } }
-                item { MyFancyFrame("DrawScopeSample") { DrawScopeSample() } }
-                item { MyFancyFrame("DrawScopeBatchedTransformSample") { DrawScopeBatchedTransformSample() } }
-                item { MyFancyFrame("DrawScopeOvalBrushSample") { DrawScopeOvalBrushSample() } }
-                item { MyFancyFrame("DrawScopeOvalColorSample") { DrawScopeOvalColorSample() } }
-                item { MyFancyFrame("StampedPathEffectSample") { StampedPathEffectSample() } }
-                item { MyFancyFrame("AnimatableAnimateToGenericsType") { AnimatableAnimateToGenericsType() } }
-                item { MyFancyFrame("AlphaAnimationSample") { AlphaAnimationSample() } }
-                item { MyFancyFrame("ArbitraryValueTypeTransitionSample") { ArbitraryValueTypeTransitionSample() } }
-                item { MyFancyFrame("DpAnimationSample") { DpAnimationSample() } }
-                item { MyFancyFrame("InfiniteTransitionSample") { InfiniteTransitionSample() } }
-                item { MyFancyFrame("InfiniteTransitionAnimateValueSample") { InfiniteTransitionAnimateValueSample() } }
-                item { MyFancyFrame("GestureAnimationSample") { GestureAnimationSample() } }
-                item { MyFancyFrame("AnimateFloatSample") { AnimateFloatSample() } }
-                item { MyFancyFrame("DoubleTapToLikeSample") { DoubleTapToLikeSample() } }
-                item { MyFancyFrame("ColorAnimationSample") { ColorAnimationSample() } }
-                item { MyFancyFrame("HorizontalTransitionSample") { HorizontalTransitionSample() } }
-                item { MyFancyFrame("SlideTransition") { SlideTransition() } }
-                item { MyFancyFrame("FadeTransition") { FadeTransition() } }
-                item { MyFancyFrame("FullyLoadedTransition") { FullyLoadedTransition() } }
-                item { MyFancyFrame("AnimatedVisibilityWithBooleanVisibleParamNoReceiver") { AnimatedVisibilityWithBooleanVisibleParamNoReceiver() } }
-                item { MyFancyFrame("SlideInOutSample") { SlideInOutSample() } }
-                item { MyFancyFrame("ExpandShrinkVerticallySample") { ExpandShrinkVerticallySample() } }
-                item { MyFancyFrame("ExpandInShrinkOutSample") { ExpandInShrinkOutSample() } }
-                item { MyFancyFrame("AnimatedVisibilityLazyColumnSample") { AnimatedVisibilityLazyColumnSample() } }
-                item { MyFancyFrame("AnimateContent") { AnimateContent() } }
-                item { MyFancyFrame("CrossfadeSample") { CrossfadeSample() } }
-                item { MyFancyFrame("GestureAnimationSample") { GestureAnimationSample2() } }
-                item { MyFancyFrame("InfiniteTransitionSample") { InfiniteTransitionSample2() } }
+    //  val density = Density(1.5f)
+        val density = LocalDensity.current
+        CompositionLocalProvider(LocalDensity provides density) {
+            LazyVerticalGrid(cells = GridCells.Adaptive(164.dp)) {
+                MyFancyItem("GradientBrushSample") { GradientBrushSample() }
+                MyFancyItem("DrawScopeSample") { DrawScopeSample() }
+                MyFancyItem("DrawScopeBatchedTransformSample") { DrawScopeBatchedTransformSample() }
+                MyFancyItem("DrawScopeOvalBrushSample") { DrawScopeOvalBrushSample() }
+                MyFancyItem("DrawScopeOvalColorSample") { DrawScopeOvalColorSample() }
+                MyFancyItem("StampedPathEffectSample") { StampedPathEffectSample() }
+                MyFancyItem("AnimatableAnimateToGenericsType") { AnimatableAnimateToGenericsType() }
+                MyFancyItem("AlphaAnimationSample") { AlphaAnimationSample() }
+                MyFancyItem("ArbitraryValueTypeTransitionSample") { ArbitraryValueTypeTransitionSample() }
+                MyFancyItem("DpAnimationSample") { DpAnimationSample() }
+                MyFancyItem("InfiniteTransitionSample") { InfiniteTransitionSample() }
+                MyFancyItem("InfiniteTransitionAnimateValueSample") { InfiniteTransitionAnimateValueSample() }
+                MyFancyItem("GestureAnimationSample") { GestureAnimationSample() }
+                MyFancyItem("AnimateFloatSample") { AnimateFloatSample() }
+                MyFancyItem("DoubleTapToLikeSample") { DoubleTapToLikeSample() }
+                MyFancyItem("ColorAnimationSample") { ColorAnimationSample() }
+                MyFancyItem("HorizontalTransitionSample") { HorizontalTransitionSample() }
+                MyFancyItem("SlideTransition") { SlideTransition() }
+                MyFancyItem("FadeTransition") { FadeTransition() }
+                MyFancyItem("FullyLoadedTransition") { FullyLoadedTransition() }
+                MyFancyItem("AnimatedVisibilityWithBooleanVisibleParamNoReceiver") { AnimatedVisibilityWithBooleanVisibleParamNoReceiver() }
+                MyFancyItem("SlideInOutSample") { SlideInOutSample() }
+                MyFancyItem("ExpandShrinkVerticallySample") { ExpandShrinkVerticallySample() }
+                MyFancyItem("ExpandInShrinkOutSample") { ExpandInShrinkOutSample() }
+                MyFancyItem("AnimatedVisibilityLazyColumnSample") { AnimatedVisibilityLazyColumnSample() }
+                MyFancyItem("AnimateContent") { AnimateContent() }
+                MyFancyItem("CrossfadeSample") { CrossfadeSample() }
+                MyFancyItem("GestureAnimationSample") { GestureAnimationSample() }
+                MyFancyItem("InfiniteTransitionSample") { InfiniteTransitionSample() }
             }
         }
     }
@@ -91,7 +98,7 @@ fun PlaygroundsTemplatePreview() {
 
 @Composable
 private fun HelloColumn() {
-    MyFancyFrame("Hello!") {
+    MyFancyFrame(title = "Hello!") {
         val d = LocalDensity.current.density
         Column {
             for (a in 1..5)
