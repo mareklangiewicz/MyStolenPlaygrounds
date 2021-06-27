@@ -1,5 +1,6 @@
 @file:OptIn(okio.ExperimentalFileSystem::class)
 import okio.Path.Companion.toPath
+import okio.Path
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
 
@@ -15,16 +16,16 @@ task("stealAndroidxComposeUiGraphicsSamples") {
         processAllKtFiles(
             inputRootDir = androidxSupportDir / "annotation/annotation-sampled/src/main/java/androidx/annotation",
             outputRootDir = stolenSrcKotlinDir / "androidx-annotation"
-        ) { it }
+        ) { _, _, content -> content }
 
-        val sampleFunNames = mutableListOf<String>()
+        val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
 
         // copy samples from ui/ui-graphics/samples and collect @Sampled @Composable fun names
         processAllKtFiles(
             inputRootDir = androidxSupportDir / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples",
             outputRootDir = stolenSrcKotlinDir / "ui-graphics-samples"
-        ) { sampleFileContent ->
-            sampleFunNames += sampleFileContent.findSampledComposableFunNames()
+        ) { inputPath, outputPath, sampleFileContent ->
+            samples += sampleFileContent.findSampledComposableFunNames().map { it to outputPath }
             sampleFileContent
         }
 
@@ -32,8 +33,8 @@ task("stealAndroidxComposeUiGraphicsSamples") {
         processAllKtFiles(
             inputRootDir = androidxSupportDir / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples",
             outputRootDir = stolenSrcKotlinDir / "animation-core-samples"
-        ) { sampleFileContent ->
-            sampleFunNames += sampleFileContent.findSampledComposableFunNames()
+        ) { inputPath, outputPath, sampleFileContent ->
+            samples += sampleFileContent.findSampledComposableFunNames().map { it to outputPath }
             sampleFileContent
         }
 
@@ -41,12 +42,12 @@ task("stealAndroidxComposeUiGraphicsSamples") {
         processAllKtFiles(
             inputRootDir = androidxSupportDir / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples",
             outputRootDir = stolenSrcKotlinDir / "animation-samples"
-        ) { sampleFileContent ->
-            sampleFunNames += sampleFileContent.findSampledComposableFunNames()
+        ) { inputPath, outputPath, sampleFileContent ->
+            samples += sampleFileContent.findSampledComposableFunNames().map { it to outputPath }
             sampleFileContent
         }
 
-        processAllKtFiles(templatesSrcKotlinDir, templatesSrcKotlinDir) { templateFileContent ->
+        processAllKtFiles(templatesSrcKotlinDir, templatesSrcKotlinDir) { inputPath, outputPath, templateFileContent ->
 
             val ureBigIdent = ure {
                 1 of posixUpper
@@ -146,7 +147,7 @@ task("stealAndroidxComposeUiGraphicsSamples") {
             val newGenerationArea = processFunTemplate(
                 template = groups["partTemplate"]!!.value,
                 templateFunName = groups["funName"]!!.value,
-                newFunNames = sampleFunNames
+                samples = samples
             )
 
             val newTemplateFileContent =
@@ -193,16 +194,19 @@ fun ureWholeLineWith(text: UreIR) = ure(MULTILINE) {
     1 of lf
 }
 
-fun processFunTemplate(template: String, templateFunName: String, newFunNames: List<String>) =
+fun processFunTemplate(template: String, templateFunName: String, samples: List<Pair<String, Path?>>) =
     template
         .replace(templateFunName + "Template", templateFunName)
         .replace(ureWholeLineWith("// REMOVE").compile(), "")
         .replace(ureWholeLineWith("// REPLACE").compile(),
-            newFunNames
+            samples
                 .joinToString(
-                    prefix = " ".repeat(16),
-                    separator = "\n" + " ".repeat(16),
+                    prefix = " ".repeat(8),
+                    separator = "\n" + " ".repeat(8),
                     postfix = "\n",
-                    transform = { "MyFancyItem(\"$it\") { $it() }" }
+                    transform = { (name, path) ->
+                        val pathStr = if (path == null) "null" else "\"$path\""
+                        "MySampleData(\"$name\", $pathStr) { $name() },"
+                    }
                 )
         )
