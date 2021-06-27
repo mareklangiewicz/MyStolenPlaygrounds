@@ -31,19 +31,21 @@ fun PlaygroundsTemplate() {
         MySampleData("Some Sample 3", "/home/marek/code/blabla.kt") { Text("Some Sample 3") } // REMOVE
     )
 
+    var selectedSample by remember { mutableStateOf(samples[0]) }
+
     Row {
-    //  val density = Density(1.5f)
-        val density = LocalDensity.current
-        CompositionLocalProvider(LocalDensity provides density) {
-            LazyVerticalGrid(cells = GridCells.Adaptive(164.dp)) {
-                for (sample in samples)
-                    MySampleItem(sample)
-                MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
-                MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
-                MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
-                for (i in 1..15) MyFancyItem("Hello Column") { HelloColumn() } // REMOVE
-                for (i in 1..15) MyFancyItem("Another Sample $i") { Text("Some Sample $i") } // REMOVE
-            }
+        LazyVerticalGrid(cells = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
+            for (sample in samples)
+                MySampleItem(sample) { selectedSample = it }
+
+            MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
+            MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
+            MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
+            for (i in 1..15) MyFancyItem("Hello Column") { HelloColumn() } // REMOVE
+            for (i in 1..15) MyFancyItem("Another Sample $i") { Text("Some Sample $i") } // REMOVE
+        }
+        MyFancyFrame(Modifier.weight(1f), selectedSample.title) {
+            selectedSample.code()
         }
     }
 }
@@ -53,7 +55,7 @@ fun LazyGridScope.MySampleItem(data: MySampleData, onSampleClick: (MySampleData)
 }
 
 fun LazyGridScope.MyFancyItem(title: String, onClick: () -> Unit = {}, content: @Composable () -> Unit) {
-    item { MyFancyFrame(Modifier.size(164.dp, 256.dp), title = title) { content() } }
+    item { MyFancyFrame(Modifier.size(164.dp, 256.dp), title = title, onClick = onClick) { content() } }
 }
 
 
@@ -93,14 +95,16 @@ fun Playgrounds() {
         MySampleData("InfiniteTransitionSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/TransitionSamples.kt") { InfiniteTransitionSample() },
     )
 
+    var selectedSample by remember { mutableStateOf(samples[0]) }
+
     Row {
-    //  val density = Density(1.5f)
-        val density = LocalDensity.current
-        CompositionLocalProvider(LocalDensity provides density) {
-            LazyVerticalGrid(cells = GridCells.Adaptive(164.dp)) {
-                for (sample in samples)
-                    MySampleItem(sample)
-            }
+        LazyVerticalGrid(cells = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
+            for (sample in samples)
+                MySampleItem(sample) { selectedSample = it; println(it.path) }
+
+        }
+        MyFancyFrame(Modifier.weight(1f), selectedSample.title) {
+            selectedSample.code()
         }
     }
 }
