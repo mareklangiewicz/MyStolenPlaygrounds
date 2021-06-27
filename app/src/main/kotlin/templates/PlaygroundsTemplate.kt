@@ -19,15 +19,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.mareklangiewicz.myfancyframe.MyFancyFrame
 
+data class MySampleData(val title: String, val path: String, val code: @Composable () -> Unit)
 
 @Composable
 fun PlaygroundsTemplate() {
+
+    val samples = listOf(
+        MySampleData("Some Sample 0", "/home/marek/code/blabla.kt") { Text("Some Sample 0") }, // REPLACE
+        MySampleData("Some Sample 1", "/home/marek/code/blabla.kt") { Text("Some Sample 1") }, // REMOVE
+        MySampleData("Some Sample 2", "/home/marek/code/blabla.kt") { Text("Some Sample 2") }, // REMOVE
+        MySampleData("Some Sample 3", "/home/marek/code/blabla.kt") { Text("Some Sample 3") } // REMOVE
+    )
+
     Row {
     //  val density = Density(1.5f)
         val density = LocalDensity.current
         CompositionLocalProvider(LocalDensity provides density) {
             LazyVerticalGrid(cells = GridCells.Adaptive(164.dp)) {
-                MyFancyItem("Some Sample") { Text("Some Sample") } // REPLACE
+                for (sample in samples)
+                    MySampleItem(sample)
+                MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
                 MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
                 MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
                 for (i in 1..15) MyFancyItem("Hello Column") { HelloColumn() } // REMOVE
@@ -37,7 +48,11 @@ fun PlaygroundsTemplate() {
     }
 }
 
-fun LazyGridScope.MyFancyItem(title: String, content: @Composable () -> Unit) {
+fun LazyGridScope.MySampleItem(data: MySampleData, onSampleClick: (MySampleData) -> Unit = {}) {
+    MyFancyItem(data.title, { onSampleClick(data) }, data.code)
+}
+
+fun LazyGridScope.MyFancyItem(title: String, onClick: () -> Unit = {}, content: @Composable () -> Unit) {
     item { MyFancyFrame(Modifier.size(164.dp, 256.dp), title = title) { content() } }
 }
 
