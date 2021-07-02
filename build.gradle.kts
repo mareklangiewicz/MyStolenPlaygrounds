@@ -1,10 +1,11 @@
 @file:OptIn(okio.ExperimentalFileSystem::class)
+import okio.FileSystem.Companion.SYSTEM
 import okio.Path.Companion.toPath
 import okio.Path
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
 
-task("stealAndroidxComposeUiGraphicsSamples") {
+task("stealAndroidxComposeSamples") {
     doLast {
         val androidxRootDir = "/home/marek/code/android/androidx-main".toPath()
         val androidxSupportDir = androidxRootDir / "frameworks/support"
@@ -13,7 +14,7 @@ task("stealAndroidxComposeUiGraphicsSamples") {
         val templatesSrcKotlinDir = srcKotlinDir / "templates"
 
         // just copy the @Sampled annotation definition
-        processAllKtFiles(
+        SYSTEM.processEachKtFile(
             inputRootDir = androidxSupportDir / "annotation/annotation-sampled/src/main/java/androidx/annotation",
             outputRootDir = stolenSrcKotlinDir / "androidx-annotation"
         ) { _, _, content -> content }
@@ -21,7 +22,7 @@ task("stealAndroidxComposeUiGraphicsSamples") {
         val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
 
         // copy samples from ui/ui-graphics/samples and collect @Sampled @Composable fun names
-        processAllKtFiles(
+        SYSTEM.processEachKtFile(
             inputRootDir = androidxSupportDir / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples",
             outputRootDir = stolenSrcKotlinDir / "ui-graphics-samples"
         ) { inputPath, outputPath, sampleFileContent ->
@@ -30,7 +31,7 @@ task("stealAndroidxComposeUiGraphicsSamples") {
         }
 
         // copy samples from animation/animation-core/samples and collect @Sampled @Composable fun names
-        processAllKtFiles(
+        SYSTEM.processEachKtFile(
             inputRootDir = androidxSupportDir / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples",
             outputRootDir = stolenSrcKotlinDir / "animation-core-samples"
         ) { inputPath, outputPath, sampleFileContent ->
@@ -39,7 +40,7 @@ task("stealAndroidxComposeUiGraphicsSamples") {
         }
 
         // copy samples from animation/animation/samples and collect @Sampled @Composable fun names
-        processAllKtFiles(
+        SYSTEM.processEachKtFile(
             inputRootDir = androidxSupportDir / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples",
             outputRootDir = stolenSrcKotlinDir / "animation-samples"
         ) { inputPath, outputPath, sampleFileContent ->
@@ -47,7 +48,7 @@ task("stealAndroidxComposeUiGraphicsSamples") {
             sampleFileContent
         }
 
-        processAllKtFiles(templatesSrcKotlinDir, templatesSrcKotlinDir) { inputPath, outputPath, templateFileContent ->
+        SYSTEM.processEachKtFile(templatesSrcKotlinDir, templatesSrcKotlinDir) { inputPath, outputPath, templateFileContent ->
 
             val ureBigIdent = ure {
                 1 of posixUpper
