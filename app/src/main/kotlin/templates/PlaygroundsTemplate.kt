@@ -36,7 +36,7 @@ fun PlaygroundsTemplate() {
     Row {
         LazyVerticalGrid(cells = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
             for (sample in samples)
-                MySampleItem(sample) { selectedSample = it }
+                MySampleItem(sample) { selectedSample = it; println(it.path) }
 
             MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
             MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
@@ -91,8 +91,8 @@ fun Playgrounds() {
         MySampleData("AnimatedVisibilityLazyColumnSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { AnimatedVisibilityLazyColumnSample() },
         MySampleData("AnimateContent", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimationModifierSample.kt") { AnimateContent() },
         MySampleData("CrossfadeSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/CrossfadeSample.kt") { CrossfadeSample() },
-        MySampleData("GestureAnimationSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/TransitionSamples.kt") { GestureAnimationSample() },
-        MySampleData("InfiniteTransitionSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/TransitionSamples.kt") { InfiniteTransitionSample() },
+        MySampleData("GestureAnimationSample2", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/TransitionSamples.kt") { GestureAnimationSample2() },
+        MySampleData("InfiniteTransitionSample2", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/TransitionSamples.kt") { InfiniteTransitionSample2() },
     )
 
     var selectedSample by remember { mutableStateOf(samples[0]) }
