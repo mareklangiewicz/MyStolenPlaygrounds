@@ -60,148 +60,24 @@ fun processTemplates(
     samples: Collection<Pair<String, Path?>>
 ) = SYSTEM.processEachKtFile(templatesDir, templatesDir) { _, _, templateFileContent ->
 
-    val ureBigIdent = ure {
-        1 of posixUpper
-        0..MAX of (word or digit)
-    }
+    val r = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("matchEntire failed")
 
-    val ureParamsNotNested = ure { // I assume no internal expressions with parenthesis
-        1 of ch("\\(")
-        0..MAX of oneCharNotOf("(")
-        1 of ch("\\)")
-    }
+    val newGenerationArea = processFunTemplate(r["partTemplate"], r["funName"], samples)
 
-    val ureAnnotations = ure {
-        1..MAX of { // single annotation
-            1 of ch("@")
-            1 of ureBigIdent
-            0..1 of ureParamsNotNested
-            1..MAX of space
-        }
-    }
-
-    val ureAnnotationsWithComposable = ure {
-        1 of ureAnnotations
-        1 of lookBehind {
-            1 of ir("@Composable")
-            1..100 of space
-        }
-    }
-
-    val ureMaybeSomeSpaces = ure { 0..MAX of ch(" ") }
-
-    val ureIndentedNotEmptyLineContent = ure {
-        1 of ch(" ")
-        1 of ureMaybeSomeSpaces
-        1 of oneCharNotOf(" ", "\\n")
-        0..MAX of oneCharNotOf("\\n")
-    }
-
-    val ureIndentedLine = ure(MULTILINE) {
-        1 of BOL
-        1 of (ureIndentedNotEmptyLineContent or ureMaybeSomeSpaces)
-        1 of lf
-    }
-
-    val ureComposableFunTemplate = ure(MULTILINE) {
-        1 of ureAnnotationsWithComposable
-        0..MAX of space // annotations can contain ending spaces too
-        1 of BOL // we have to start from new line to easier find ending brace }
-        1 of ir("fun")
-        1 of space
-        1 of ure("funName") { 1 of ureBigIdent }
-        1 of ir("Template")
-        1 of ureParamsNotNested
-        1 of space
-        1 of ch("\\{")
-        1 of lf
-        1..MAX of ureIndentedLine
-        1 of BOL
-        1 of ch("\\}")
-        1 of lf
-    }
-
-    val ureBeginGenerationAreaMarker = ure(MULTILINE) {
-        1 of BOL
-        1 of ir("// BEGIN generated ")
-        1 of ref(name = "funName")
-        1 of ir(" from ")
-        1 of ref(name = "funName")
-        1 of ir("Template")
-        1 of lf
-    }
-
-    val ureEndGenerationAreaMarker = ure(MULTILINE) {
-        1 of BOL
-        1 of ir("// END generated ")
-        1 of ref(name = "funName")
-        1 of ir(" from ")
-        1 of ref(name = "funName")
-        1 of ir("Template")
-        1 of lf
-
-    }
-
-    val ureContentWithTemplate = ure {
-        1 of ure("partBeforeTemplate", DOT_MATCHES_ALL) { x(0..MAX, reluctant = true) of any }
-        1 of ure("partTemplate") { 1 of ureComposableFunTemplate }
-        1 of ure("partBeforeGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
-        1 of ure("partBeginGenerationAreaMarker") { 1 of ureBeginGenerationAreaMarker }
-        1 of ure("partGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
-        1 of ure("partEndGenerationAreaMarker")  { 1 of ureEndGenerationAreaMarker }
-        1 of ure("partAfterGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
-    }
-
-    val result = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("matchEntire failed")
-    val groups = result.groups
-
-    val newGenerationArea = processFunTemplate(
-        template = groups["partTemplate"]!!.value,
-        templateFunName = groups["funName"]!!.value,
-        samples = samples
-    )
-
-    val newTemplateFileContent =
-        groups["partBeforeTemplate"]!!.value +
-                groups["partTemplate"]!!.value +
-                groups["partBeforeGenerationArea"]!!.value +
-                groups["partBeginGenerationAreaMarker"]!!.value +
-                newGenerationArea +
-                groups["partEndGenerationAreaMarker"]!!.value +
-                groups["partAfterGenerationArea"]!!.value
-
-    newTemplateFileContent
+    r["partBeforeTemplate"] +
+            r["partTemplate"] +
+            r["partBeforeGenerationArea"] +
+            r["partBeginGenerationAreaMarker"] +
+            newGenerationArea +
+            r["partEndGenerationAreaMarker"] +
+            r["partAfterGenerationArea"]
 }
 
-fun String.findSampledComposableFunNames(): Sequence<String> {
-    val ureFunHeader = ure(MULTILINE) {
-        1 of BOL
-        1 of ir("@Sampled")
-        1..MAX of space
-        1 of ir("@Composable")
-        1..MAX of space
-        1 of ir("fun")
-        1..MAX of space
-        1 of ure("funName") {
-            1 of posixUpper
-            0..MAX of (word or digit)
-        }
-        1 of ir("\\(\\)")
-    }
-
-    return ureFunHeader.compile()
+fun String.findSampledComposableFunNames() =
+    ureFunHeader
+        .compile()
         .findAll(this)
         .map { it.groups["funName"]!!.value.also { println("found fun: $it") } }
-}
-
-fun ureWholeLineWith(text: UreIR) = ure(MULTILINE) {
-    1 of BOL
-    0..MAX of any
-    1 of ir(text) // TODO_later: maybe force literal texts
-    0..MAX of any
-    1 of EOL
-    1 of lf
-}
 
 fun processFunTemplate(template: String, templateFunName: String, samples: Collection<Pair<String, Path?>>) =
     template
@@ -219,3 +95,122 @@ fun processFunTemplate(template: String, templateFunName: String, samples: Colle
                     }
                 )
         )
+
+
+val ureFunHeader = ure(MULTILINE) {
+    1 of BOL
+    1 of ir("@Sampled")
+    1..MAX of space
+    1 of ir("@Composable")
+    1..MAX of space
+    1 of ir("fun")
+    1..MAX of space
+    1 of ure("funName") {
+        1 of posixUpper
+        0..MAX of (word or digit)
+    }
+    1 of ir("\\(\\)")
+}
+
+
+fun ureWholeLineWith(text: UreIR) = ure(MULTILINE) {
+    1 of BOL
+    0..MAX of any
+    1 of ir(text) // TODO_later: maybe force literal texts
+    0..MAX of any
+    1 of EOL
+    1 of lf
+}
+
+
+val ureBigIdent = ure {
+    1 of posixUpper
+    0..MAX of (word or digit)
+}
+
+val ureParamsNotNested = ure { // I assume no internal expressions with parenthesis
+    1 of ch("\\(")
+    0..MAX of oneCharNotOf("(")
+    1 of ch("\\)")
+}
+
+val ureAnnotations = ure {
+    1..MAX of { // single annotation
+        1 of ch("@")
+        1 of ureBigIdent
+        0..1 of ureParamsNotNested
+        1..MAX of space
+    }
+}
+
+val ureAnnotationsWithComposable = ure {
+    1 of ureAnnotations
+    1 of lookBehind {
+        1 of ir("@Composable")
+        1..100 of space
+    }
+}
+
+val ureMaybeSomeSpaces = ure { 0..MAX of ch(" ") }
+
+val ureIndentedNotEmptyLineContent = ure {
+    1 of ch(" ")
+    1 of ureMaybeSomeSpaces
+    1 of oneCharNotOf(" ", "\\n")
+    0..MAX of oneCharNotOf("\\n")
+}
+
+val ureIndentedLine = ure(MULTILINE) {
+    1 of BOL
+    1 of (ureIndentedNotEmptyLineContent or ureMaybeSomeSpaces)
+    1 of lf
+}
+
+val ureComposableFunTemplate = ure(MULTILINE) {
+    1 of ureAnnotationsWithComposable
+    0..MAX of space // annotations can contain ending spaces too
+    1 of BOL // we have to start from new line to easier find ending brace }
+    1 of ir("fun")
+    1 of space
+    1 of ure("funName") { 1 of ureBigIdent }
+    1 of ir("Template")
+    1 of ureParamsNotNested
+    1 of space
+    1 of ch("\\{")
+    1 of lf
+    1..MAX of ureIndentedLine
+    1 of BOL
+    1 of ch("\\}")
+    1 of lf
+}
+
+val ureBeginGenerationAreaMarker = ure(MULTILINE) {
+    1 of BOL
+    1 of ir("// BEGIN generated ")
+    1 of ref(name = "funName")
+    1 of ir(" from ")
+    1 of ref(name = "funName")
+    1 of ir("Template")
+    1 of lf
+}
+
+val ureEndGenerationAreaMarker = ure(MULTILINE) {
+    1 of BOL
+    1 of ir("// END generated ")
+    1 of ref(name = "funName")
+    1 of ir(" from ")
+    1 of ref(name = "funName")
+    1 of ir("Template")
+    1 of lf
+
+}
+
+val ureContentWithTemplate = ure {
+    1 of ure("partBeforeTemplate", DOT_MATCHES_ALL) { x(0..MAX, reluctant = true) of any }
+    1 of ure("partTemplate") { 1 of ureComposableFunTemplate }
+    1 of ure("partBeforeGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
+    1 of ure("partBeginGenerationAreaMarker") { 1 of ureBeginGenerationAreaMarker }
+    1 of ure("partGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
+    1 of ure("partEndGenerationAreaMarker")  { 1 of ureEndGenerationAreaMarker }
+    1 of ure("partAfterGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
+}
