@@ -5,28 +5,6 @@ import okio.Path
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
 
-val androidxRootDir = "/home/marek/code/android/androidx-main".toPath()
-val androidxSupportDir = androidxRootDir / "frameworks/support"
-val srcKotlinDir = project.rootOkioPath / "app/src/main/kotlin"
-val stolenSrcKotlinDir = srcKotlinDir / "stolen"
-val templatesSrcKotlinDir = srcKotlinDir / "templates"
-
-fun stealSources(supportDir: String, stolenDir: String) = SYSTEM.processEachKtFile(
-    inputRootDir = androidxSupportDir / supportDir,
-    outputRootDir = stolenSrcKotlinDir / stolenDir
-) { _, _, content -> content }
-
-fun MutableCollection<Pair<String, Path?>>.stealSamples(
-    supportDir: String,
-    stolenDir: String
-) = SYSTEM.processEachKtFile(
-        androidxSupportDir / supportDir,
-        stolenSrcKotlinDir / stolenDir
-    ) { _, outputPath, content ->
-        this += content.findSampledComposableFunNames().map { it to outputPath }
-        content
-    }
-
 task("stealAndroidxComposeSamples") {
     doLast {
         stealSources(
@@ -54,6 +32,28 @@ task("stealAndroidxComposeSamples") {
         processTemplates(templatesSrcKotlinDir, samples)
     }
 }
+
+val androidxRootDir = "/home/marek/code/android/androidx-main".toPath()
+val androidxSupportDir = androidxRootDir / "frameworks/support"
+val srcKotlinDir = project.rootOkioPath / "app/src/main/kotlin"
+val stolenSrcKotlinDir = srcKotlinDir / "stolen"
+val templatesSrcKotlinDir = srcKotlinDir / "templates"
+
+fun stealSources(supportDir: String, stolenDir: String) = SYSTEM.processEachKtFile(
+    inputRootDir = androidxSupportDir / supportDir,
+    outputRootDir = stolenSrcKotlinDir / stolenDir
+) { _, _, content -> content }
+
+fun MutableCollection<Pair<String, Path?>>.stealSamples(
+    supportDir: String,
+    stolenDir: String
+) = SYSTEM.processEachKtFile(
+        androidxSupportDir / supportDir,
+        stolenSrcKotlinDir / stolenDir
+    ) { _, outputPath, content ->
+        this += content.findSampledComposableFunNames().map { it to outputPath }
+        content
+    }
 
 fun processTemplates(
     templatesDir: Path,
