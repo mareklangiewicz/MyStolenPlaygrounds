@@ -25,7 +25,7 @@ task("stealAndroidxComposeSamples") {
         SYSTEM.processEachKtFile(
             inputRootDir = androidxSupportDir / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples",
             outputRootDir = stolenSrcKotlinDir / "ui-graphics-samples"
-        ) { inputPath, outputPath, sampleFileContent ->
+        ) { _, outputPath, sampleFileContent ->
             samples += sampleFileContent.findSampledComposableFunNames().map { it to outputPath }
             sampleFileContent
         }
@@ -34,7 +34,7 @@ task("stealAndroidxComposeSamples") {
         SYSTEM.processEachKtFile(
             inputRootDir = androidxSupportDir / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples",
             outputRootDir = stolenSrcKotlinDir / "animation-core-samples"
-        ) { inputPath, outputPath, sampleFileContent ->
+        ) { _, outputPath, sampleFileContent ->
             samples += sampleFileContent.findSampledComposableFunNames().map { it to outputPath }
             sampleFileContent
         }
@@ -43,7 +43,7 @@ task("stealAndroidxComposeSamples") {
         SYSTEM.processEachKtFile(
             inputRootDir = androidxSupportDir / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples",
             outputRootDir = stolenSrcKotlinDir / "animation-samples"
-        ) { inputPath, outputPath, sampleFileContent ->
+        ) { _, outputPath, sampleFileContent ->
             samples += sampleFileContent.findSampledComposableFunNames().map { it to outputPath }
             sampleFileContent
         }
