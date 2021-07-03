@@ -51,114 +51,118 @@ task("stealAndroidxComposeSamples") {
             stolenDir = "animation-samples"
         )
 
-        SYSTEM.processEachKtFile(
-            inputRootDir = templatesSrcKotlinDir,
-            outputRootDir = templatesSrcKotlinDir
-        ) { inputPath, outputPath, templateFileContent ->
+        processTemplates(templatesSrcKotlinDir, samples)
+    }
+}
 
-            val ureBigIdent = ure {
-                1 of posixUpper
-                0..MAX of (word or digit)
-            }
+fun processTemplates(
+    templatesDir: Path,
+    samples: Collection<Pair<String, Path?>>
+) = SYSTEM.processEachKtFile(templatesDir, templatesDir) { _, _, templateFileContent ->
 
-            val ureParamsNotNested = ure { // I assume no internal expressions with parenthesis
-                1 of ch("\\(")
-                0..MAX of oneCharNotOf("(")
-                1 of ch("\\)")
-            }
+    val ureBigIdent = ure {
+        1 of posixUpper
+        0..MAX of (word or digit)
+    }
 
-            val ureAnnotations = ure {
-                1..MAX of { // single annotation
-                    1 of ch("@")
-                    1 of ureBigIdent
-                    0..1 of ureParamsNotNested
-                    1..MAX of space
-                }
-            }
+    val ureParamsNotNested = ure { // I assume no internal expressions with parenthesis
+        1 of ch("\\(")
+        0..MAX of oneCharNotOf("(")
+        1 of ch("\\)")
+    }
 
-            val ureAnnotationsWithComposable = ure {
-                1 of ureAnnotations
-                1 of lookBehind {
-                    1 of ir("@Composable")
-                    1..100 of space
-                }
-            }
+    val ureAnnotations = ure {
+        1..MAX of { // single annotation
+            1 of ch("@")
+            1 of ureBigIdent
+            0..1 of ureParamsNotNested
+            1..MAX of space
+        }
+    }
 
-            val ureMaybeSomeSpaces = ure { 0..MAX of ch(" ") }
+    val ureAnnotationsWithComposable = ure {
+        1 of ureAnnotations
+        1 of lookBehind {
+            1 of ir("@Composable")
+            1..100 of space
+        }
+    }
 
-            val ureIndentedNotEmptyLineContent = ure {
-                1 of ch(" ")
-                1 of ureMaybeSomeSpaces
-                1 of oneCharNotOf(" ", "\\n")
-                0..MAX of oneCharNotOf("\\n")
-            }
+    val ureMaybeSomeSpaces = ure { 0..MAX of ch(" ") }
 
-            val ureIndentedLine = ure(MULTILINE) {
-                1 of BOL
-                1 of (ureIndentedNotEmptyLineContent or ureMaybeSomeSpaces)
-                1 of lf
-            }
+    val ureIndentedNotEmptyLineContent = ure {
+        1 of ch(" ")
+        1 of ureMaybeSomeSpaces
+        1 of oneCharNotOf(" ", "\\n")
+        0..MAX of oneCharNotOf("\\n")
+    }
 
-            val ureComposableFunTemplate = ure(MULTILINE) {
-                1 of ureAnnotationsWithComposable
-                0..MAX of space // annotations can contain ending spaces too
-                1 of BOL // we have to start from new line to easier find ending brace }
-                1 of ir("fun")
-                1 of space
-                1 of ure("funName") { 1 of ureBigIdent }
-                1 of ir("Template")
-                1 of ureParamsNotNested
-                1 of space
-                1 of ch("\\{")
-                1 of lf
-                1..MAX of ureIndentedLine
-                1 of BOL
-                1 of ch("\\}")
-                1 of lf
-            }
+    val ureIndentedLine = ure(MULTILINE) {
+        1 of BOL
+        1 of (ureIndentedNotEmptyLineContent or ureMaybeSomeSpaces)
+        1 of lf
+    }
 
-            val ureBeginGenerationAreaMarker = ure(MULTILINE) {
-                1 of BOL
-                1 of ir("// BEGIN generated ")
-                1 of ref(name = "funName")
-                1 of ir(" from ")
-                1 of ref(name = "funName")
-                1 of ir("Template")
-                1 of lf
-            }
+    val ureComposableFunTemplate = ure(MULTILINE) {
+        1 of ureAnnotationsWithComposable
+        0..MAX of space // annotations can contain ending spaces too
+        1 of BOL // we have to start from new line to easier find ending brace }
+        1 of ir("fun")
+        1 of space
+        1 of ure("funName") { 1 of ureBigIdent }
+        1 of ir("Template")
+        1 of ureParamsNotNested
+        1 of space
+        1 of ch("\\{")
+        1 of lf
+        1..MAX of ureIndentedLine
+        1 of BOL
+        1 of ch("\\}")
+        1 of lf
+    }
 
-            val ureEndGenerationAreaMarker = ure(MULTILINE) {
-                1 of BOL
-                1 of ir("// END generated ")
-                1 of ref(name = "funName")
-                1 of ir(" from ")
-                1 of ref(name = "funName")
-                1 of ir("Template")
-                1 of lf
+    val ureBeginGenerationAreaMarker = ure(MULTILINE) {
+        1 of BOL
+        1 of ir("// BEGIN generated ")
+        1 of ref(name = "funName")
+        1 of ir(" from ")
+        1 of ref(name = "funName")
+        1 of ir("Template")
+        1 of lf
+    }
 
-            }
+    val ureEndGenerationAreaMarker = ure(MULTILINE) {
+        1 of BOL
+        1 of ir("// END generated ")
+        1 of ref(name = "funName")
+        1 of ir(" from ")
+        1 of ref(name = "funName")
+        1 of ir("Template")
+        1 of lf
 
-            val ureContentWithTemplate = ure {
-                1 of ure("partBeforeTemplate", DOT_MATCHES_ALL) { x(0..MAX, reluctant = true) of any }
-                1 of ure("partTemplate") { 1 of ureComposableFunTemplate }
-                1 of ure("partBeforeGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
-                1 of ure("partBeginGenerationAreaMarker") { 1 of ureBeginGenerationAreaMarker }
-                1 of ure("partGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
-                1 of ure("partEndGenerationAreaMarker")  { 1 of ureEndGenerationAreaMarker }
-                1 of ure("partAfterGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
-            }
+    }
 
-            val result = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("matchEntire failed")
-            val groups = result.groups
+    val ureContentWithTemplate = ure {
+        1 of ure("partBeforeTemplate", DOT_MATCHES_ALL) { x(0..MAX, reluctant = true) of any }
+        1 of ure("partTemplate") { 1 of ureComposableFunTemplate }
+        1 of ure("partBeforeGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
+        1 of ure("partBeginGenerationAreaMarker") { 1 of ureBeginGenerationAreaMarker }
+        1 of ure("partGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
+        1 of ure("partEndGenerationAreaMarker")  { 1 of ureEndGenerationAreaMarker }
+        1 of ure("partAfterGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
+    }
 
-            val newGenerationArea = processFunTemplate(
-                template = groups["partTemplate"]!!.value,
-                templateFunName = groups["funName"]!!.value,
-                samples = samples
-            )
+    val result = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("matchEntire failed")
+    val groups = result.groups
 
-            val newTemplateFileContent =
-                groups["partBeforeTemplate"]!!.value +
+    val newGenerationArea = processFunTemplate(
+        template = groups["partTemplate"]!!.value,
+        templateFunName = groups["funName"]!!.value,
+        samples = samples
+    )
+
+    val newTemplateFileContent =
+        groups["partBeforeTemplate"]!!.value +
                 groups["partTemplate"]!!.value +
                 groups["partBeforeGenerationArea"]!!.value +
                 groups["partBeginGenerationAreaMarker"]!!.value +
@@ -166,9 +170,7 @@ task("stealAndroidxComposeSamples") {
                 groups["partEndGenerationAreaMarker"]!!.value +
                 groups["partAfterGenerationArea"]!!.value
 
-            newTemplateFileContent
-        }
-    }
+    newTemplateFileContent
 }
 
 fun String.findSampledComposableFunNames(): Sequence<String> {
@@ -201,7 +203,7 @@ fun ureWholeLineWith(text: UreIR) = ure(MULTILINE) {
     1 of lf
 }
 
-fun processFunTemplate(template: String, templateFunName: String, samples: List<Pair<String, Path?>>) =
+fun processFunTemplate(template: String, templateFunName: String, samples: Collection<Pair<String, Path?>>) =
     template
         .replace(templateFunName + "Template", templateFunName)
         .replace(ureWholeLineWith("// REMOVE").compile(), "")
