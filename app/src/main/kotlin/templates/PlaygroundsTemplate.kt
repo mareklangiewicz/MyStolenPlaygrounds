@@ -12,16 +12,17 @@ import androidx.compose.foundation.lazy.LazyGridScope
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.samples.*
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.samples.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.mareklangiewicz.myfancyframe.MyFancyFrame
 
 data class MySampleData(val title: String, val path: String?, val code: @Composable () -> Unit)
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlaygroundsTemplate() {
 
@@ -61,10 +62,61 @@ fun LazyGridScope.MyFancyItem(title: String, onClick: () -> Unit = {}, content: 
 
 
 // BEGIN generated Playgrounds from PlaygroundsTemplate
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Playgrounds() {
 
     val samples = listOf(
+        MySampleData("AlignmentLineSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/AlignmentLineSample.kt") { AlignmentLineSample() },
+        MySampleData("AlphaSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/AlphaSample.kt") { AlphaSample() },
+        MySampleData("AndroidViewSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/AndroidViewSample.kt") { AndroidViewSample() },
+        MySampleData("AndroidDrawableInDrawScopeSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/AndroidViewSample.kt") { AndroidDrawableInDrawScopeSample() },
+        MySampleData("BlurSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/BlurSample.kt") { BlurSample() },
+        MySampleData("ImageBlurSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/BlurSample.kt") { ImageBlurSample() },
+        MySampleData("DialogSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/DialogSample.kt") { DialogSample() },
+        MySampleData("DrawWithCacheModifierSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/DrawModifierSample.kt") { DrawWithCacheModifierSample() },
+        MySampleData("DrawWithCacheModifierStateParameterSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/DrawModifierSample.kt") { DrawWithCacheModifierStateParameterSample() },
+        MySampleData("DrawWithCacheContentSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/DrawModifierSample.kt") { DrawWithCacheContentSample() },
+        MySampleData("FocusableSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/FocusSamples.kt") { FocusableSample() },
+        MySampleData("FocusableSampleUsingLowerLevelFocusTarget", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/FocusSamples.kt") { FocusableSampleUsingLowerLevelFocusTarget() },
+        MySampleData("CaptureFocusSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/FocusSamples.kt") { CaptureFocusSample() },
+        MySampleData("RequestFocusSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/FocusSamples.kt") { RequestFocusSample() },
+        MySampleData("ClearFocusSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/FocusSamples.kt") { ClearFocusSample() },
+        MySampleData("MoveFocusSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/FocusSamples.kt") { MoveFocusSample() },
+        MySampleData("CreateFocusRequesterRefsSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/FocusSamples.kt") { CreateFocusRequesterRefsSample() },
+        MySampleData("CustomFocusOrderSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/FocusSamples.kt") { CustomFocusOrderSample() },
+//        MySampleData("FocusPropertiesSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/FocusSamples.kt") { FocusPropertiesSample() },
+        MySampleData("InspectableModifierSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/InspectableModifierSample.kt") { InspectableModifierSample() },
+        MySampleData("KeyEventSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/KeyInputSamples.kt") { KeyEventSample() },
+        MySampleData("KeyEventTypeSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/KeyInputSamples.kt") { KeyEventTypeSample() },
+        MySampleData("KeyEventIsAltPressedSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/KeyInputSamples.kt") { KeyEventIsAltPressedSample() },
+        MySampleData("KeyEventIsCtrlPressedSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/KeyInputSamples.kt") { KeyEventIsCtrlPressedSample() },
+        MySampleData("KeyEventIsMetaPressedSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/KeyInputSamples.kt") { KeyEventIsMetaPressedSample() },
+        MySampleData("KeyEventIsShiftPressedSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/KeyInputSamples.kt") { KeyEventIsShiftPressedSample() },
+        MySampleData("ChangeOpacity", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/LayerModifierSamples.kt") { ChangeOpacity() },
+        MySampleData("AnimateFadeIn", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/LayerModifierSamples.kt") { AnimateFadeIn() },
+        MySampleData("LayoutModifierSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/LayoutSample.kt") { LayoutModifierSample() },
+        MySampleData("ConvenienceLayoutModifierSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/LayoutSample.kt") { ConvenienceLayoutModifierSample() },
+        MySampleData("ModifierLocalParentChildCommunicationWithinLayoutNodeSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ModifierLocalSamples.kt") { ModifierLocalParentChildCommunicationWithinLayoutNodeSample() },
+        MySampleData("ModifierLocalChildParentCommunicationWithinLayoutNodeSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ModifierLocalSamples.kt") { ModifierLocalChildParentCommunicationWithinLayoutNodeSample() },
+        MySampleData("ModifierLocalParentChildCommunicationInterLayoutNodeSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ModifierLocalSamples.kt") { ModifierLocalParentChildCommunicationInterLayoutNodeSample() },
+        MySampleData("ModifierLocalChildParentCommunicationInterLayoutNodeSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ModifierLocalSamples.kt") { ModifierLocalChildParentCommunicationInterLayoutNodeSample() },
+        MySampleData("ModifierUsageSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ModifierSamples.kt") { ModifierUsageSample() },
+        MySampleData("ModifierFactorySample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ModifierSamples.kt") { ModifierFactorySample() },
+        MySampleData("ModifierParameterSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ModifierSamples.kt") { ModifierParameterSample() },
+        MySampleData("SubcomponentModifierSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ModifierSamples.kt") { SubcomponentModifierSample() },
+        MySampleData("NestedScrollConnectionSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/NestedScrollSamples.kt") { NestedScrollConnectionSample() },
+        MySampleData("NestedScrollDispatcherSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/NestedScrollSamples.kt") { NestedScrollDispatcherSample() },
+        MySampleData("OnGloballyPositioned", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/OnGloballyPositionedSamples.kt") { OnGloballyPositioned() },
+        MySampleData("PainterModifierSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/PainterSample.kt") { PainterModifierSample() },
+        MySampleData("PainterResourceSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/PainterSample.kt") { PainterResourceSample() },
+        MySampleData("PopupSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/PopupSample.kt") { PopupSample() },
+        MySampleData("RotateSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/RotateSample.kt") { RotateSample() },
+        MySampleData("ScaleUniformSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ScaleSample.kt") { ScaleUniformSample() },
+        MySampleData("ScaleNonUniformSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ScaleSample.kt") { ScaleNonUniformSample() },
+        MySampleData("ShadowSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ShadowSample.kt") { ShadowSample() },
+        MySampleData("SoftwareKeyboardControllerSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/SoftwareKeyboardControllerSample.kt") { SoftwareKeyboardControllerSample() },
+        MySampleData("ZIndexModifierSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ZIndexModifierSample.kt") { ZIndexModifierSample() },
         MySampleData("GradientBrushSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-graphics-samples/BrushSamples.kt") { GradientBrushSample() },
         MySampleData("DrawScopeSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-graphics-samples/DrawScopeSample.kt") { DrawScopeSample() },
         MySampleData("DrawScopeBatchedTransformSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-graphics-samples/DrawScopeSample.kt") { DrawScopeBatchedTransformSample() },

@@ -16,6 +16,11 @@ task("stealAndroidxComposeSamples") {
         val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
 
         samples.stealSamples(
+            supportDir = "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples",
+            stolenDir = "ui-samples"
+        )
+
+        samples.stealSamples(
             supportDir = "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples",
             stolenDir = "ui-graphics-samples"
         )
