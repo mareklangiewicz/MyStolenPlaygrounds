@@ -4,6 +4,7 @@ import okio.Path.Companion.toPath
 import okio.Path
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
+import pl.mareklangiewicz.deps.*
 
 task("stealAndroidxComposeSamples") {
     doLast {

@@ -1,5 +1,4 @@
 @file:OptIn(okio.ExperimentalFileSystem::class)
-import okio.Path.Companion.toPath
 
 plugins {
     id("com.android.application") version Vers.androidGradlePlugin
@@ -30,7 +29,7 @@ group = "pl.mareklangiewicz.playgrounds"
 version = "0.0.01"
 
 android {
-    compileSdk = 30
+    compileSdk = 31
 
     defaultConfig {
         applicationId = "pl.mareklangiewicz.playgrounds"
@@ -62,13 +61,13 @@ android {
 
 dependencies {
     implementation ("androidx.core:core-ktx:1.6.0")
-    implementation ("androidx.appcompat:appcompat:1.3.0")
+    implementation ("androidx.appcompat:appcompat:1.3.1")
     implementation ("com.google.android.material:material:1.4.0")
     implementation (Deps.composeAndroidUi)
     implementation (Deps.composeAndroidUiTooling)
     implementation (Deps.composeAndroidMaterial)
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation ("androidx.activity:activity-compose:1.3.0-rc01")
+    implementation ("androidx.activity:activity-compose:1.4.0-rc01")
     api(Deps.uspekx)
     testImplementation ("junit:junit:4.13.2")
 }
