@@ -21,6 +21,7 @@ import pl.mareklangiewicz.myfancyframe.MyFancyFrame
 
 data class MySampleData(val title: String, val path: String?, val code: @Composable () -> Unit)
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlaygroundsTemplate() {
 
@@ -74,12 +75,26 @@ fun Playgrounds() {
         MySampleData("AlphaAnimationSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-core-samples/AnimatedValueSamples.kt") { AlphaAnimationSample() },
         MySampleData("ArbitraryValueTypeTransitionSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-core-samples/AnimatedValueSamples.kt") { ArbitraryValueTypeTransitionSample() },
         MySampleData("DpAnimationSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-core-samples/AnimatedValueSamples.kt") { DpAnimationSample() },
+        MySampleData("InfiniteProgressIndicator", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-core-samples/AnimationSpecSamples.kt") { InfiniteProgressIndicator() },
         MySampleData("InfiniteTransitionSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-core-samples/InfiniteTransitionSamples.kt") { InfiniteTransitionSample() },
         MySampleData("InfiniteTransitionAnimateValueSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-core-samples/InfiniteTransitionSamples.kt") { InfiniteTransitionAnimateValueSample() },
         MySampleData("GestureAnimationSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-core-samples/TransitionSamples.kt") { GestureAnimationSample() },
         MySampleData("AnimateFloatSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-core-samples/TransitionSamples.kt") { AnimateFloatSample() },
         MySampleData("DoubleTapToLikeSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-core-samples/TransitionSamples.kt") { DoubleTapToLikeSample() },
         MySampleData("ColorAnimationSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedValueSamples.kt") { ColorAnimationSample() },
+        MySampleData("HorizontalTransitionSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { HorizontalTransitionSample() },
+        MySampleData("SlideTransition", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { SlideTransition() },
+        MySampleData("FadeTransition", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { FadeTransition() },
+        MySampleData("FullyLoadedTransition", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { FullyLoadedTransition() },
+        MySampleData("AnimatedVisibilityWithBooleanVisibleParamNoReceiver", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { AnimatedVisibilityWithBooleanVisibleParamNoReceiver() },
+        MySampleData("SlideInOutSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { SlideInOutSample() },
+        MySampleData("ExpandShrinkVerticallySample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { ExpandShrinkVerticallySample() },
+        MySampleData("ExpandInShrinkOutSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { ExpandInShrinkOutSample() },
+        MySampleData("ColumnAnimatedVisibilitySample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { ColumnAnimatedVisibilitySample() },
+        MySampleData("AVScopeAnimateEnterExit", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { AVScopeAnimateEnterExit() },
+        MySampleData("AnimatedVisibilityLazyColumnSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { AnimatedVisibilityLazyColumnSample() },
+        MySampleData("AVColumnScopeWithMutableTransitionState", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { AVColumnScopeWithMutableTransitionState() },
+        MySampleData("AnimateEnterExitPartialContent", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimatedVisibilitySamples.kt") { AnimateEnterExitPartialContent() },
         MySampleData("AnimateContent", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/AnimationModifierSample.kt") { AnimateContent() },
         MySampleData("CrossfadeSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/CrossfadeSample.kt") { CrossfadeSample() },
         MySampleData("GestureAnimationSample2", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/animation-samples/TransitionSamples.kt") { GestureAnimationSample2() },
