@@ -39,11 +39,16 @@ task("stealAndroidxComposeSamples") {
     }
 }
 
-val androidxRootDir = "/home/marek/code/android/androidx-main".toPath()
+//val androidxRootDir = "/home/marek/code/android/androidx-main".toPath()
+val androidxRootDir = "/home/marek/code/kotlin/compose-jb/compose".toPath()
 val androidxSupportDir = androidxRootDir / "frameworks/support"
 val srcKotlinDir = project.rootOkioPath / "app/src/main/kotlin"
 val stolenSrcKotlinDir = srcKotlinDir / "stolen"
 val templatesSrcKotlinDir = srcKotlinDir / "templates"
+
+
+// TODO NOW: steal some tests - like:
+///home/marek/code/kotlin/compose-jb/compose/frameworks/support/compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation/FocusableTest.kt
 
 fun stealSources(supportDir: String, stolenDir: String) = SYSTEM.processEachKtFile(
     inputRootDir = androidxSupportDir / supportDir,

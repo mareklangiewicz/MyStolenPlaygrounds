@@ -26,6 +26,7 @@ data class MySampleData(val title: String, val path: String?, val code: @Composa
 @Composable
 fun PlaygroundsTemplate() {
 
+    @OptIn(ExperimentalComposeUiApi::class)
     val samples = listOf(
         MySampleData("Some Sample 0", "/home/marek/code/blabla.kt") { Text("Some Sample 0") }, // REPLACE
         MySampleData("Some Sample 1", "/home/marek/code/blabla.kt") { Text("Some Sample 1") }, // REMOVE
@@ -62,10 +63,10 @@ fun LazyGridScope.MyFancyItem(title: String, onClick: () -> Unit = {}, content: 
 
 
 // BEGIN generated Playgrounds from PlaygroundsTemplate
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Playgrounds() {
 
+    @OptIn(ExperimentalComposeUiApi::class)
     val samples = listOf(
         MySampleData("AlignmentLineSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/AlignmentLineSample.kt") { AlignmentLineSample() },
         MySampleData("AlphaSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/AlphaSample.kt") { AlphaSample() },
@@ -110,6 +111,7 @@ fun Playgrounds() {
         MySampleData("OnGloballyPositioned", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/OnGloballyPositionedSamples.kt") { OnGloballyPositioned() },
         MySampleData("PainterModifierSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/PainterSample.kt") { PainterModifierSample() },
         MySampleData("PainterResourceSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/PainterSample.kt") { PainterResourceSample() },
+        MySampleData("PointerIconSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/PointerIconSample.kt") { PointerIconSample() },
         MySampleData("PopupSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/PopupSample.kt") { PopupSample() },
         MySampleData("RotateSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/RotateSample.kt") { RotateSample() },
         MySampleData("ScaleUniformSample", "/home/marek/code/kotlin/MyStolenPlaygrounds/app/src/main/kotlin/stolen/ui-samples/ScaleSample.kt") { ScaleUniformSample() },
