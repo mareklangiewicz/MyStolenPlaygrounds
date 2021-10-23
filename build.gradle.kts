@@ -6,6 +6,14 @@ import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
 import pl.mareklangiewicz.deps.*
 
+//val androidxRootDir = "/home/marek/code/android/androidx-main".toPath()
+val androidxRootDir = "/home/marek/code/kotlin/compose-jb/compose".toPath()
+val androidxSupportDir = androidxRootDir / "frameworks/support"
+val srcKotlinDir = project.rootOkioPath / "app/src/main/kotlin"
+val stolenSrcKotlinDir = srcKotlinDir / "stolen"
+val templatesSrcKotlinDir = srcKotlinDir / "templates"
+
+
 task("stealAndroidxComposeSamples") {
     doLast {
         stealSources(
@@ -35,16 +43,14 @@ task("stealAndroidxComposeSamples") {
             stolenDir = "animation-samples"
         )
 
-        processTemplates(templatesSrcKotlinDir, samples)
+        val interpolations = mapOf(
+//            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
+//            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
+            srcKotlinDir.toString() to "srcKotlinDir",
+        )
+        processTemplates(templatesSrcKotlinDir, samples, interpolations)
     }
 }
-
-//val androidxRootDir = "/home/marek/code/android/androidx-main".toPath()
-val androidxRootDir = "/home/marek/code/kotlin/compose-jb/compose".toPath()
-val androidxSupportDir = androidxRootDir / "frameworks/support"
-val srcKotlinDir = project.rootOkioPath / "app/src/main/kotlin"
-val stolenSrcKotlinDir = srcKotlinDir / "stolen"
-val templatesSrcKotlinDir = srcKotlinDir / "templates"
 
 
 // TODO NOW: steal some tests - like:
@@ -68,12 +74,13 @@ fun MutableCollection<Pair<String, Path?>>.stealSamples(
 
 fun processTemplates(
     templatesDir: Path,
-    samples: Collection<Pair<String, Path?>>
+    samples: Collection<Pair<String, Path?>>,
+    interpolations: Map<String, String>
 ) = SYSTEM.processEachKtFile(templatesDir, templatesDir) { _, _, templateFileContent ->
 
     val r = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("matchEntire failed")
 
-    val newGenerationArea = processFunTemplate(r["partTemplate"], r["funName"], samples)
+    val newGenerationArea = processFunTemplate(r["partTemplate"], r["funName"], samples, interpolations)
 
     r["partBeforeTemplate"] +
             r["partTemplate"] +
@@ -90,7 +97,12 @@ fun String.findSampledComposableFunNames() =
         .findAll(this)
         .map { it.groups["funName"]!!.value.also { println("found fun: $it") } }
 
-fun processFunTemplate(template: String, templateFunName: String, samples: Collection<Pair<String, Path?>>) =
+fun processFunTemplate(
+    template: String,
+    templateFunName: String,
+    samples: Collection<Pair<String, Path?>>,
+    interpolations: Map<String, String>
+) =
     template
         .replace(templateFunName + "Template", templateFunName)
         .replace(ureWholeLineWith("// REMOVE").compile(), "")
@@ -101,11 +113,17 @@ fun processFunTemplate(template: String, templateFunName: String, samples: Colle
                     separator = "\n" + " ".repeat(8),
                     postfix = "\n",
                     transform = { (name, path) ->
-                        val pathStr = if (path == null) "null" else "\"$path\""
+                        val pathStr = if (path == null) "null" else "\"${path.toShortStr(interpolations)}\""
                         "MySampleData(\"$name\", $pathStr) { $name() },"
                     }
                 )
         )
+
+fun String.interpolate(vararg interpolations: Pair<String, String>) = interpolate(interpolations.toMap())
+fun String.interpolate(interpolations: Map<String, String>) =
+    interpolations.keys.fold(this) { acc, key -> acc.replace(key, "\\\${${interpolations[key]!!}}") }
+fun Path.toShortStr(interpolations: Map<String, String>) = toString().interpolate(interpolations)
+
 
 
 val ureFunHeader = ure(MULTILINE) {
