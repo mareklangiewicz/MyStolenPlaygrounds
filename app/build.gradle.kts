@@ -34,7 +34,7 @@ android {
     defaultConfig {
         applicationId = "pl.mareklangiewicz.playgrounds"
         minSdk = 26
-        targetSdk = 30
+        targetSdk = 31
         versionCode = 1
         versionName = "0.0.01"
     }
@@ -45,7 +45,7 @@ android {
         }
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "16"
         freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
     }
     buildFeatures {
@@ -70,16 +70,17 @@ dependencies {
     implementation (Deps.composeAndroidUi)
     implementation (Deps.composeAndroidUiTooling)
     implementation (Deps.composeAndroidMaterial)
+    implementation (Deps.androidxLifecycleCompiler)
     implementation (Deps.androidxLifecycleRuntimeKtx)
     implementation (Deps.androidxActivityCompose)
     // I use test stuff in main sources so I can add some tests sources to playgrounds app
-    implementation (Deps.uspekx)
+//    implementation (Deps.uspekx)
     implementation (Deps.junit4)
     implementation (Deps.googleTruth)
     implementation (Deps.androidxTestRules)
     implementation (Deps.androidxTestRunner)
-//    implementation (Deps.androidxTestExtTruth)
-//    implementation (Deps.androidxTestExtJUnit)
+    implementation (Deps.androidxTestExtTruth)
+    implementation (Deps.androidxTestExtJUnit)
     implementation (Deps.composeAndroidUiTest)
     implementation (Deps.composeAndroidUiTestJUnit4)
     implementation (Deps.composeAndroidUiTestManifest)
