@@ -20,6 +20,10 @@ task("stealAndroidxComposeSamples") {
             supportDir = "annotation/annotation-sampled/src/main/java/androidx/annotation",
             stolenDir = "androidx-annotation"
         )
+        stealSources(
+            supportDir = "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation",
+            stolenDir = "foundation-tests"
+        )
 
         val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
 
@@ -27,17 +31,14 @@ task("stealAndroidxComposeSamples") {
             supportDir = "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples",
             stolenDir = "ui-samples"
         )
-
         samples.stealSamples(
             supportDir = "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples",
             stolenDir = "ui-graphics-samples"
         )
-
         samples.stealSamples(
             supportDir = "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples",
             stolenDir = "animation-core-samples"
         )
-
         samples.stealSamples(
             supportDir = "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples",
             stolenDir = "animation-samples"

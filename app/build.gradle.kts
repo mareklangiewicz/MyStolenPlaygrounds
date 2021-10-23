@@ -56,18 +56,31 @@ android {
     }
     packagingOptions {
         resources.excludes.add("**/*.md")
+        resources.excludes.add("**/attach_hotspot_windows.dll")
+        resources.excludes.add("META-INF/licenses/**")
+        resources.excludes.add("META-INF/AL2.0")
+        resources.excludes.add("META-INF/LGPL2.1")
     }
 }
 
 dependencies {
-    implementation ("androidx.core:core-ktx:1.6.0")
-    implementation ("androidx.appcompat:appcompat:1.3.1")
-    implementation ("com.google.android.material:material:1.4.0")
+    implementation (Deps.androidxCoreKtx)
+    implementation (Deps.androidxAppcompat)
+    implementation (Deps.androidMaterial)
     implementation (Deps.composeAndroidUi)
     implementation (Deps.composeAndroidUiTooling)
     implementation (Deps.composeAndroidMaterial)
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation ("androidx.activity:activity-compose:1.4.0-rc01")
-    api(Deps.uspekx)
-    testImplementation ("junit:junit:4.13.2")
+    implementation (Deps.androidxLifecycleRuntimeKtx)
+    implementation (Deps.androidxActivityCompose)
+    // I use test stuff in main sources so I can add some tests sources to playgrounds app
+    implementation (Deps.uspekx)
+    implementation (Deps.junit4)
+    implementation (Deps.googleTruth)
+    implementation (Deps.androidxTestRules)
+    implementation (Deps.androidxTestRunner)
+//    implementation (Deps.androidxTestExtTruth)
+//    implementation (Deps.androidxTestExtJUnit)
+    implementation (Deps.composeAndroidUiTest)
+    implementation (Deps.composeAndroidUiTestJUnit4)
+    implementation (Deps.composeAndroidUiTestManifest)
 }

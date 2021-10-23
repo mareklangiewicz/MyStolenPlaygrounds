@@ -67,6 +67,7 @@ fun LazyGridScope.MyFancyItem(title: String, onClick: () -> Unit = {}, content: 
 
 
 // BEGIN generated Playgrounds from PlaygroundsTemplate
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Playgrounds() {
 
