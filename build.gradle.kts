@@ -16,14 +16,23 @@ val templatesSrcKotlinDir = srcKotlinDir / "templates"
 
 task("stealAndroidxComposeSamples") {
     doLast {
+
         stealSources(
             supportDir = "annotation/annotation-sampled/src/main/java/androidx/annotation",
             stolenDir = "androidx-annotation"
         )
         stealSources(
-            supportDir = "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation",
-            stolenDir = "foundation-tests"
+            supportDir = "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils",
+            stolenDir = "compose-testutils"
         )
+        stealSources(
+            supportDir = "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils",
+            stolenDir = "compose-testutils"
+        )
+//        stealSources(
+//            supportDir = "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation",
+//            stolenDir = "foundation-tests"
+//        )
 
         val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
 
@@ -53,9 +62,6 @@ task("stealAndroidxComposeSamples") {
     }
 }
 
-
-// TODO NOW: steal some tests - like:
-///home/marek/code/kotlin/compose-jb/compose/frameworks/support/compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation/FocusableTest.kt
 
 fun stealSources(supportDir: String, stolenDir: String) = SYSTEM.processEachKtFile(
     inputRootDir = androidxSupportDir / supportDir,

@@ -158,13 +158,12 @@ fun Playgrounds() {
         MySampleData("AnimateEnterExitPartialContent", "${srcKotlinDir}/stolen/animation-samples/AnimatedVisibilitySamples.kt") { AnimateEnterExitPartialContent() },
         MySampleData("AnimateContent", "${srcKotlinDir}/stolen/animation-samples/AnimationModifierSample.kt") { AnimateContent() },
         MySampleData("CrossfadeSample", "${srcKotlinDir}/stolen/animation-samples/CrossfadeSample.kt") { CrossfadeSample() },
-        MySampleData("GestureAnimationSample", "${srcKotlinDir}/stolen/animation-samples/TransitionSamples.kt") { GestureAnimationSample() },
-        MySampleData("InfiniteTransitionSample", "${srcKotlinDir}/stolen/animation-samples/TransitionSamples.kt") { InfiniteTransitionSample() },
+        MySampleData("GestureAnimationSample", "${srcKotlinDir}/stolen/animation-samples/TransitionSamples.kt") { GestureAnimationSample2() },
+        MySampleData("InfiniteTransitionSample", "${srcKotlinDir}/stolen/animation-samples/TransitionSamples.kt") { InfiniteTransitionSample2() },
     )
 
     var selectedSample by remember { mutableStateOf(samples[0]) }
 
-    @OptIn(ExperimentalFoundationApi::class)
     Row {
         LazyVerticalGrid(cells = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
             for (sample in samples)

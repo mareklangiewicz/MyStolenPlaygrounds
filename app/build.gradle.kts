@@ -76,6 +76,7 @@ dependencies {
     // I use test stuff in main sources so I can add some tests sources to playgrounds app
 //    implementation (Deps.uspekx)
     implementation (Deps.junit4)
+    implementation (Deps.androidxEspressoCore)
     implementation (Deps.googleTruth)
     implementation (Deps.androidxTestRules)
     implementation (Deps.androidxTestRunner)
@@ -84,4 +85,5 @@ dependencies {
     implementation (Deps.composeAndroidUiTest)
     implementation (Deps.composeAndroidUiTestJUnit4)
     implementation (Deps.composeAndroidUiTestManifest)
+    implementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
 }
