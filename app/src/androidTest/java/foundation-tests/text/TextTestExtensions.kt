@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.ResourceFont
 import androidx.compose.ui.text.font.toFontFamily
 import androidx.core.content.res.ResourcesCompat
+import pl.mareklangiewicz.playgrounds.R
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -37,6 +38,10 @@ internal class TestFontResourceLoader(val context: Context) : Font.ResourceLoade
     }
 }
 
-val TEST_FONT: Font = TODO()
+val TEST_FONT = Font(
+    resId = R.font.sample_font,
+    weight = FontWeight.Normal,
+    style = FontStyle.Normal
+)
 
 val TEST_FONT_FAMILY = TEST_FONT.toFontFamily()

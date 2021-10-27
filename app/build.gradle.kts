@@ -87,4 +87,6 @@ dependencies {
     implementation (Deps.composeAndroidUiTestJUnit4)
     implementation (Deps.composeAndroidUiTestManifest)
     implementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
+//    implementation(Deps.mockitoKotlin2)
+    implementation(Deps.mockitoAndroid)
 }

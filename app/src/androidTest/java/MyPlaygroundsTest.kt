@@ -25,6 +25,5 @@ class MyPlaygroundsTest {
         composeTestRule.onAllNodesWithText("AlignmentLineSample").assertCountEquals(1)
 
 //        composeTestRule.onNodeWithText("sth").assertIsFocused() // TODO: play with this
-//        composeTestRule.onNodeWithText("sth").assertIsSelected() // TODO: and this
     }
 }
