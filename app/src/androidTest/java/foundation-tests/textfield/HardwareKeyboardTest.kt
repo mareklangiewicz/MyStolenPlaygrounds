@@ -33,6 +33,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.nativeKeyCode
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.hasSetTextAction
@@ -305,7 +307,12 @@ class HardwareKeyboardTest {
                         fontFamily = TEST_FONT_FAMILY,
                         fontSize = 10.sp
                     ),
-                    modifier = modifier.focusRequester(focusFequester),
+                    modifier = modifier
+                        .onPreviewKeyEvent {
+                            Char(it.utf16CodePoint)
+                            false
+                        }
+                        .focusRequester(focusFequester),
                     onValueChange = {
                         state.value = it
                     }

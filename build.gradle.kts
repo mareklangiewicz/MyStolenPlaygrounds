@@ -1,4 +1,3 @@
-@file:OptIn(okio.ExperimentalFileSystem::class)
 import okio.FileSystem.Companion.SYSTEM
 import okio.Path.Companion.toPath
 import okio.Path

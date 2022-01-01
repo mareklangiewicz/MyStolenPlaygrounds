@@ -1,5 +1,3 @@
-@file:OptIn(okio.ExperimentalFileSystem::class)
-
 plugins {
     id("com.android.application") version Vers.androidGradlePlugin
     kotlin("android") version Vers.kotlin
@@ -48,6 +46,8 @@ android {
     kotlinOptions {
         jvmTarget = "16"
         freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
+        freeCompilerArgs = freeCompilerArgs + "-P" + "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
+            // FIXME:remove when compose catches up to new kotlin 1.6.10
     }
     buildFeatures {
         compose = true
