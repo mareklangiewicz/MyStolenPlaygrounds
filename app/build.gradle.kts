@@ -70,6 +70,7 @@ dependencies {
     implementation (Deps.androidMaterial)
     implementation (Deps.composeAndroidUi)
     implementation (Deps.composeAndroidUiTooling)
+    implementation (Deps.composeAndroidMaterial3)
     implementation (Deps.composeAndroidMaterial)
     implementation (Deps.androidxLifecycleCompiler)
     implementation (Deps.androidxLifecycleRuntimeKtx)
