@@ -9,68 +9,93 @@ import pl.mareklangiewicz.deps.*
 val androidxRootDir = "/home/marek/code/kotlin/compose-jb/compose".toPath()
 val androidxSupportDir = androidxRootDir / "frameworks/support"
 val srcKotlinDir = project.rootOkioPath / "app/src/main/kotlin"
+val srcJavaDir = project.rootOkioPath / "app/src/main/java"
 val stolenSrcKotlinDir = srcKotlinDir / "stolen"
+val stolenSrcJavaDir = srcJavaDir
 val templatesSrcKotlinDir = srcKotlinDir / "templates"
 
 
-task("stealAndroidxComposeSamples") {
+task("doStealComposeStuff") {
     doLast {
+        stealComposeStuff()
+    }
+}
 
-        stealSources(
-            supportDir = "annotation/annotation-sampled/src/main/java/androidx/annotation",
-            stolenDir = "androidx-annotation"
-        )
-        stealSources(
-            supportDir = "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils",
-            stolenDir = "compose-testutils"
-        )
-        stealSources(
-            supportDir = "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils",
-            stolenDir = "compose-testutils"
-        )
+fun stealComposeStuff() {
+    stealComposeSources()
+    stealAndProcessComposeSamples()
+}
+
+fun stealComposeSources() {
+    stealJavaSources(
+        supportDir = "compose/ui/ui-android-stubs/src/main/java/android/view",
+        stolenDir = "android/view"
+    )
+    stealSources(
+        supportDir = "annotation/annotation-sampled/src/main/java/androidx/annotation",
+        stolenDir = "androidx-annotation"
+    )
+    stealSources(
+        supportDir = "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils",
+        stolenDir = "compose-testutils"
+    )
+    stealSources(
+        supportDir = "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils",
+        stolenDir = "compose-testutils"
+    )
 //        stealSources(
 //            supportDir = "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation",
 //            stolenDir = "foundation-tests"
 //        )
-
-        val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
-
-        samples.stealSamples(
-            supportDir = "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples",
-            stolenDir = "ui-samples"
-        )
-        samples.stealSamples(
-            supportDir = "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples",
-            stolenDir = "ui-graphics-samples"
-        )
-        samples.stealSamples(
-            supportDir = "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples",
-            stolenDir = "animation-core-samples"
-        )
-        samples.stealSamples(
-            supportDir = "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples",
-            stolenDir = "animation-samples"
-        )
-
-        val interpolations = mapOf(
-//            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
-//            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
-            srcKotlinDir.toString() to "srcKotlinDir",
-        )
-        processTemplates(templatesSrcKotlinDir, samples, interpolations)
-    }
 }
 
+fun stealAndProcessComposeSamples() {
 
-fun stealSources(supportDir: String, stolenDir: String) = SYSTEM.processEachKtFile(
+    val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
+    samples.stealComposeSamples()
+
+    val interpolations = mapOf(
+//            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
+//            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
+        srcKotlinDir.toString() to "srcKotlinDir",
+    )
+    processTemplates(templatesSrcKotlinDir, samples, interpolations)
+}
+
+fun MutableCollection<Pair<String, Path?>>.stealComposeSamples() {
+
+    stealSamples(
+        supportDir = "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples",
+        stolenDir = "ui-samples"
+    )
+    stealSamples(
+        supportDir = "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples",
+        stolenDir = "ui-graphics-samples"
+    )
+    stealSamples(
+        supportDir = "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples",
+        stolenDir = "animation-core-samples"
+    )
+    stealSamples(
+        supportDir = "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples",
+        stolenDir = "animation-samples"
+    )
+}
+
+fun stealSources(supportDir: String, stolenDir: String) = SYSTEM.processEachFile(
     inputRootDir = androidxSupportDir / supportDir,
     outputRootDir = stolenSrcKotlinDir / stolenDir
+) { _, _, content -> content }
+
+fun stealJavaSources(supportDir: String, stolenDir: String) = SYSTEM.processEachFile(
+    inputRootDir = androidxSupportDir / supportDir,
+    outputRootDir = stolenSrcJavaDir / stolenDir
 ) { _, _, content -> content }
 
 fun MutableCollection<Pair<String, Path?>>.stealSamples(
     supportDir: String,
     stolenDir: String
-) = SYSTEM.processEachKtFile(
+) = SYSTEM.processEachFile(
         androidxSupportDir / supportDir,
         stolenSrcKotlinDir / stolenDir
     ) { _, outputPath, content ->
@@ -82,7 +107,7 @@ fun processTemplates(
     templatesDir: Path,
     samples: Collection<Pair<String, Path?>>,
     interpolations: Map<String, String>
-) = SYSTEM.processEachKtFile(templatesDir, templatesDir) { _, _, templateFileContent ->
+) = SYSTEM.processEachFile(templatesDir, templatesDir) { _, _, templateFileContent ->
 
     val r = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("matchEntire failed")
 

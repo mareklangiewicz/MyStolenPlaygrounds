@@ -40,7 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusOrder
-//import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.focus.onFocusChanged
@@ -209,20 +209,20 @@ fun CustomFocusOrderSample() {
     }
 }
 
-//@Sampled
-//@Composable
-//fun FocusPropertiesSample() {
-//    Column {
-//        // Always focusable.
-//        Box(modifier = Modifier
-//            .focusProperties { canFocus = true }
-//            .focusTarget()
-//        )
-//        // Only focusable in non-touch mode.
-//        val inputModeManager = LocalInputModeManager.current
-//        Box(modifier = Modifier
-//            .focusProperties { canFocus = inputModeManager.inputMode != Touch }
-//            .focusTarget()
-//        )
-//    }
-//}
+@Sampled
+@Composable
+fun FocusPropertiesSample() {
+    Column {
+        // Always focusable.
+        Box(modifier = Modifier
+            .focusProperties { canFocus = true }
+            .focusTarget()
+        )
+        // Only focusable in non-touch mode.
+        val inputModeManager = LocalInputModeManager.current
+        Box(modifier = Modifier
+            .focusProperties { canFocus = inputModeManager.inputMode != Touch }
+            .focusTarget()
+        )
+    }
+}
