@@ -71,9 +71,13 @@ fun MutableCollection<Pair<String, Path?>>.stealSamples(
         androidxSupportDir / supportDir,
         stolenSrcKotlinDir / stolenDir
     ) { _, outputPath, content ->
-        this += content.findSampledComposableFunNames().map { it to outputPath }
+        val pkg = content.findPackage()
+        val newSamples = content.findSampledComposableFunNames().map { "$pkg.$it" to outputPath }
+        this += newSamples
         content.withOptionalRImport()
     }
+
+fun String.findPackage(): String = urePackageLine.compile().find(this)!!["thePackage"]
 
 fun String.withOptionalRImport(): String {
     ureDefaultRUsage.compile().containsMatchIn(this) || return this
@@ -104,7 +108,7 @@ fun processTemplates(
 }
 
 fun String.findSampledComposableFunNames() =
-    ureFunHeader
+    ureSampledFunHeader
         .compile()
         .findAll(this)
         .map { it.groups["funName"]!!.value.also { println("found fun: $it") } }
@@ -138,7 +142,7 @@ fun Path.toShortStr(interpolations: Map<String, String>) = toString().interpolat
 
 
 
-val ureFunHeader = ure(MULTILINE) {
+val ureSampledFunHeader = ure(MULTILINE) {
     1 of BOL
     1 of ir("@Sampled")
     1..MAX of space
@@ -254,6 +258,15 @@ val ureContentWithTemplate = ure {
     1 of ure("partGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
     1 of ure("partEndGenerationAreaMarker")  { 1 of ureEndGenerationAreaMarker }
     1 of ure("partAfterGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
+}
+
+val urePackageLine = ure(MULTILINE) {
+    1 of BOL
+    1 of ir("package ")
+    1 of ure("thePackage") {
+        1..MAX of nonSpace
+    }
+    1 of EOL
 }
 
 val ureDefaultRUsage = ure {

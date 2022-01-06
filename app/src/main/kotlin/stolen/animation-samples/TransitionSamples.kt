@@ -57,7 +57,7 @@ private enum class ComponentState { Pressed, Released }
 
 @Sampled
 @Composable
-fun GestureAnimationSample2() {
+fun GestureAnimationSample() {
     // enum class ComponentState { Pressed, Released }
     var useRed by remember { mutableStateOf(false) }
     var toState by remember { mutableStateOf(ComponentState.Released) }
@@ -128,7 +128,7 @@ fun GestureAnimationSample2() {
 
 @Sampled
 @Composable
-fun InfiniteTransitionSample2() {
+fun InfiniteTransitionSample() {
     @Composable
     fun InfinitelyPulsingHeart() {
         // Creates an [InfiniteTransition] instance for managing child animations.
