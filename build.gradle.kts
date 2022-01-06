@@ -11,7 +11,7 @@ val androidxSupportDir = androidxRootDir / "frameworks/support"
 val srcKotlinDir = project.rootOkioPath / "app/src/main/kotlin"
 val srcJavaDir = project.rootOkioPath / "app/src/main/java"
 val stolenSrcKotlinDir = srcKotlinDir / "stolen"
-val stolenSrcJavaDir = srcJavaDir
+val stolenSrcJavaDir = srcJavaDir // java files have to be in directories same as packages :(
 val templatesSrcKotlinDir = srcKotlinDir / "templates"
 
 
@@ -27,26 +27,11 @@ fun stealComposeStuff() {
 }
 
 fun stealComposeSources() {
-    stealJavaSources(
-        supportDir = "compose/ui/ui-android-stubs/src/main/java/android/view",
-        stolenDir = "android/view"
-    )
-    stealSources(
-        supportDir = "annotation/annotation-sampled/src/main/java/androidx/annotation",
-        stolenDir = "androidx-annotation"
-    )
-    stealSources(
-        supportDir = "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils",
-        stolenDir = "compose-testutils"
-    )
-    stealSources(
-        supportDir = "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils",
-        stolenDir = "compose-testutils"
-    )
-//        stealSources(
-//            supportDir = "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation",
-//            stolenDir = "foundation-tests"
-//        )
+    stealJavaSources("compose/ui/ui-android-stubs/src/main/java/android/view", "android/view")
+    stealSources("annotation/annotation-sampled/src/main/java/androidx/annotation", "androidx-annotation")
+    stealSources("compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils", "compose-testutils")
+    stealSources("compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils", "compose-testutils") { "Screenshot" !in it.name }
+//    stealSources("compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation", "foundation-tests")
 }
 
 fun stealAndProcessComposeSamples() {
@@ -63,29 +48,16 @@ fun stealAndProcessComposeSamples() {
 }
 
 fun MutableCollection<Pair<String, Path?>>.stealComposeSamples() {
-
-    stealSamples(
-        supportDir = "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples",
-        stolenDir = "ui-samples"
-    )
-    stealSamples(
-        supportDir = "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples",
-        stolenDir = "ui-graphics-samples"
-    )
-    stealSamples(
-        supportDir = "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples",
-        stolenDir = "animation-core-samples"
-    )
-    stealSamples(
-        supportDir = "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples",
-        stolenDir = "animation-samples"
-    )
+    stealSamples("compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples", "ui-samples")
+    stealSamples("compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples", "ui-graphics-samples")
+    stealSamples("compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples", "animation-core-samples")
+    stealSamples("compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples", "animation-samples")
 }
 
-fun stealSources(supportDir: String, stolenDir: String) = SYSTEM.processEachFile(
+fun stealSources(supportDir: String, stolenDir: String, filter: (input: Path) -> Boolean = { true }) = SYSTEM.processEachFile(
     inputRootDir = androidxSupportDir / supportDir,
     outputRootDir = stolenSrcKotlinDir / stolenDir
-) { _, _, content -> content }
+) { input, _, content -> if (filter(input)) content.withOptionalRImport() else null }
 
 fun stealJavaSources(supportDir: String, stolenDir: String) = SYSTEM.processEachFile(
     inputRootDir = androidxSupportDir / supportDir,
@@ -100,8 +72,17 @@ fun MutableCollection<Pair<String, Path?>>.stealSamples(
         stolenSrcKotlinDir / stolenDir
     ) { _, outputPath, content ->
         this += content.findSampledComposableFunNames().map { it to outputPath }
-        content
+        content.withOptionalRImport()
     }
+
+fun String.withOptionalRImport(): String {
+    ureDefaultRUsage.compile().containsMatchIn(this) || return this
+    val r = ureContentWithImports.compile().matchEntire(this) ?: error("imports not found in:\n$this")
+    return r["partBeforeImports"] +
+            r["partWithImports"] +
+            "import pl.mareklangiewicz.playgrounds.R\n" +
+            r["partAfterImports"]
+}
 
 fun processTemplates(
     templatesDir: Path,
@@ -273,4 +254,26 @@ val ureContentWithTemplate = ure {
     1 of ure("partGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
     1 of ure("partEndGenerationAreaMarker")  { 1 of ureEndGenerationAreaMarker }
     1 of ure("partAfterGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
+}
+
+val ureDefaultRUsage = ure {
+    1 of lookBehind(positive = false) { 1 of dot }
+    1 of wordBoundary
+    1 of ch("R")
+    1 of dot
+    1 of word
+}
+
+val ureContentWithImports = ure {
+    1 of ure("partBeforeImports", DOT_MATCHES_ALL) { x(0..MAX, reluctant = true) of any }
+    1 of ure("partWithImports") {
+        1..MAX of ure(MULTILINE) {
+            1 of BOL
+            1 of ir("import ")
+            1..MAX of any
+            1 of lf
+        }
+    }
+    1 of ure("partAfterImports", DOT_MATCHES_ALL) { 0..MAX of any }
+
 }

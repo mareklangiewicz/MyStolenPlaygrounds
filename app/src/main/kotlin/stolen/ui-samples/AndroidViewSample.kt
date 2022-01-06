@@ -37,8 +37,8 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import pl.mareklangiewicz.playgrounds.R
 import kotlin.math.roundToInt
+import pl.mareklangiewicz.playgrounds.R
 
 @Suppress("SetTextI18n")
 @Sampled
