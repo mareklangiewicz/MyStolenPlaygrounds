@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
@@ -42,7 +43,7 @@ fun MyFancyFrame(
                 if (title != null)
                     Text(
                         text = title,
-                        modifier = Modifier.padding(start = 8.dp, top = 4.dp),
+                        modifier = Modifier.padding(start = 8.dp, top = 4.dp, end = 2.dp).wrapContentWidth(End, unbounded = true),
                         maxLines = 1,
                         style = MaterialTheme.typography.caption
                     )
