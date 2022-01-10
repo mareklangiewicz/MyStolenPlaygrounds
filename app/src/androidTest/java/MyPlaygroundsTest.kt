@@ -14,15 +14,15 @@ class MyPlaygroundsTest {
 
     @Test
     fun DisplayStuff() {
-        composeTestRule.onNodeWithText("AlphaSample").assertIsDisplayed()
-        composeTestRule.onNodeWithText("AlignmentLineSample").assertIsDisplayed()
+        composeTestRule.onNodeWithText("AlphaSample", substring = true).assertIsDisplayed()
+        composeTestRule.onNodeWithText("AlignmentLineSample", substring = true).assertIsDisplayed()
     }
 
     @Test
     fun ChangeSelectedSample() {
-        composeTestRule.onAllNodesWithText("AlignmentLineSample").assertCountEquals(2)
+        composeTestRule.onAllNodesWithText("AlignmentLineSample", substring = true).assertCountEquals(2)
         composeTestRule.onNodeWithText("AlphaSample").performClick()
-        composeTestRule.onAllNodesWithText("AlignmentLineSample").assertCountEquals(1)
+        composeTestRule.onAllNodesWithText("AlignmentLineSample", substring = true).assertCountEquals(1)
 
 //        composeTestRule.onNodeWithText("sth").assertIsFocused() // TODO: play with this
     }
