@@ -23,8 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.wrapContentSize
-//import androidx.compose.foundation.test.R
-import pl.mareklangiewicz.playgrounds.R
+import androidx.compose.foundation.test.R
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.testutils.assertPixels
@@ -73,6 +72,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import pl.mareklangiewicz.playgrounds.R
 
 @MediumTest
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.O)

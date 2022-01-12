@@ -17,15 +17,16 @@ package androidx.compose.foundation.text
 
 import android.content.Context
 import android.graphics.Typeface
+import androidx.compose.ui.text.font.test.R
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.ResourceFont
 import androidx.compose.ui.text.font.toFontFamily
 import androidx.core.content.res.ResourcesCompat
-import pl.mareklangiewicz.playgrounds.R
 import kotlin.math.ceil
 import kotlin.math.roundToInt
+import pl.mareklangiewicz.playgrounds.R
 
 fun Float.toIntPx(): Int = ceil(this).roundToInt()
 
