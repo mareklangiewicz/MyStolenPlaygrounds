@@ -12,8 +12,8 @@ val srcKotlinDir = project.rootOkioPath / "app/src/main/kotlin"
 val srcJavaDir = project.rootOkioPath / "app/src/main/java"
 val stolenSrcKotlinDir = srcKotlinDir / "stolen"
 val stolenSrcJavaDir = srcJavaDir // java files have to be in directories same as packages :(
+val stolenAndroTestsDir = project.rootOkioPath / "app/src/androidTest/java"
 val templatesSrcKotlinDir = srcKotlinDir / "templates"
-
 
 task("doStealComposeStuff") {
     doLast {
@@ -23,6 +23,7 @@ task("doStealComposeStuff") {
 
 fun stealComposeStuff() {
     stealComposeSources()
+    stealComposeTests()
     stealAndProcessComposeSamples()
 }
 
@@ -31,7 +32,10 @@ fun stealComposeSources() {
     stealSources("annotation/annotation-sampled/src/main/java/androidx/annotation", "androidx-annotation")
     stealSources("compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils", "compose-testutils")
     stealSources("compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils", "compose-testutils") { "Screenshot" !in it.name }
-//    stealSources("compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation", "foundation-tests")
+}
+
+fun stealComposeTests() {
+    stealAndroTests("compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation", "foundation-tests")
 }
 
 fun stealAndProcessComposeSamples() {
@@ -57,6 +61,11 @@ fun MutableCollection<Pair<String, Path?>>.stealComposeSamples() {
 fun stealSources(supportDir: String, stolenDir: String, filter: (input: Path) -> Boolean = { true }) = SYSTEM.processEachFile(
     inputRootDir = androidxSupportDir / supportDir,
     outputRootDir = stolenSrcKotlinDir / stolenDir
+) { input, _, content -> if (filter(input)) content.withOptionalRImport() else null }
+
+fun stealAndroTests(supportDir: String, stolenDir: String, filter: (input: Path) -> Boolean = { true }) = SYSTEM.processEachFile(
+    inputRootDir = androidxSupportDir / supportDir,
+    outputRootDir = stolenAndroTestsDir / stolenDir
 ) { input, _, content -> if (filter(input)) content.withOptionalRImport() else null }
 
 fun stealJavaSources(supportDir: String, stolenDir: String) = SYSTEM.processEachFile(

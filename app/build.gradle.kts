@@ -46,14 +46,12 @@ android {
     kotlinOptions {
         jvmTarget = "16"
         freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-        freeCompilerArgs = freeCompilerArgs + "-P" + "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
-            // FIXME:remove when compose catches up to new kotlin 1.6.10
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Vers.composeAndroid
+        kotlinCompilerExtensionVersion = Vers.composeAndroidCompiler
     }
     packagingOptions {
         resources.excludes.add("**/*.md")
