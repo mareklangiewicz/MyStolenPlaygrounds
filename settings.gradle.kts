@@ -1,5 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
+
 pluginManagement {
     includeBuild("../deps.kt")
     repositories {
@@ -15,4 +16,5 @@ plugins {
 
 rootProject.name = "MyStolenPlaygrounds"
 include (":app")
+include(":lib1")
 

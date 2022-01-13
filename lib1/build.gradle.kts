@@ -1,5 +1,5 @@
 plugins {
-    id("com.android.application") version Vers.androidGradlePlugin
+    id("com.android.library") version Vers.androidGradlePlugin
     kotlin("android") version Vers.kotlin
 }
 
@@ -23,18 +23,15 @@ repositories {
     maven(Repos.jitpack)
 }
 
-group = "pl.mareklangiewicz.playgrounds"
+group = "pl.mareklangiewicz.lib1"
 version = "0.0.01"
 
 android {
     compileSdk = 31
 
     defaultConfig {
-        applicationId = "pl.mareklangiewicz.playgrounds"
         minSdk = 26
         targetSdk = 31
-        versionCode = 1
-        versionName = "0.0.01"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -63,7 +60,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":lib1"))
     implementation (Deps.androidxCoreKtx)
     implementation (Deps.androidxAppcompat)
     implementation (Deps.androidMaterial)
