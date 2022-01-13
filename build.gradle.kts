@@ -8,11 +8,11 @@ import pl.mareklangiewicz.deps.*
 //val androidxRootDir = "/home/marek/code/android/androidx-main".toPath()
 val androidxRootDir = "/home/marek/code/kotlin/compose-jb/compose".toPath()
 val androidxSupportDir = androidxRootDir / "frameworks/support"
-val srcKotlinDir = project.rootOkioPath / "app/src/main/kotlin"
-val srcJavaDir = project.rootOkioPath / "app/src/main/java"
+val srcKotlinDir = project.rootOkioPath / "lib1/src/main/kotlin"
+val srcJavaDir = project.rootOkioPath / "lib1/src/main/java"
 val stolenSrcKotlinDir = srcKotlinDir / "stolen"
 val stolenSrcJavaDir = srcJavaDir // java files have to be in directories same as packages :(
-val stolenAndroTestsDir = project.rootOkioPath / "app/src/androidTest/java"
+val stolenAndroTestsDir = project.rootOkioPath / "lib1/src/androidTest/kotlin"
 val templatesSrcKotlinDir = srcKotlinDir / "templates"
 
 task("doStealComposeStuff") {
@@ -35,7 +35,9 @@ fun stealComposeSources() {
 }
 
 fun stealComposeTests() {
-    stealAndroTests("compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation", "foundation-tests")
+    stealAndroTests("compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation", "foundation-tests") { file ->
+        "CanvasTest" in file.name || "Foundation" in file.name
+    }
 }
 
 fun stealAndProcessComposeSamples() {
