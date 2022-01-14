@@ -8,14 +8,18 @@ import pl.mareklangiewicz.deps.*
 //val androidxRootDir = "/home/marek/code/android/androidx-main".toPath()
 val androidxRootDir = "/home/marek/code/kotlin/compose-jb/compose".toPath()
 val androidxSupportDir = androidxRootDir / "frameworks/support"
-val srcKotlinDir = project.rootOkioPath / "lib1/src/main/kotlin"
+val srcLib1KotlinDir = project.rootOkioPath / "lib1/src/main/kotlin"
+val srcLibUiSamplesKotlinDir = project.rootOkioPath / "lib-ui-samples/src/main/kotlin"
+val srcAppKotlinDir = project.rootOkioPath / "app/src/main/kotlin"
 val srcJavaDir = project.rootOkioPath / "lib1/src/main/java"
-val stolenSrcKotlinDir = srcKotlinDir / "stolen"
+val stolenSrcKotlinDir = srcLib1KotlinDir / "stolen"
 val stolenSrcJavaDir = srcJavaDir // java files have to be in directories same as packages :(
-val stolenAndroTestsDir = project.rootOkioPath / "lib1/src/androidTest/kotlin"
-val templatesSrcKotlinDir = srcKotlinDir / "templates"
+val stolenSamplesKotlinDir = srcLibUiSamplesKotlinDir / "stolen"
+val stolenAndroTestsDir = project.rootOkioPath / "lib1/src/androidTest/kotlin/stolen"
+val templatesSrcKotlinDir = srcAppKotlinDir / "templates"
 
 task("doStealComposeStuff") {
+    group = "steal"
     doLast {
         stealComposeStuff()
     }
@@ -48,7 +52,7 @@ fun stealAndProcessComposeSamples() {
     val interpolations = mapOf(
 //            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
 //            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
-        srcKotlinDir.toString() to "srcKotlinDir",
+        srcLib1KotlinDir.toString() to "srcKotlinDir",
     )
     processTemplates(templatesSrcKotlinDir, samples, interpolations)
 }
@@ -80,12 +84,13 @@ fun MutableCollection<Pair<String, Path?>>.stealSamples(
     stolenDir: String
 ) = SYSTEM.processEachFile(
         androidxSupportDir / supportDir,
-        stolenSrcKotlinDir / stolenDir
+        stolenSamplesKotlinDir / stolenDir
     ) { _, outputPath, content ->
         val pkg = content.findPackage()
         val newSamples = content.findSampledComposableFunNames().map { "$pkg.$it" to outputPath }
         this += newSamples
-        content.withOptionalRImport()
+//        content.withOptionalRImport()
+        content
     }
 
 fun String.findPackage(): String = urePackageLine.compile().find(this)!!["thePackage"]
