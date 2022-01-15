@@ -4,23 +4,11 @@ plugins {
 }
 
 buildscript {
-    repositories {
-        gradlePluginPortal()
-        google()
-        maven(url = "https://kotlin.bintray.com/kotlinx")
-        mavenCentral()
-    }
-    dependencies {
-        classpath(Deps.kotlinGradlePlugin)
-        classpath(Deps.androidGradlePlugin)
-    }
+    defaultAndroBuildScript()
 }
 
 repositories {
-    google()
-    mavenCentral()
-    maven(url = "https://kotlin.bintray.com/kotlinx")
-    maven(Repos.jitpack)
+    defaultRepositories()
 }
 
 android {
