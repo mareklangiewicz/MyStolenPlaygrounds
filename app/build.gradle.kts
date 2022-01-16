@@ -22,7 +22,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 android {
-    defaultAndroid()
+    defaultAndroid("pl.mareklangiewicz.playgrounds", withCompose = true)
 }
 
 

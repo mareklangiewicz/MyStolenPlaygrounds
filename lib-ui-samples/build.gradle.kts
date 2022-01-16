@@ -19,38 +19,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 }
 
 android {
-
-    compileOptions {
-        sourceCompatibility = org.gradle.api.JavaVersion.VERSION_16
-        targetCompatibility = org.gradle.api.JavaVersion.VERSION_16
-    }
-
-    compileSdk = 31
-
-    defaultConfig {
-        minSdk = 26
-        targetSdk = 31
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-        }
-    }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Vers.composeAndroidCompiler
-    }
-    packagingOptions {
-        resources.excludes.add("**/*.md")
-        resources.excludes.add("**/attach_hotspot_windows.dll")
-        resources.excludes.add("META-INF/licenses/**")
-        resources.excludes.add("META-INF/AL2.0")
-        resources.excludes.add("META-INF/LGPL2.1")
-    }
+    defaultAndroid(withCompose = true)
 }
 
 dependencies {
