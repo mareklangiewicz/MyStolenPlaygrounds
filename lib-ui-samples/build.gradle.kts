@@ -11,7 +11,20 @@ repositories {
     defaultRepositories()
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = "16"
+        freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
+    }
+}
+
 android {
+
+    compileOptions {
+        sourceCompatibility = org.gradle.api.JavaVersion.VERSION_16
+        targetCompatibility = org.gradle.api.JavaVersion.VERSION_16
+    }
+
     compileSdk = 31
 
     defaultConfig {
@@ -24,10 +37,6 @@ android {
         release {
             isMinifyEnabled = false
         }
-    }
-    kotlinOptions {
-        jvmTarget = "16"
-        freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
     }
     buildFeatures {
         compose = true

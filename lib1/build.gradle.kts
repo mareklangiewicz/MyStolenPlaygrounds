@@ -14,6 +14,14 @@ repositories {
 group = "pl.mareklangiewicz.lib1"
 version = "0.0.01"
 
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = "16"
+        freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
+    }
+}
+
 android {
     compileSdk = 31
 
@@ -23,14 +31,16 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_16
+        targetCompatibility = JavaVersion.VERSION_16
+
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
         }
-    }
-    kotlinOptions {
-        jvmTarget = "16"
-        freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
     }
     buildFeatures {
         compose = true
