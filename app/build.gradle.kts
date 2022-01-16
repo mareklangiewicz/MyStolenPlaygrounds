@@ -20,6 +20,8 @@ dependencies {
 group = "pl.mareklangiewicz.playgrounds"
 version = "0.0.01"
 
+//tasks.configureKotlinCompileTasks()
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions {
         jvmTarget = defaultJvmVersion
