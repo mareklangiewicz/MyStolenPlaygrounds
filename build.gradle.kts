@@ -255,7 +255,7 @@ val ureComposableFunTemplate = ure(MULTILINE) {
 
 val ureBeginGenerationAreaMarker = ure(MULTILINE) {
     1 of BOL
-    1 of ir("// BEGIN generated ")
+    1 of ir("//region Generated ")
     1 of ref(name = "funName")
     1 of ir(" from ")
     1 of ref(name = "funName")
@@ -265,7 +265,7 @@ val ureBeginGenerationAreaMarker = ure(MULTILINE) {
 
 val ureEndGenerationAreaMarker = ure(MULTILINE) {
     1 of BOL
-    1 of ir("// END generated ")
+    1 of ir("//endregion Generated ")
     1 of ref(name = "funName")
     1 of ir(" from ")
     1 of ref(name = "funName")
