@@ -61,7 +61,7 @@ fun LazyGridScope.MyFancyItem(title: String, onClick: () -> Unit = {}, content: 
     item { MyFancyFrame(Modifier.size(164.dp, 256.dp), title = title, onClick = onClick) { content() } }
 }
 
-//region Generated Playgrounds from PlaygroundsTemplate
+// region Generated Playgrounds from PlaygroundsTemplate
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Playgrounds() {
@@ -171,7 +171,7 @@ fun Playgrounds() {
         }
     }
 }
-//endregion Generated Playgrounds from PlaygroundsTemplate
+// endregion Generated Playgrounds from PlaygroundsTemplate
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
