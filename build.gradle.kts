@@ -4,6 +4,7 @@ import okio.Path
 import kotlin.text.RegexOption.DOT_MATCHES_ALL
 import kotlin.text.RegexOption.MULTILINE
 import pl.mareklangiewicz.deps.*
+import pl.mareklangiewicz.ure.*
 
 //val androidxRootDir = "/home/marek/code/android/androidx-main".toPath()
 val androidxRootDir = "/home/marek/code/kotlin/compose-jb/compose".toPath()
@@ -105,7 +106,7 @@ fun String.findPackage(): String = urePackageLine.compile().find(this)!!["thePac
 @Deprecated("Prefer multiple modules so default R class matches source file package")
 fun String.withOptionalRImport(): String {
     ureDefaultRUsage.compile().containsMatchIn(this) || return this
-    val r = ureContentWithImports.compile().matchEntire(this) ?: error("imports not found in:\n$this")
+    val r: MatchResult = ureContentWithImports.compile().matchEntire(this) ?: error("imports not found in:\n$this")
     return r["partBeforeImports"] +
             r["partWithImports"] +
             "import pl.mareklangiewicz.playgrounds.R\n" +
@@ -131,11 +132,11 @@ fun processTemplates(
             r["partAfterGenerationArea"]
 }
 
-fun String.findSampledComposableFunNames() =
+fun String.findSampledComposableFunNames(): Sequence<String> =
     ureSampledFunHeader
         .compile()
         .findAll(this)
-        .map { it.groups["funName"]!!.value.also { println("found fun: $it") } }
+        .map { result: MatchResult -> result["funName"].also { println("found fun: $it") } }
 
 fun processFunTemplate(
     template: String,
@@ -255,7 +256,7 @@ val ureComposableFunTemplate = ure(MULTILINE) {
 
 val ureBeginGenerationAreaMarker = ure(MULTILINE) {
     1 of BOL
-    1 of ir("// region Generated ")
+    1 of ir("// region Generated ") // FIXME NOW: use ureRegion
     1 of ref(name = "funName")
     1 of ir(" from ")
     1 of ref(name = "funName")
@@ -265,7 +266,7 @@ val ureBeginGenerationAreaMarker = ure(MULTILINE) {
 
 val ureEndGenerationAreaMarker = ure(MULTILINE) {
     1 of BOL
-    1 of ir("// endregion Generated ")
+    1 of ir("// endregion Generated ") // FIXME NOW: use ureRegion
     1 of ref(name = "funName")
     1 of ir(" from ")
     1 of ref(name = "funName")
