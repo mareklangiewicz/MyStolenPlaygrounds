@@ -1,8 +1,6 @@
 import okio.FileSystem.Companion.SYSTEM
 import okio.Path.Companion.toPath
 import okio.Path
-import kotlin.text.RegexOption.DOT_MATCHES_ALL
-import kotlin.text.RegexOption.MULTILINE
 import pl.mareklangiewicz.deps.*
 import pl.mareklangiewicz.ure.*
 
@@ -167,7 +165,7 @@ fun Path.toShortStr(interpolations: Map<String, String>) = toString().interpolat
 
 
 
-val ureSampledFunHeader = ure(MULTILINE) {
+val ureSampledFunHeader = ure {
     1 of BOL
     1 of ir("@Sampled")
     1..MAX of space
@@ -183,7 +181,7 @@ val ureSampledFunHeader = ure(MULTILINE) {
 }
 
 
-fun ureWholeLineWith(text: UreIR) = ure(MULTILINE) {
+fun ureWholeLineWith(text: UreIR) = ure {
     1 of BOL
     0..MAX of any
     1 of ir(text) // TODO_later: maybe force literal texts
@@ -230,13 +228,13 @@ val ureIndentedNotEmptyLineContent = ure {
     0..MAX of oneCharNotOf("\\n")
 }
 
-val ureIndentedLine = ure(MULTILINE) {
+val ureIndentedLine = ure {
     1 of BOL
     1 of (ureIndentedNotEmptyLineContent or ureMaybeSomeSpaces)
     1 of lf
 }
 
-val ureComposableFunTemplate = ure(MULTILINE) {
+val ureComposableFunTemplate = ure {
     1 of ureAnnotationsWithComposable
     0..MAX of space // annotations can contain ending spaces too
     1 of BOL // we have to start from new line to easier find ending brace }
@@ -254,7 +252,7 @@ val ureComposableFunTemplate = ure(MULTILINE) {
     1 of lf
 }
 
-val ureBeginGenerationAreaMarker = ure(MULTILINE) {
+val ureBeginGenerationAreaMarker = ure {
     1 of BOL
     1 of ir("// region Generated ") // FIXME NOW: use ureRegion
     1 of ref(name = "funName")
@@ -264,7 +262,7 @@ val ureBeginGenerationAreaMarker = ure(MULTILINE) {
     1 of lf
 }
 
-val ureEndGenerationAreaMarker = ure(MULTILINE) {
+val ureEndGenerationAreaMarker = ure {
     1 of BOL
     1 of ir("// endregion Generated ") // FIXME NOW: use ureRegion
     1 of ref(name = "funName")
@@ -276,16 +274,16 @@ val ureEndGenerationAreaMarker = ure(MULTILINE) {
 }
 
 val ureContentWithTemplate = ure {
-    1 of ure("partBeforeTemplate", DOT_MATCHES_ALL) { x(0..MAX, reluctant = true) of any }
-    1 of ure("partTemplate") { 1 of ureComposableFunTemplate }
-    1 of ure("partBeforeGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
-    1 of ure("partBeginGenerationAreaMarker") { 1 of ureBeginGenerationAreaMarker }
-    1 of ure("partGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
-    1 of ure("partEndGenerationAreaMarker")  { 1 of ureEndGenerationAreaMarker }
-    1 of ure("partAfterGenerationArea", DOT_MATCHES_ALL) { 0..MAX of any }
+    1 of ureWhateva().withName("partBeforeTemplate")
+    1 of ure { 1 of ureComposableFunTemplate }.withName("partTemplate")
+    1 of ureWhateva().withName("partBeforeGenerationArea")
+    1 of ure { 1 of ureBeginGenerationAreaMarker }.withName("partBeginGenerationAreaMarker")
+    1 of ureWhateva().withName("partGenerationArea")
+    1 of ure { 1 of ureEndGenerationAreaMarker }.withName("partEndGenerationAreaMarker")
+    1 of ureWhateva(reluctant = false).withName("partAfterGenerationArea")
 }
 
-val urePackageLine = ure(MULTILINE) {
+val urePackageLine = ure {
     1 of BOL
     1 of ir("package ")
     1 of ure("thePackage") {
@@ -303,15 +301,14 @@ val ureDefaultRUsage = ure {
 }
 
 val ureContentWithImports = ure {
-    1 of ure("partBeforeImports", DOT_MATCHES_ALL) { x(0..MAX, reluctant = true) of any }
-    1 of ure("partWithImports") {
-        1..MAX of ure(MULTILINE) {
+    1 of ureWhateva().withName("partBeforeImports")
+    1 of ure {
+        1..MAX of ure {
             1 of BOL
             1 of ir("import ")
             1..MAX of any
             1 of lf
         }
-    }
-    1 of ure("partAfterImports", DOT_MATCHES_ALL) { 0..MAX of any }
-
+    }.withName("partWithImports")
+    1 of ureWhateva().withName("partAfterImports")
 }
