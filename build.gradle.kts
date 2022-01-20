@@ -117,17 +117,18 @@ fun processTemplates(
     interpolations: Map<String, String>
 ) = SYSTEM.processEachFile(templatesDir, templatesDir) { _, _, templateFileContent ->
 
-    val r = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("matchEntire failed")
-
-    val newGenerationArea = processFunTemplate(r["partTemplate"], r["funName"], samples, interpolations)
-
-    r["partBeforeTemplate"] +
-            r["partTemplate"] +
-            r["partBeforeGenerationArea"] +
-            r["partBeginGenerationAreaMarker"] +
-            newGenerationArea +
-            r["partEndGenerationAreaMarker"] +
-            r["partAfterGenerationArea"]
+    val r = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("No template")
+    val partBeforeTemplate by r
+    val partTemplate by r
+    val partBeforeGenerationRegion by r
+    val partAfterGenerationRegion by r
+    val funName by r
+    val regionName = "Generated " + funName + " from " + funName + "Template"
+    val newGenerationArea = processFunTemplate(partTemplate, funName, samples, interpolations)
+    val wholeRegion = "\n// region $regionName\n$newGenerationArea// endregion $regionName\n\n"
+    val templateRelatedStuff = partBeforeTemplate + partTemplate
+    val regionRelatedStuff = partBeforeGenerationRegion + wholeRegion + partAfterGenerationRegion
+    templateRelatedStuff + regionRelatedStuff
 }
 
 fun String.findSampledComposableFunNames(): Sequence<String> =
@@ -240,7 +241,7 @@ val ureComposableFunTemplate = ure {
     1 of BOL // we have to start from new line to easier find ending brace }
     1 of ir("fun")
     1 of space
-    1 of ure("funName") { 1 of ureBigIdent }
+    1 of ure { 1 of ureBigIdent }.withName("funName")
     1 of ir("Template")
     1 of ureParamsNotNested
     1 of space
@@ -252,35 +253,19 @@ val ureComposableFunTemplate = ure {
     1 of lf
 }
 
-val ureBeginGenerationAreaMarker = ure {
-    1 of BOL
-    1 of ir("// region Generated ") // FIXME NOW: use ureRegion
-    1 of ref(name = "funName")
-    1 of ir(" from ")
-    1 of ref(name = "funName")
-    1 of ir("Template")
-    1 of lf
-}
-
-val ureEndGenerationAreaMarker = ure {
-    1 of BOL
-    1 of ir("// endregion Generated ") // FIXME NOW: use ureRegion
-    1 of ref(name = "funName")
-    1 of ir(" from ")
-    1 of ref(name = "funName")
-    1 of ir("Template")
-    1 of lf
-
-}
-
 val ureContentWithTemplate = ure {
+    val regionName = ure {
+        1 of ir("Generated ")
+        1 of ref(name = "funName") // backreference to actual template function name (inside ureComposableFunTemplate)
+        1 of ir(" from ")
+        1 of ref(name = "funName") // backreference to actual template function name again
+        1 of ir("Template")
+    }
     1 of ureWhateva().withName("partBeforeTemplate")
     1 of ure { 1 of ureComposableFunTemplate }.withName("partTemplate")
-    1 of ureWhateva().withName("partBeforeGenerationArea")
-    1 of ure { 1 of ureBeginGenerationAreaMarker }.withName("partBeginGenerationAreaMarker")
-    1 of ureWhateva().withName("partGenerationArea")
-    1 of ure { 1 of ureEndGenerationAreaMarker }.withName("partEndGenerationAreaMarker")
-    1 of ureWhateva(reluctant = false).withName("partAfterGenerationArea")
+    1 of ureWhateva().withName("partBeforeGenerationRegion")
+    1 of ureRegion(ureWhateva(), regionName = regionName)
+    1 of ureWhateva(reluctant = false).withName("partAfterGenerationRegion")
 }
 
 val urePackageLine = ure {
