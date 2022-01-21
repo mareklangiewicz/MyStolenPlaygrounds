@@ -17,6 +17,21 @@ val stolenSamplesKotlinDir = srcLibUiSamplesKotlinDir / "stolen"
 val stolenAndroTestsDir = project.rootOkioPath / "lib1/src/androidTest/kotlin/stolen"
 val templatesSrcKotlinDir = srcAppKotlinDir / "templates"
 
+
+tasks.register("doCheckAndroAppBuildTemplates") {
+    group = "inject"
+    doLast {
+        checkAndroBuildTemplates()
+    }
+}
+
+tasks.register("doInjectAndroAppBuildTemplate") {
+    group = "inject"
+    doLast {
+        injectAndroAppBuildTemplate("app/build.gradle.kts".toPath())
+    }
+}
+
 task("doStealComposeStuff") {
     group = "steal"
     doLast {
