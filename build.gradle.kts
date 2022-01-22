@@ -17,33 +17,26 @@ val stolenSamplesKotlinDir = srcLibUiSamplesKotlinDir / "stolen"
 val stolenAndroTestsDir = project.rootOkioPath / "lib1/src/androidTest/kotlin/stolen"
 val templatesSrcKotlinDir = srcAppKotlinDir / "templates"
 
+tasks.registerAllThatGroupFun("inject",
+    ::checkAndroBuildTemplates,
+    ::injectAndroAppBuildTemplate,
+)
 
-tasks.register("doCheckAndroAppBuildTemplates") {
-    group = "inject"
-    doLast {
-        checkAndroBuildTemplates()
-    }
-}
+tasks.registerAllThatGroupFun("steal",
+    ::stealComposeAll,
+    ::stealComposeAnnotations,
+    ::stealComposeSources,
+    ::stealComposeTests,
+    ::stealComposeSamplesAndProcess
+)
 
-tasks.register("doInjectAndroAppBuildTemplate") {
-    group = "inject"
-    doLast {
-        injectAndroAppBuildTemplate("app/build.gradle.kts".toPath())
-    }
-}
+fun injectAndroAppBuildTemplate() = injectAndroAppBuildTemplate("app/build.gradle.kts".toPath())
 
-task("doStealComposeStuff") {
-    group = "steal"
-    doLast {
-        stealComposeStuff()
-    }
-}
-
-fun stealComposeStuff() {
+fun stealComposeAll() {
     stealComposeAnnotations()
     stealComposeSources()
     stealComposeTests()
-    stealAndProcessComposeSamples()
+    stealComposeSamplesAndProcess()
 }
 
 fun stealComposeAnnotations() {
@@ -61,7 +54,7 @@ fun stealComposeTests() {
     }
 }
 
-fun stealAndProcessComposeSamples() {
+fun stealComposeSamplesAndProcess() {
 
     val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
     samples.stealComposeSamples()
