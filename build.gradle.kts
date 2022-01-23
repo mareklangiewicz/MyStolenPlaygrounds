@@ -16,9 +16,12 @@ val stolenSrcJavaDir = srcJavaDir // java files have to be in directories same a
 val stolenSamplesKotlinDir = srcLibUiSamplesKotlinDir / "stolen"
 val stolenAndroTestsDir = project.rootOkioPath / "lib1/src/androidTest/kotlin/stolen"
 val templatesSrcKotlinDir = srcAppKotlinDir / "templates"
+val appBuildPath = "app/build.gradle.kts".toPath()
+val lib1BuildPath = "lib1/build.gradle.kts".toPath()
+val libUiSamplesBuildPath = "lib-ui-samples/build.gradle.kts".toPath()
 
 tasks.registerAllThatGroupFun("inject",
-    ::checkAndroBuildTemplates,
+    ::checkPlaygroundsBuildTemplates,
     ::injectAndroAppBuildTemplate,
     ::injectAndroLib1BuildTemplate,
     ::injectAndroLibUiSamplesBuildTemplate,
@@ -32,9 +35,10 @@ tasks.registerAllThatGroupFun("steal",
     ::stealComposeSamplesAndProcess
 )
 
-fun injectAndroAppBuildTemplate() = injectAndroAppBuildTemplate("app/build.gradle.kts".toPath())
-fun injectAndroLib1BuildTemplate() = injectAndroLibBuildTemplate("lib1/build.gradle.kts".toPath())
-fun injectAndroLibUiSamplesBuildTemplate() = injectAndroLibBuildTemplate("lib-ui-samples/build.gradle.kts".toPath())
+fun checkPlaygroundsBuildTemplates() = checkAndroBuildTemplates(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
+fun injectAndroAppBuildTemplate() = injectAndroAppBuildTemplate(appBuildPath)
+fun injectAndroLib1BuildTemplate() = injectAndroLibBuildTemplate(lib1BuildPath)
+fun injectAndroLibUiSamplesBuildTemplate() = injectAndroLibBuildTemplate(libUiSamplesBuildPath)
 
 fun stealComposeAll() {
     stealComposeAnnotations()
