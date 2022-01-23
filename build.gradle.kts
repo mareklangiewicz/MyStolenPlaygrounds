@@ -20,6 +20,8 @@ val templatesSrcKotlinDir = srcAppKotlinDir / "templates"
 tasks.registerAllThatGroupFun("inject",
     ::checkAndroBuildTemplates,
     ::injectAndroAppBuildTemplate,
+    ::injectAndroLib1BuildTemplate,
+    ::injectAndroLibUiSamplesBuildTemplate,
 )
 
 tasks.registerAllThatGroupFun("steal",
@@ -31,6 +33,8 @@ tasks.registerAllThatGroupFun("steal",
 )
 
 fun injectAndroAppBuildTemplate() = injectAndroAppBuildTemplate("app/build.gradle.kts".toPath())
+fun injectAndroLib1BuildTemplate() = injectAndroLibBuildTemplate("lib1/build.gradle.kts".toPath())
+fun injectAndroLibUiSamplesBuildTemplate() = injectAndroLibBuildTemplate("lib-ui-samples/build.gradle.kts".toPath())
 
 fun stealComposeAll() {
     stealComposeAnnotations()
