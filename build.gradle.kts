@@ -109,13 +109,13 @@ fun MutableCollection<Pair<String, Path?>>.stealSamples(
         androidxSupportDir / supportDir,
         stolenSamplesKotlinDir / stolenDir
     ) { _, outputPath, content ->
-        val pkg = content.findPackage()
+        val pkg = content.ktFindPackageName()
         val newSamples = content.findSampledComposableFunNames().map { "$pkg.$it" to outputPath }
         this += newSamples
         content
     }
 
-fun String.findPackage(): String = urePackageLine.compile().find(this)!!["thePackage"]
+fun String.ktFindPackageName(): String = urePackageLine().compile().find(this)!!["ktPackageName"]
 
 @Deprecated("Prefer multiple modules so default R class matches source file package")
 fun String.withOptionalRImport(): String {
@@ -282,15 +282,6 @@ val ureContentWithTemplate = ure {
     1 of ureWhateva().withName("partBeforeGenerationRegion")
     1 of ureRegion(ureWhateva(), regionName = regionName)
     1 of ureWhateva(reluctant = false).withName("partAfterGenerationRegion")
-}
-
-val urePackageLine = ure {
-    1 of BOL
-    1 of ir("package ")
-    1 of ure("thePackage") {
-        1..MAX of nonSpace
-    }
-    1 of EOL
 }
 
 val ureDefaultRUsage = ure {
