@@ -38,7 +38,6 @@ fun PlaygroundsTemplate() {
         LazyVerticalGrid(cells = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
             for (sample in samples)
                 MySampleItem(sample) { selectedSample = it; println(it.path) }
-
             MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
             MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
             MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
@@ -164,7 +163,6 @@ fun Playgrounds() {
         LazyVerticalGrid(cells = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
             for (sample in samples)
                 MySampleItem(sample) { selectedSample = it; println(it.path) }
-
         }
         MyFancyFrame(Modifier.weight(1f), selectedSample.title) {
             selectedSample.code()
