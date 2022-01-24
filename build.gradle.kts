@@ -115,17 +115,7 @@ fun MutableCollection<Pair<String, Path?>>.stealSamples(
         content
     }
 
-fun String.ktFindPackageName(): String = urePackageLine().compile().find(this)!!["ktPackageName"]
-
-@Deprecated("Prefer multiple modules so default R class matches source file package")
-fun String.withOptionalRImport(): String {
-    ureDefaultRUsage.compile().containsMatchIn(this) || return this
-    val r: MatchResult = ureContentWithImports.compile().matchEntire(this) ?: error("imports not found in:\n$this")
-    return r["partBeforeImports"] +
-            r["partWithImports"] +
-            "import pl.mareklangiewicz.playgrounds.R\n" +
-            r["partAfterImports"]
-}
+fun String.ktFindPackageName() = urePackageLine().compile().find(this)!!["ktPackageName"]
 
 fun processTemplates(
     templatesDir: Path,
@@ -141,7 +131,7 @@ fun processTemplates(
     val funName by r
     val regionName = "Generated " + funName + " from " + funName + "Template"
     val newGenerationArea = processFunTemplate(partTemplate, funName, samples, interpolations)
-    val wholeRegion = "\n// region $regionName\n$newGenerationArea// endregion $regionName\n\n"
+    val wholeRegion = "// region $regionName\n$newGenerationArea// endregion $regionName\n"
     val templateRelatedStuff = partBeforeTemplate + partTemplate
     val regionRelatedStuff = partBeforeGenerationRegion + wholeRegion + partAfterGenerationRegion
     templateRelatedStuff + regionRelatedStuff
@@ -282,26 +272,4 @@ val ureContentWithTemplate = ure {
     1 of ureWhateva().withName("partBeforeGenerationRegion")
     1 of ureRegion(ureWhateva(), regionName = regionName)
     1 of ureWhateva(reluctant = false).withName("partAfterGenerationRegion")
-}
-
-val ureDefaultRUsage = ure {
-    1 of lookBehind(positive = false) { 1 of dot }
-    1 of wordBoundary
-    1 of ch("R")
-    1 of dot
-    1 of word
-}
-
-// TODO NOW use UreKotlin
-val ureContentWithImports = ure {
-    1 of ureWhateva().withName("partBeforeImports")
-    1 of ure {
-        1..MAX of ure {
-            1 of BOL
-            1 of ir("import ")
-            1..MAX of any
-            1 of lf
-        }
-    }.withName("partWithImports")
-    1 of ureWhateva().withName("partAfterImports")
 }
