@@ -292,6 +292,7 @@ val ureDefaultRUsage = ure {
     1 of word
 }
 
+// TODO NOW use UreKotlin
 val ureContentWithImports = ure {
     1 of ureWhateva().withName("partBeforeImports")
     1 of ure {
