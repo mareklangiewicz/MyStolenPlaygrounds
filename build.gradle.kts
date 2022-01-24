@@ -151,8 +151,8 @@ fun processFunTemplate(
 ) =
     template
         .replace(templateFunName + "Template", templateFunName)
-        .replace(ureWholeLineWith("// REMOVE").compile(), "")
-        .replace(ureWholeLineWith("// REPLACE").compile(),
+        .replace(ureLineEndingWithComment("REMOVE").compile(), "")
+        .replace(ureLineEndingWithComment("REPLACE").compile(),
             samples
                 .joinToString(
                     prefix = " ".repeat(8),
@@ -185,16 +185,6 @@ val ureSampledFunHeader = ure {
         0..MAX of (word or digit)
     }
     1 of ir("\\(\\)")
-}
-
-
-fun ureWholeLineWith(text: UreIR) = ure {
-    1 of BOL
-    0..MAX of any
-    1 of ir(text) // TODO_later: maybe force literal texts
-    0..MAX of any
-    1 of EOL
-    1 of lf
 }
 
 
