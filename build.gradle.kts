@@ -188,11 +188,6 @@ val ureSampledFunHeader = ure {
 }
 
 
-val ureBigIdent = ure {
-    1 of posixUpper
-    0..MAX of (word or digit)
-}
-
 val ureParamsNotNested = ure { // I assume no internal expressions with parenthesis
     1 of ch("\\(")
     0..MAX of oneCharNotOf("(")
@@ -202,7 +197,7 @@ val ureParamsNotNested = ure { // I assume no internal expressions with parenthe
 val ureAnnotations = ure {
     1..MAX of { // single annotation
         1 of ch("@")
-        1 of ureBigIdent
+        1 of ureIdent(AZ)
         0..1 of ureParamsNotNested
         1..MAX of space
     }
@@ -237,7 +232,7 @@ val ureComposableFunTemplate = ure {
     1 of BOL // we have to start from new line to easier find ending brace }
     1 of ir("fun")
     1 of space
-    1 of ure { 1 of ureBigIdent }.withName("funName")
+    1 of ure { 1 of ureIdent(AZ) }.withName("funName")
     1 of ir("Template")
     1 of ureParamsNotNested
     1 of space
