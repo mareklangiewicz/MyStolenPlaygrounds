@@ -151,8 +151,8 @@ fun processFunTemplate(
 ) =
     template
         .replace(templateFunName + "Template", templateFunName)
-        .replace(ureLineEndingWithComment("REMOVE").compile(), "")
-        .replace(ureLineEndingWithComment("REPLACE").compile(),
+        .replace(ureLineWithEndingComment(ir("REMOVE")).compile(), "")
+        .replace(ureLineWithEndingComment(ir("REPLACE")).compile(),
             samples
                 .joinToString(
                     prefix = " ".repeat(8),
