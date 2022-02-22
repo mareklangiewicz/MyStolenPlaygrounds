@@ -7,7 +7,7 @@
         <compositeConfiguration>
           <compositeBuild compositeDefinitionSource="SCRIPT">
             <builds>
-              <build path="$PROJECT_DIR$/../deps.kt" name="deps">
+              <build path="$PROJECT_DIR$/../deps.kt" name="deps.kt">
                 <projects>
                   <project path="$PROJECT_DIR$/../deps.kt" />
                 </projects>

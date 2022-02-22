@@ -3,18 +3,38 @@ import okio.Path.Companion.toPath
 import okio.Path
 import pl.mareklangiewicz.deps.*
 import pl.mareklangiewicz.ure.*
+import pl.mareklangiewicz.utils.*
+
+plugins {
+    id("pl.mareklangiewicz.sourcefun")
+}
+
+
+
+// TODO NOW: temporary experiment of how I can use processEachFile to do sth like SourceFun, then extract boilerplate
+// to dsl like tmpFunTask by tasks.registeringSourceFun {...processing...}
+// what about registerAllThatGroupFun?? maybe sth like this would be better than sourceFun DSL????
+val tmpFunTask by tasks.registering(pl.mareklangiewicz.sourcefun.SourceFunTask::class) {
+    rootProjectPath
+}
+
+// TODO NOW: test sourceFun DSL
+sourceFun {
+    def("someTask1", "someInDir".toPath(), "someOutdir".toPath()) { "[BEGIN]\n$it[END]\n" }
+}
+
 
 //val androidxRootDir = "/home/marek/code/android/androidx-main".toPath()
 val androidxRootDir = "/home/marek/code/kotlin/compose-jb/compose".toPath()
 val androidxSupportDir = androidxRootDir / "frameworks/support"
-val srcLib1KotlinDir = project.rootOkioPath / "lib1/src/main/kotlin"
-val srcLibUiSamplesKotlinDir = project.rootOkioPath / "lib-ui-samples/src/main/kotlin"
-val srcAppKotlinDir = project.rootOkioPath / "app/src/main/kotlin"
-val srcJavaDir = project.rootOkioPath / "lib1/src/main/java"
+val srcLib1KotlinDir = rootProjectPath / "lib1/src/main/kotlin"
+val srcLibUiSamplesKotlinDir = rootProjectPath / "lib-ui-samples/src/main/kotlin"
+val srcAppKotlinDir = rootProjectPath / "app/src/main/kotlin"
+val srcJavaDir = rootProjectPath / "lib1/src/main/java"
 val stolenSrcKotlinDir = srcLib1KotlinDir / "stolen"
 val stolenSrcJavaDir = srcJavaDir // java files have to be in directories same as packages :(
 val stolenSamplesKotlinDir = srcLibUiSamplesKotlinDir / "stolen"
-val stolenAndroTestsDir = project.rootOkioPath / "lib1/src/androidTest/kotlin/stolen"
+val stolenAndroTestsDir = rootProjectPath / "lib1/src/androidTest/kotlin/stolen"
 val templatesSrcKotlinDir = srcAppKotlinDir / "templates"
 val appBuildPath = "app/build.gradle.kts".toPath()
 val lib1BuildPath = "lib1/build.gradle.kts".toPath()
