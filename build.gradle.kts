@@ -52,36 +52,31 @@ val stealComposeTestsTmpImpl1 by tasks.registering(SourceFunTask::class) {
 
 // TODO NOW: test sourceFun DSL
 sourceFun {
+    val srcTests = androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
+    val srcAnnot = androidxSupportDir / "annotation/annotation-sampled/src/main/java/androidx/annotation"
     grp = "steal"
-    def(taskName = "stealComposeTests",
-        sourcePath = androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation",
-        outputPath = stolenAndroTestsDir / "foundation-tests") { content ->
+    def("stealComposeTests", srcTests, stolenAndroTestsDir / "foundation-tests") { content ->
         if ("CanvasTest" in name || "Foundation" in name) content else null
     }
+    def("stealComposeAnnotations", srcAnnot, stolenSamplesKotlinDir / "androidx-annotation") { it }
 }
 
 val stealComposeAll by tasks.registering {
     group = "steal"
     dependsOn("stealComposeTests")
+    dependsOn("stealComposeAnnotations")
 }
 
 tasks.registerAllThatGroupFun("steal",
-    ::stealComposeAnnotationsOld,
     ::stealComposeSources,
     ::stealComposeSamplesAndProcess
 )
 
 @Deprecated("")
 fun stealComposeAll() {
-    stealComposeAnnotationsOld()
     stealComposeSources()
     stealComposeSamplesAndProcess()
 }
-
-fun stealComposeAnnotationsOld() = SYSTEM.processEachFile(
-    inputRootDir = androidxSupportDir / "annotation/annotation-sampled/src/main/java/androidx/annotation",
-    outputRootDir = stolenSamplesKotlinDir / "androidx-annotation"
-) { input, _, content -> content }
 
 fun stealComposeSources() {
     stealJavaSources("compose/ui/ui-android-stubs/src/main/java/android/view", "android/view")
