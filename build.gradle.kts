@@ -1,32 +1,17 @@
 import okio.FileSystem.Companion.SYSTEM
 import okio.Path.Companion.toPath
 import okio.Path
-import pl.mareklangiewicz.deps.*
 import pl.mareklangiewicz.ure.*
 import pl.mareklangiewicz.utils.*
+import pl.mareklangiewicz.sourcefun.*
 
 plugins {
     id("pl.mareklangiewicz.sourcefun")
 }
 
-
-
-// TODO NOW: temporary experiment of how I can use processEachFile to do sth like SourceFun, then extract boilerplate
-// to dsl like tmpFunTask by tasks.registeringSourceFun {...processing...}
-// what about registerAllThatGroupFun?? maybe sth like this would be better than sourceFun DSL????
-val tmpFunTask by tasks.registering(pl.mareklangiewicz.sourcefun.SourceFunTask::class) {
-    rootProjectPath
-}
-
-// TODO NOW: test sourceFun DSL
-sourceFun {
-    def("someTask1", "someInDir".toPath(), "someOutdir".toPath()) { "[BEGIN]\n$it[END]\n" }
-}
-
-
-//val androidxRootDir = "/home/marek/code/android/androidx-main".toPath()
-val androidxRootDir = "/home/marek/code/kotlin/compose-jb/compose".toPath()
-val androidxSupportDir = androidxRootDir / "frameworks/support"
+//val rootAndroidxPath = "/home/marek/code/android/androidx-main".toPath()
+val rootAndroidxPath = "/home/marek/code/kotlin/compose-jb/compose".toPath()
+val androidxSupportDir = rootAndroidxPath / "frameworks/support"
 val srcLib1KotlinDir = rootProjectPath / "lib1/src/main/kotlin"
 val srcLibUiSamplesKotlinDir = rootProjectPath / "lib-ui-samples/src/main/kotlin"
 val srcAppKotlinDir = rootProjectPath / "app/src/main/kotlin"
@@ -40,6 +25,34 @@ val appBuildPath = "app/build.gradle.kts".toPath()
 val lib1BuildPath = "lib1/build.gradle.kts".toPath()
 val libUiSamplesBuildPath = "lib-ui-samples/build.gradle.kts".toPath()
 
+
+
+// TODO NOW: test sourceFun DSL
+sourceFun {
+    grp = "steal"
+    def(taskName = "stealComposeTests",
+        sourcePath = androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation",
+        outputPath = stolenAndroTestsDir / "foundation-tests") {
+            content -> if ("CanvasTest" in name || "Foundation" in name) content else null
+    }
+}
+
+// TODO NOW: temporary experiment of how I can use SourceFunTask, then extract boilerplate
+// to dsl like tmpFunTask by tasks.registeringSourceFun {...processing...}
+// what about registerAllThatGroupFun?? maybe sth like this would be better than sourceFun DSL????
+val stealComposeTestsTmpImpl1 by tasks.registering(SourceFunTask::class) {
+    group = "steal"
+    include { "CanvasTest" in it.name || "Foundation" in it.name }
+    addSource(androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation")
+    setOutput(stolenAndroTestsDir / "foundation-tests")
+    setTransformFun { it }
+}
+
+val stealComposeAll by tasks.registering {
+    group = "steal"
+    dependsOn("stealComposeTests")
+}
+
 tasks.registerAllThatGroupFun("inject",
     ::checkPlaygroundsBuildTemplates,
     ::injectAndroAppBuildTemplate,
@@ -48,10 +61,8 @@ tasks.registerAllThatGroupFun("inject",
 )
 
 tasks.registerAllThatGroupFun("steal",
-    ::stealComposeAll,
     ::stealComposeAnnotations,
     ::stealComposeSources,
-    ::stealComposeTests,
     ::stealComposeSamplesAndProcess
 )
 
@@ -60,6 +71,7 @@ fun injectAndroAppBuildTemplate() = injectAndroAppBuildTemplate(appBuildPath)
 fun injectAndroLib1BuildTemplate() = injectAndroLibBuildTemplate(lib1BuildPath)
 fun injectAndroLibUiSamplesBuildTemplate() = injectAndroLibBuildTemplate(libUiSamplesBuildPath)
 
+@Deprecated("")
 fun stealComposeAll() {
     stealComposeAnnotations()
     stealComposeSources()
@@ -76,12 +88,16 @@ fun stealComposeSources() {
     stealSources("compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils", "compose-testutils") { "Screenshot" !in it.name }
 }
 
+@Deprecated("")
 fun stealComposeTests() {
     stealAndroTests("compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation", "foundation-tests") { file ->
         "CanvasTest" in file.name || "Foundation" in file.name
     }
 }
 
+// TODO NOW: use SourceFunTask; use intermediate file to store samples list (funNames and paths)
+// use proper provider api to connect inputs/outputs so if sample list doesn't change,
+// but template does - then only appropriate task get executed in continuous mode
 fun stealComposeSamplesAndProcess() {
 
     val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
