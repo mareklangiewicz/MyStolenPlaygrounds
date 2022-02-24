@@ -54,32 +54,46 @@ val stealComposeTestsTmpImpl1 by tasks.registering(SourceFunTask::class) {
 sourceFun {
     val srcTests = androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
     val srcAnnot = androidxSupportDir / "annotation/annotation-sampled/src/main/java/androidx/annotation"
+    val srcJava = androidxSupportDir / "compose/ui/ui-android-stubs/src/main/java/android/view"
+    val srcTestUtilsCommon = androidxSupportDir / "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils"
+    val srcTestUtilsAndro = androidxSupportDir / "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils"
     grp = "steal"
-    def("stealComposeTests", srcTests, stolenAndroTestsDir / "foundation-tests") { content ->
-        if ("CanvasTest" in name || "Foundation" in name) content else null
-    }
+    def("stealComposeTests", srcTests, stolenAndroTestsDir / "foundation-tests") { if ("CanvasTest" in name || "Foundation" in name) it else null }
     def("stealComposeAnnotations", srcAnnot, stolenSamplesKotlinDir / "androidx-annotation") { it }
+    def("stealComposeSourcesJava", srcJava, stolenSrcJavaDir / "android/view") { it }
+    def("stealComposeSourcesTestUtilsCommon", srcTestUtilsCommon, stolenSrcKotlinDir / "compose-testutils") { it }
+    def("stealComposeSourcesTestUtilsAndro", srcTestUtilsAndro, stolenSrcKotlinDir / "compose-testutils") { if ("Screenshot" in name) null else it }
+}
+
+val stealComposeSources by tasks.registering {
+    group = "steal"
+    dependsOn("stealComposeSourcesJava")
+    dependsOn("stealComposeSourcesTestUtilsCommon")
+    dependsOn("stealComposeSourcesTestUtilsAndro")
 }
 
 val stealComposeAll by tasks.registering {
     group = "steal"
     dependsOn("stealComposeTests")
     dependsOn("stealComposeAnnotations")
+    dependsOn("stealComposeSources")
 }
 
 tasks.registerAllThatGroupFun("steal",
-    ::stealComposeSources,
+    ::stealComposeSourcesOld,
     ::stealComposeSamplesAndProcess
 )
 
 @Deprecated("")
 fun stealComposeAll() {
-    stealComposeSources()
     stealComposeSamplesAndProcess()
 }
 
-fun stealComposeSources() {
-    stealJavaSources("compose/ui/ui-android-stubs/src/main/java/android/view", "android/view")
+fun stealComposeSourcesOld() {
+    SYSTEM.processEachFile(
+        inputRootDir = androidxSupportDir / "compose/ui/ui-android-stubs/src/main/java/android/view",
+        outputRootDir = stolenSrcJavaDir / "android/view"
+    ) { _, _, content -> content }
     stealSources("compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils", "compose-testutils")
     stealSources("compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils",
         "compose-testutils") { "Screenshot" !in it.name }
@@ -112,11 +126,6 @@ fun stealSources(supportDir: String, stolenDir: String, filter: (input: Path) ->
     inputRootDir = androidxSupportDir / supportDir,
     outputRootDir = stolenSrcKotlinDir / stolenDir
 ) { input, _, content -> if (filter(input)) content else null }
-
-fun stealJavaSources(supportDir: String, stolenDir: String) = SYSTEM.processEachFile(
-    inputRootDir = androidxSupportDir / supportDir,
-    outputRootDir = stolenSrcJavaDir / stolenDir
-) { _, _, content -> content }
 
 fun MutableCollection<Pair<String, Path?>>.stealSamples(
     supportDir: String,
@@ -184,6 +193,7 @@ fun processFunTemplate(
 fun String.interpolate(vararg interpolations: Pair<String, String>) = interpolate(interpolations.toMap())
 fun String.interpolate(interpolations: Map<String, String>) =
     interpolations.keys.fold(this) { acc, key -> acc.replace(key, "\\\${${interpolations[key]!!}}") }
+
 fun Path.toShortStr(interpolations: Map<String, String>) = toString().interpolate(interpolations)
 
 
