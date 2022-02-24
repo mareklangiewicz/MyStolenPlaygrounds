@@ -25,17 +25,19 @@ val appBuildPath = "app/build.gradle.kts".toPath()
 val lib1BuildPath = "lib1/build.gradle.kts".toPath()
 val libUiSamplesBuildPath = "lib-ui-samples/build.gradle.kts".toPath()
 
+tasks.registerAllThatGroupFun(
+    "inject",
+    ::checkPlaygroundsBuildTemplates,
+    ::injectAndroAppBuildTemplate,
+    ::injectAndroLib1BuildTemplate,
+    ::injectAndroLibUiSamplesBuildTemplate,
+)
 
+fun checkPlaygroundsBuildTemplates() = checkAndroBuildTemplates(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
+fun injectAndroAppBuildTemplate() = injectAndroAppBuildTemplate(appBuildPath)
+fun injectAndroLib1BuildTemplate() = injectAndroLibBuildTemplate(lib1BuildPath)
+fun injectAndroLibUiSamplesBuildTemplate() = injectAndroLibBuildTemplate(libUiSamplesBuildPath)
 
-// TODO NOW: test sourceFun DSL
-sourceFun {
-    grp = "steal"
-    def(taskName = "stealComposeTests",
-        sourcePath = androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation",
-        outputPath = stolenAndroTestsDir / "foundation-tests") {
-            content -> if ("CanvasTest" in name || "Foundation" in name) content else null
-    }
-}
 
 // TODO NOW: temporary experiment of how I can use SourceFunTask, then extract boilerplate
 // to dsl like tmpFunTask by tasks.registeringSourceFun {...processing...}
@@ -48,51 +50,44 @@ val stealComposeTestsTmpImpl1 by tasks.registering(SourceFunTask::class) {
     setTransformFun { it }
 }
 
+// TODO NOW: test sourceFun DSL
+sourceFun {
+    grp = "steal"
+    def(taskName = "stealComposeTests",
+        sourcePath = androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation",
+        outputPath = stolenAndroTestsDir / "foundation-tests") { content ->
+        if ("CanvasTest" in name || "Foundation" in name) content else null
+    }
+}
+
 val stealComposeAll by tasks.registering {
     group = "steal"
     dependsOn("stealComposeTests")
 }
 
-tasks.registerAllThatGroupFun("inject",
-    ::checkPlaygroundsBuildTemplates,
-    ::injectAndroAppBuildTemplate,
-    ::injectAndroLib1BuildTemplate,
-    ::injectAndroLibUiSamplesBuildTemplate,
-)
-
 tasks.registerAllThatGroupFun("steal",
-    ::stealComposeAnnotations,
+    ::stealComposeAnnotationsOld,
     ::stealComposeSources,
     ::stealComposeSamplesAndProcess
 )
 
-fun checkPlaygroundsBuildTemplates() = checkAndroBuildTemplates(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
-fun injectAndroAppBuildTemplate() = injectAndroAppBuildTemplate(appBuildPath)
-fun injectAndroLib1BuildTemplate() = injectAndroLibBuildTemplate(lib1BuildPath)
-fun injectAndroLibUiSamplesBuildTemplate() = injectAndroLibBuildTemplate(libUiSamplesBuildPath)
-
 @Deprecated("")
 fun stealComposeAll() {
-    stealComposeAnnotations()
+    stealComposeAnnotationsOld()
     stealComposeSources()
-    stealComposeTests()
     stealComposeSamplesAndProcess()
 }
 
-fun stealComposeAnnotations() {
-    stealAnnotations("annotation/annotation-sampled/src/main/java/androidx/annotation", "androidx-annotation")
-}
+fun stealComposeAnnotationsOld() = SYSTEM.processEachFile(
+    inputRootDir = androidxSupportDir / "annotation/annotation-sampled/src/main/java/androidx/annotation",
+    outputRootDir = stolenSamplesKotlinDir / "androidx-annotation"
+) { input, _, content -> content }
+
 fun stealComposeSources() {
     stealJavaSources("compose/ui/ui-android-stubs/src/main/java/android/view", "android/view")
     stealSources("compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils", "compose-testutils")
-    stealSources("compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils", "compose-testutils") { "Screenshot" !in it.name }
-}
-
-@Deprecated("")
-fun stealComposeTests() {
-    stealAndroTests("compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation", "foundation-tests") { file ->
-        "CanvasTest" in file.name || "Foundation" in file.name
-    }
+    stealSources("compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils",
+        "compose-testutils") { "Screenshot" !in it.name }
 }
 
 // TODO NOW: use SourceFunTask; use intermediate file to store samples list (funNames and paths)
@@ -121,16 +116,6 @@ fun MutableCollection<Pair<String, Path?>>.stealComposeSamples() {
 fun stealSources(supportDir: String, stolenDir: String, filter: (input: Path) -> Boolean = { true }) = SYSTEM.processEachFile(
     inputRootDir = androidxSupportDir / supportDir,
     outputRootDir = stolenSrcKotlinDir / stolenDir
-) { input, _, content -> if (filter(input)) content else null }
-
-fun stealAnnotations(supportDir: String, stolenDir: String, filter: (input: Path) -> Boolean = { true }) = SYSTEM.processEachFile(
-    inputRootDir = androidxSupportDir / supportDir,
-    outputRootDir = stolenSamplesKotlinDir / stolenDir
-) { input, _, content -> if (filter(input)) content else null }
-
-fun stealAndroTests(supportDir: String, stolenDir: String, filter: (input: Path) -> Boolean = { true }) = SYSTEM.processEachFile(
-    inputRootDir = androidxSupportDir / supportDir,
-    outputRootDir = stolenAndroTestsDir / stolenDir
 ) { input, _, content -> if (filter(input)) content else null }
 
 fun stealJavaSources(supportDir: String, stolenDir: String) = SYSTEM.processEachFile(
@@ -205,7 +190,6 @@ fun String.interpolate(vararg interpolations: Pair<String, String>) = interpolat
 fun String.interpolate(interpolations: Map<String, String>) =
     interpolations.keys.fold(this) { acc, key -> acc.replace(key, "\\\${${interpolations[key]!!}}") }
 fun Path.toShortStr(interpolations: Map<String, String>) = toString().interpolate(interpolations)
-
 
 
 val ureSampledFunHeader = ure {
