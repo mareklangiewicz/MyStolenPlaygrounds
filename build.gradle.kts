@@ -80,29 +80,14 @@ val stealComposeAll by tasks.registering {
 }
 
 tasks.registerAllThatGroupFun("steal",
-    ::stealComposeSourcesOld,
-    ::stealComposeSamplesAndProcess
+    ::stealComposeSamplesAndProcessOld
 )
-
-@Deprecated("")
-fun stealComposeAll() {
-    stealComposeSamplesAndProcess()
-}
-
-fun stealComposeSourcesOld() {
-    SYSTEM.processEachFile(
-        inputRootDir = androidxSupportDir / "compose/ui/ui-android-stubs/src/main/java/android/view",
-        outputRootDir = stolenSrcJavaDir / "android/view"
-    ) { _, _, content -> content }
-    stealSources("compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils", "compose-testutils")
-    stealSources("compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils",
-        "compose-testutils") { "Screenshot" !in it.name }
-}
 
 // TODO NOW: use SourceFunTask; use intermediate file to store samples list (funNames and paths)
 // use proper provider api to connect inputs/outputs so if sample list doesn't change,
 // but template does - then only appropriate task get executed in continuous mode
-fun stealComposeSamplesAndProcess() {
+@Deprecated("")
+fun stealComposeSamplesAndProcessOld() {
 
     val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
     samples.stealComposeSamples()
