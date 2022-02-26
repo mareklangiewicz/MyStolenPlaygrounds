@@ -12,9 +12,13 @@ plugins {
 
 repositories { defaultRepos() }
 
+val generateVersionDetails by tasks.registering(VersionDetailsTask::class) {
+    generatedAssetsDir provides layout.buildDirectory.dir("generated/assets")
+}
+
 android {
     defaultAndro("pl.mareklangiewicz.playgrounds", withCompose = true)
-    sourceSets["main"].assets.srcDir(layout.buildDirectory.dir("generated/assets"))
+    sourceSets["main"].assets.srcDir(generateVersionDetails)
 }
 
 dependencies {
@@ -29,11 +33,6 @@ group = "pl.mareklangiewicz.playgrounds"
 version = "0.0.01"
 
 tasks.configureKotlinCompileTasks()
-
-tasks.register<VersionDetailsTask>("generateVersionDetails") {
-    gitVersionOutputFile provides layout.buildDirectory.file("generated/assets/version-details/commit")
-    buildTimeOutputFile provides layout.buildDirectory.file("generated/assets/version-details/buildtime")
-}
 
 androidComponents {
     afterEvaluate {
