@@ -2,6 +2,8 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
 import pl.mareklangiewicz.defaults.*
+import pl.mareklangiewicz.sourcefun.*
+import pl.mareklangiewicz.utils.*
 
 plugins {
     id("com.android.application") version Vers.androidGradlePlugin
@@ -10,7 +12,10 @@ plugins {
 
 repositories { defaultRepos() }
 
-android { defaultAndro("pl.mareklangiewicz.playgrounds", withCompose = true) }
+android {
+    defaultAndro("pl.mareklangiewicz.playgrounds", withCompose = true)
+    sourceSets["main"].assets.srcDir(layout.buildDirectory.dir("generated/assets"))
+}
 
 dependencies {
     implementation(project(":lib1"))
@@ -24,6 +29,20 @@ group = "pl.mareklangiewicz.playgrounds"
 version = "0.0.01"
 
 tasks.configureKotlinCompileTasks()
+
+tasks.register<VersionDetailsTask>("generateVersionDetails") {
+    gitVersionOutputFile provides layout.buildDirectory.file("generated/assets/version-details/commit")
+    buildTimeOutputFile provides layout.buildDirectory.file("generated/assets/version-details/buildtime")
+}
+
+androidComponents {
+    afterEvaluate {
+        // TODO: how to connect outputs to appropriate inputs (generate<Variant>Assets??) without using task names?
+        //   and to have implicit dependencies
+        tasks.named("generateDebugAssets") { dependsOn("generateVersionDetails") }
+        tasks.named("generateReleaseAssets") { dependsOn("generateVersionDetails") }
+    }
+}
 
 // region Andro Build Template
 

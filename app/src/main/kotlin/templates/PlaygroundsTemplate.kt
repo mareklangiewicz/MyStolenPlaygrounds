@@ -36,6 +36,7 @@ fun PlaygroundsTemplate() {
 
     Row {
         LazyVerticalGrid(cells = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
+            item { MySimpleAssets("version-details") }
             for (sample in samples)
                 MySampleItem(sample) { selectedSample = it; println(it.path) }
             MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
@@ -163,6 +164,7 @@ fun Playgrounds() {
 
     Row {
         LazyVerticalGrid(cells = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
+            item { MySimpleAssets("version-details") }
             for (sample in samples)
                 MySampleItem(sample) { selectedSample = it; println(it.path) }
         }
