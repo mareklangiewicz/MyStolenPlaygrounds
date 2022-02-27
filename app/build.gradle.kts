@@ -1,6 +1,7 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
+import org.gradle.configurationcache.extensions.*
 import pl.mareklangiewicz.defaults.*
 import pl.mareklangiewicz.sourcefun.*
 import pl.mareklangiewicz.utils.*
@@ -35,11 +36,12 @@ version = "0.0.01"
 tasks.configureKotlinCompileTasks()
 
 androidComponents {
-    afterEvaluate {
-        // TODO: how to connect outputs to appropriate inputs (generate<Variant>Assets??) without using task names?
-        //   and to have implicit dependencies
-        tasks.named("generateDebugAssets") { dependsOn("generateVersionDetails") }
-        tasks.named("generateReleaseAssets") { dependsOn("generateVersionDetails") }
+    onVariants {
+        val capitalizedVariantName = it.name.capitalized()
+        afterEvaluate {
+            // FIXME_someday: watch: https://issuetracker.google.com/issues/191774971
+            tasks.named("generate${capitalizedVariantName}Assets") { dependsOn("generateVersionDetails") }
+        }
     }
 }
 
