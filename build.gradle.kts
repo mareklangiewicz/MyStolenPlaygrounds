@@ -80,6 +80,12 @@ val stealComposeAll by tasks.registering {
     dependsOn("processStolenSamples")
 }
 
+private val interpolations = mapOf(
+//            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
+//            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
+    srcLibUiSamplesKotlinDir.toString() to "samplesDir",
+)
+
 val processStolenSamples by tasks.registering(SourceFunTask::class) {
     group = "steal"
     addSource(stolenSamplesKotlinDir)
@@ -87,18 +93,12 @@ val processStolenSamples by tasks.registering(SourceFunTask::class) {
     setTaskAction { source: FileTree, output: Directory ->
         val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
         source.visit {
-            if (!isDirectory) {
-                val samplePath = file.toOkioPath()
-                val sampleContent = SYSTEM.readUtf8(samplePath)
-                val pkg = sampleContent.ktFindPackageName()
-                samples += sampleContent.findSampledComposableFunNames().map { "$pkg.$it" to samplePath }
-            }
+            if (isDirectory) return@visit
+            val samplePath = file.toOkioPath()
+            val sampleContent = SYSTEM.readUtf8(samplePath)
+            val pkg = sampleContent.ktFindPackageName()
+            samples += sampleContent.findSampledComposableFunNames().map { "$pkg.$it" to samplePath }
         }
-        val interpolations = mapOf(
-//            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
-//            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
-            srcLibUiSamplesKotlinDir.toString() to "samplesDir",
-        )
         processTemplates(templatesSrcKotlinDir, samples, interpolations)
     }
 }
