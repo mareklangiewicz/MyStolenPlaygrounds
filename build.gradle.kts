@@ -63,31 +63,32 @@ sourceFun {
     def("stealComposeSamplesAnimation", srcSamplesUiAnimation, stolenSamplesKotlinDir / "samples-animation") { it }
 }
 
-val stealComposeSources by tasks.registering {
+val stealComposeSourcesAll by tasks.registering {
     group = "steal"
     dependsOn("stealComposeSourcesJava")
     dependsOn("stealComposeSourcesTestUtilsCommon")
     dependsOn("stealComposeSourcesTestUtilsAndro")
 }
 
+val stealComposeSamplesAll by tasks.registering {
+    group = "steal"
+    dependsOn("stealComposeSamplesUi")
+    dependsOn("stealComposeSamplesUiGraphics")
+    dependsOn("stealComposeSamplesAnimationCore")
+    dependsOn("stealComposeSamplesAnimation")
+}
+
 val stealComposeAll by tasks.registering {
     group = "steal"
     dependsOn("stealComposeTests")
     dependsOn("stealComposeAnnotations")
-    dependsOn("stealComposeSources")
-
-    // TODO NOW: check if input output match will cause process to automatically depend on steal..Samples..
-    dependsOn("processStolenSamples")
+    dependsOn(stealComposeSourcesAll)
+    dependsOn(stealComposeSamplesAll)
 }
 
-private val interpolations = mapOf(
-//            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
-//            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
-    srcLibUiSamplesKotlinDir.toString() to "samplesDir",
-)
-
-val processStolenSamples by tasks.registering(SourceFunTask::class) {
+val processStolenStuff by tasks.registering(SourceFunTask::class) {
     group = "steal"
+    dependsOn(stealComposeAll)
     addSource(stolenSamplesKotlinDir)
     setOutput(templatesSrcKotlinDir)
     setTaskAction { source: FileTree, output: Directory ->
@@ -99,7 +100,12 @@ val processStolenSamples by tasks.registering(SourceFunTask::class) {
             val pkg = sampleContent.ktFindPackageName()
             samples += sampleContent.findSampledComposableFunNames().map { "$pkg.$it" to samplePath }
         }
-        processTemplates(templatesSrcKotlinDir, samples, interpolations)
+
+        processTemplates(templatesSrcKotlinDir, samples, interpolations = mapOf(
+//            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
+//            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
+            srcLibUiSamplesKotlinDir.toString() to "samplesDir",
+        ))
     }
 }
 

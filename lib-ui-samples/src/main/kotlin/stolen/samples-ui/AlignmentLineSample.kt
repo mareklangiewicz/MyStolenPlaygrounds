@@ -46,8 +46,8 @@ fun AlignmentLineSample() {
         LineProviderLayout(exampleLinePosition = 10)
     }) { measurables, constraints ->
         val placeables = measurables.map { it.measure(constraints) }
-        // placeables[0][exampleLine] will be 5
-        // placeables[1][exampleLine] will be 10
+        // placeables[0][line] will be 5
+        // placeables[1][line] will be 10
         layout(constraints.maxWidth, constraints.maxHeight) {
             placeables[0].place(0, 3)
             placeables[1].place(constraints.maxWidth / 2, 0)
