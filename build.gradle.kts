@@ -1,6 +1,7 @@
 import okio.FileSystem.Companion.SYSTEM
 import okio.Path.Companion.toPath
 import okio.Path
+import okio.Path.Companion.toOkioPath
 import pl.mareklangiewicz.ure.*
 import pl.mareklangiewicz.utils.*
 import pl.mareklangiewicz.sourcefun.*
@@ -38,18 +39,6 @@ fun injectAndroAppBuildTemplate() = injectAndroAppBuildTemplate(appBuildPath)
 fun injectAndroLib1BuildTemplate() = injectAndroLibBuildTemplate(lib1BuildPath)
 fun injectAndroLibUiSamplesBuildTemplate() = injectAndroLibBuildTemplate(libUiSamplesBuildPath)
 
-
-// TODO NOW: temporary experiment of how I can use SourceFunTask, then extract boilerplate
-// to dsl like tmpFunTask by tasks.registeringSourceFun {...processing...}
-// what about registerAllThatGroupFun?? maybe sth like this would be better than sourceFun DSL????
-val stealComposeTestsTmpImpl1 by tasks.registering(SourceFunTask::class) {
-    group = "steal"
-    include { "CanvasTest" in it.name || "Foundation" in it.name }
-    addSource(androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation")
-    setOutput(stolenAndroTestsDir / "foundation-tests")
-    setTransformFun { it }
-}
-
 // TODO NOW: test sourceFun DSL
 sourceFun {
     val srcTests = androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
@@ -57,12 +46,21 @@ sourceFun {
     val srcJava = androidxSupportDir / "compose/ui/ui-android-stubs/src/main/java/android/view"
     val srcTestUtilsCommon = androidxSupportDir / "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils"
     val srcTestUtilsAndro = androidxSupportDir / "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils"
+    val srcSamplesUi = androidxSupportDir / "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples"
+    val srcSamplesUiGraphics = androidxSupportDir / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples"
+    val srcSamplesUiAnimationCore = androidxSupportDir / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples"
+    val srcSamplesUiAnimation = androidxSupportDir / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples"
     grp = "steal"
     def("stealComposeTests", srcTests, stolenAndroTestsDir / "foundation-tests") { if ("CanvasTest" in name || "Foundation" in name) it else null }
     def("stealComposeAnnotations", srcAnnot, stolenSamplesKotlinDir / "androidx-annotation") { it }
     def("stealComposeSourcesJava", srcJava, stolenSrcJavaDir / "android/view") { it }
     def("stealComposeSourcesTestUtilsCommon", srcTestUtilsCommon, stolenSrcKotlinDir / "compose-testutils") { it }
     def("stealComposeSourcesTestUtilsAndro", srcTestUtilsAndro, stolenSrcKotlinDir / "compose-testutils") { if ("Screenshot" in name) null else it }
+
+    def("stealComposeSamplesUi", srcSamplesUi, stolenSamplesKotlinDir / "samples-ui") { it }
+    def("stealComposeSamplesUiGraphics", srcSamplesUiGraphics, stolenSamplesKotlinDir / "samples-ui-graphics") { it }
+    def("stealComposeSamplesAnimationCore", srcSamplesUiAnimationCore, stolenSamplesKotlinDir / "samples-animation-core") { it }
+    def("stealComposeSamplesAnimation", srcSamplesUiAnimation, stolenSamplesKotlinDir / "samples-animation") { it }
 }
 
 val stealComposeSources by tasks.registering {
@@ -77,53 +75,33 @@ val stealComposeAll by tasks.registering {
     dependsOn("stealComposeTests")
     dependsOn("stealComposeAnnotations")
     dependsOn("stealComposeSources")
+
+    // TODO NOW: check if input output match will cause process to automatically depend on steal..Samples..
+    dependsOn("processStolenSamples")
 }
 
-tasks.registerAllThatGroupFun("steal",
-    ::stealComposeSamplesAndProcessOld
-)
-
-// TODO NOW: use SourceFunTask; use intermediate file to store samples list (funNames and paths)
-// use proper provider api to connect inputs/outputs so if sample list doesn't change,
-// but template does - then only appropriate task get executed in continuous mode
-@Deprecated("")
-fun stealComposeSamplesAndProcessOld() {
-
-    val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
-    samples.stealComposeSamples()
-
-    val interpolations = mapOf(
+val processStolenSamples by tasks.registering(SourceFunTask::class) {
+    group = "steal"
+    addSource(stolenSamplesKotlinDir)
+    setOutput(templatesSrcKotlinDir)
+    setTaskAction { source: FileTree, output: Directory ->
+        val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
+        source.visit {
+            if (!isDirectory) {
+                val samplePath = file.toOkioPath()
+                val sampleContent = SYSTEM.readUtf8(samplePath)
+                val pkg = sampleContent.ktFindPackageName()
+                samples += sampleContent.findSampledComposableFunNames().map { "$pkg.$it" to samplePath }
+            }
+        }
+        val interpolations = mapOf(
 //            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
 //            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
-        srcLibUiSamplesKotlinDir.toString() to "samplesDir",
-    )
-    processTemplates(templatesSrcKotlinDir, samples, interpolations)
-}
-
-fun MutableCollection<Pair<String, Path?>>.stealComposeSamples() {
-    stealSamples("compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples", "ui-samples")
-    stealSamples("compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples", "ui-graphics-samples")
-    stealSamples("compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples", "animation-core-samples")
-    stealSamples("compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples", "animation-samples")
-}
-
-fun stealSources(supportDir: String, stolenDir: String, filter: (input: Path) -> Boolean = { true }) = SYSTEM.processEachFile(
-    inputRootDir = androidxSupportDir / supportDir,
-    outputRootDir = stolenSrcKotlinDir / stolenDir
-) { input, _, content -> if (filter(input)) content else null }
-
-fun MutableCollection<Pair<String, Path?>>.stealSamples(
-    supportDir: String,
-    stolenDir: String
-) = SYSTEM.processEachFile(
-        androidxSupportDir / supportDir,
-        stolenSamplesKotlinDir / stolenDir
-    ) { _, outputPath, content ->
-        val pkg = content.ktFindPackageName()
-        val newSamples = content.findSampledComposableFunNames().map { "$pkg.$it" to outputPath }
-        this += newSamples
-        content
+            srcLibUiSamplesKotlinDir.toString() to "samplesDir",
+        )
+        processTemplates(templatesSrcKotlinDir, samples, interpolations)
     }
+}
 
 fun String.ktFindPackageName() = urePackageLine().compile().find(this)!!["ktPackageName"]
 
