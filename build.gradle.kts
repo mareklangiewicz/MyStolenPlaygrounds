@@ -41,32 +41,40 @@ fun injectAndroLibUiSamplesBuildTemplate() = injectAndroLibBuildTemplate(libUiSa
 
 // TODO NOW: test sourceFun DSL
 sourceFun {
-    val srcTestUtilsCommon = androidxSupportDir / "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils"
-    val srcTestUtilsAndro = androidxSupportDir / "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils"
-    val srcSamplesUi = androidxSupportDir / "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples"
     val srcSamplesUiGraphics = androidxSupportDir / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples"
     val srcSamplesUiAnimationCore = androidxSupportDir / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples"
     val srcSamplesUiAnimation = androidxSupportDir / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples"
     grp = "steal"
     val stealComposeTests by reg {
-        addSource(androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation")
-        setOutput(stolenAndroTestsDir / "foundation-tests")
+        src = androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
+        out = stolenAndroTestsDir / "foundation-tests"
         setTransformFun { if ("CanvasTest" in name || "Foundation" in name) it else null }
     }
     val stealComposeAnnotations by reg {
-        addSource(androidxSupportDir / "annotation/annotation-sampled/src/main/java/androidx/annotation")
-        setOutput(stolenSamplesKotlinDir / "androidx-annotation")
+        src = androidxSupportDir / "annotation/annotation-sampled/src/main/java/androidx/annotation"
+        out = stolenSamplesKotlinDir / "androidx-annotation"
         setTransformFun { it }
     }
     val stealComposeSourcesJava by reg {
-        addSource(androidxSupportDir / "compose/ui/ui-android-stubs/src/main/java/android/view")
-        setOutput(stolenSrcJavaDir / "android/view")
+        src = androidxSupportDir / "compose/ui/ui-android-stubs/src/main/java/android/view"
+        out = stolenSrcJavaDir / "android/view"
         setTransformFun { it }
     }
-    def("stealComposeSourcesTestUtilsCommon", srcTestUtilsCommon, stolenSrcKotlinDir / "compose-testutils") { it }
-    def("stealComposeSourcesTestUtilsAndro", srcTestUtilsAndro, stolenSrcKotlinDir / "compose-testutils") { if ("Screenshot" in name) null else it }
-
-    def("stealComposeSamplesUi", srcSamplesUi, stolenSamplesKotlinDir / "samples-ui") { it }
+    val stealComposeSourcesTestUtilsCommon by reg {
+        src = androidxSupportDir / "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils"
+        out = stolenSrcKotlinDir / "compose-testutils"
+        setTransformFun { it }
+    }
+    val stealComposeSourcesTestUtilsAndro by reg {
+        src = androidxSupportDir / "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils"
+        out = stolenSrcKotlinDir / "compose-testutils"
+        setTransformFun { if ("Screenshot" in name) null else it }
+    }
+    val stealComposeSamplesUi by reg {
+        src = androidxSupportDir / "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples"
+        out = stolenSamplesKotlinDir / "samples-ui"
+        setTransformFun { it }
+    }
     def("stealComposeSamplesUiGraphics", srcSamplesUiGraphics, stolenSamplesKotlinDir / "samples-ui-graphics") { it }
     def("stealComposeSamplesAnimationCore", srcSamplesUiAnimationCore, stolenSamplesKotlinDir / "samples-animation-core") { it }
     def("stealComposeSamplesAnimation", srcSamplesUiAnimation, stolenSamplesKotlinDir / "samples-animation") { it }
@@ -98,8 +106,8 @@ val stealComposeAll by tasks.registering {
 val processStolenStuff by tasks.registering(SourceFunTask::class) {
     group = "steal"
     dependsOn(stealComposeAll)
-    addSource(stolenSamplesKotlinDir)
-    setOutput(templatesSrcKotlinDir)
+    src = stolenSamplesKotlinDir
+    out = templatesSrcKotlinDir
     setTaskAction { srcTree: FileTree, outDir: Directory ->
         val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
         srcTree.visit {
