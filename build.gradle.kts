@@ -41,9 +41,6 @@ fun injectAndroLibUiSamplesBuildTemplate() = injectAndroLibBuildTemplate(libUiSa
 
 // TODO NOW: test sourceFun DSL
 sourceFun {
-    val srcSamplesUiGraphics = androidxSupportDir / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples"
-    val srcSamplesUiAnimationCore = androidxSupportDir / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples"
-    val srcSamplesUiAnimation = androidxSupportDir / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples"
     grp = "steal"
     val stealComposeTests by reg {
         src = androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
@@ -76,17 +73,17 @@ sourceFun {
         setTransformFun { it }
     }
     val stealComposeSamplesUiGraphics by reg {
-        src = srcSamplesUiGraphics
+        src = androidxSupportDir / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples"
         out = stolenSamplesKotlinDir / "samples-ui-graphics"
         setTransformFun { it }
     }
     val stealComposeSamplesAnimationCore by reg {
-        src = srcSamplesUiAnimationCore
+        src = androidxSupportDir / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples"
         out = stolenSamplesKotlinDir / "samples-animation-core"
         setTransformFun { it }
     }
     val stealComposeSamplesAnimation by reg {
-        src = srcSamplesUiAnimation
+        src = androidxSupportDir / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples"
         out = stolenSamplesKotlinDir / "samples-animation"
         setTransformFun { it }
     }
