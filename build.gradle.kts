@@ -101,7 +101,6 @@ sourceFun {
         stealComposeSamplesAnimationCore,
         stealComposeSamplesAnimation,
     ) }
-
     val stealComposeAll by reg { dependsOn(
         stealComposeTests,
         stealComposeAnnotations,
@@ -109,37 +108,43 @@ sourceFun {
         stealComposeSamplesAll,
     ) }
 
-}
-
-val processStolenStuff by tasks.registering(SourceFunTask::class) {
-    group = "steal"
-    dependsOn("stealComposeAll")
-    src = stolenSamplesKotlinDir
-    out = templatesSrcKotlinDir
-    setTaskAction { srcTree: FileTree, outDir: Directory ->
-        val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
-        srcTree.visit {
-            if (isDirectory) return@visit
-            val samplePath = file.toOkioPath()
-            val sampleContent = SYSTEM.readUtf8(samplePath)
-            val pkg = sampleContent.ktFindPackageName()
-            samples += sampleContent.findSampledComposableFunNames().map { "$pkg.$it" to samplePath }
+    val processStolenStuff by reg {
+        dependsOn(stealComposeAll)
+        src = stolenSamplesKotlinDir
+        out = templatesSrcKotlinDir
+        setTaskAction { srcTree: FileTree, outDir: Directory ->
+            val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
+            srcTree.visit {
+                if (isDirectory) return@visit
+                val samplePath = file.toOkioPath()
+                val sampleContent = SYSTEM.readUtf8(samplePath)
+                val pkg = sampleContent.ktFindPackageName()
+                samples += sampleContent.findSampledComposableFunNames().map { "$pkg.$it" to samplePath }
+            }
+            processComposeTemplates(outDir, samples)
         }
-        processTemplates(outDir.asFile.toOkioPath(), samples, interpolations = mapOf(
-//            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
-//            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
-            srcLibUiSamplesKotlinDir.toString() to "samplesDir",
-        ))
     }
 }
 
 fun String.ktFindPackageName() = urePackageLine().compile().find(this)!!["ktPackageName"]
 
+fun processComposeTemplates(
+    templatesDir: Directory,
+    samples: Collection<Pair<String, Path?>>,
+) = processTemplates(
+    templatesPath = templatesDir.asFile.toOkioPath(),
+    samples = samples,
+    interpolations = mapOf(
+//            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
+//            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
+    srcLibUiSamplesKotlinDir.toString() to "samplesDir",
+))
+
 fun processTemplates(
-    templatesDir: Path,
+    templatesPath: Path,
     samples: Collection<Pair<String, Path?>>,
     interpolations: Map<String, String>
-) = SYSTEM.processEachFile(templatesDir, templatesDir) { _, _, templateFileContent ->
+) = SYSTEM.processEachFile(templatesPath, templatesPath) { _, _, templateFileContent ->
 
     val r = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("No template")
     val partBeforeTemplate by r
