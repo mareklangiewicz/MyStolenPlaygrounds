@@ -41,9 +41,6 @@ fun injectAndroLibUiSamplesBuildTemplate() = injectAndroLibBuildTemplate(libUiSa
 
 // TODO NOW: test sourceFun DSL
 sourceFun {
-    val srcTests = androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
-    val srcAnnot = androidxSupportDir / "annotation/annotation-sampled/src/main/java/androidx/annotation"
-    val srcJava = androidxSupportDir / "compose/ui/ui-android-stubs/src/main/java/android/view"
     val srcTestUtilsCommon = androidxSupportDir / "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils"
     val srcTestUtilsAndro = androidxSupportDir / "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils"
     val srcSamplesUi = androidxSupportDir / "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples"
@@ -51,9 +48,21 @@ sourceFun {
     val srcSamplesUiAnimationCore = androidxSupportDir / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples"
     val srcSamplesUiAnimation = androidxSupportDir / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples"
     grp = "steal"
-    def("stealComposeTests", srcTests, stolenAndroTestsDir / "foundation-tests") { if ("CanvasTest" in name || "Foundation" in name) it else null }
-    def("stealComposeAnnotations", srcAnnot, stolenSamplesKotlinDir / "androidx-annotation") { it }
-    def("stealComposeSourcesJava", srcJava, stolenSrcJavaDir / "android/view") { it }
+    val stealComposeTests by reg {
+        addSource(androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation")
+        setOutput(stolenAndroTestsDir / "foundation-tests")
+        setTransformFun { if ("CanvasTest" in name || "Foundation" in name) it else null }
+    }
+    val stealComposeAnnotations by reg {
+        addSource(androidxSupportDir / "annotation/annotation-sampled/src/main/java/androidx/annotation")
+        setOutput(stolenSamplesKotlinDir / "androidx-annotation")
+        setTransformFun { it }
+    }
+    val stealComposeSourcesJava by reg {
+        addSource(androidxSupportDir / "compose/ui/ui-android-stubs/src/main/java/android/view")
+        setOutput(stolenSrcJavaDir / "android/view")
+        setTransformFun { it }
+    }
     def("stealComposeSourcesTestUtilsCommon", srcTestUtilsCommon, stolenSrcKotlinDir / "compose-testutils") { it }
     def("stealComposeSourcesTestUtilsAndro", srcTestUtilsAndro, stolenSrcKotlinDir / "compose-testutils") { if ("Screenshot" in name) null else it }
 
