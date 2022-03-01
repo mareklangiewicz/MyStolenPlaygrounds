@@ -75,37 +75,45 @@ sourceFun {
         out = stolenSamplesKotlinDir / "samples-ui"
         setTransformFun { it }
     }
-    def("stealComposeSamplesUiGraphics", srcSamplesUiGraphics, stolenSamplesKotlinDir / "samples-ui-graphics") { it }
-    def("stealComposeSamplesAnimationCore", srcSamplesUiAnimationCore, stolenSamplesKotlinDir / "samples-animation-core") { it }
-    def("stealComposeSamplesAnimation", srcSamplesUiAnimation, stolenSamplesKotlinDir / "samples-animation") { it }
-}
+    val stealComposeSamplesUiGraphics by reg {
+        src = srcSamplesUiGraphics
+        out = stolenSamplesKotlinDir / "samples-ui-graphics"
+        setTransformFun { it }
+    }
+    val stealComposeSamplesAnimationCore by reg {
+        src = srcSamplesUiAnimationCore
+        out = stolenSamplesKotlinDir / "samples-animation-core"
+        setTransformFun { it }
+    }
+    val stealComposeSamplesAnimation by reg {
+        src = srcSamplesUiAnimation
+        out = stolenSamplesKotlinDir / "samples-animation"
+        setTransformFun { it }
+    }
+    val stealComposeSourcesAll by reg { dependsOn(
+        stealComposeSourcesJava,
+        stealComposeSourcesTestUtilsCommon,
+        stealComposeSourcesTestUtilsAndro,
+    ) }
+    val stealComposeSamplesAll by reg { dependsOn(
+        stealComposeSamplesUi,
+        stealComposeSamplesUiGraphics,
+        stealComposeSamplesAnimationCore,
+        stealComposeSamplesAnimation,
+    ) }
 
-val stealComposeSourcesAll by tasks.registering {
-    group = "steal"
-    dependsOn("stealComposeSourcesJava")
-    dependsOn("stealComposeSourcesTestUtilsCommon")
-    dependsOn("stealComposeSourcesTestUtilsAndro")
-}
+    val stealComposeAll by reg { dependsOn(
+        stealComposeTests,
+        stealComposeAnnotations,
+        stealComposeSourcesAll,
+        stealComposeSamplesAll,
+    ) }
 
-val stealComposeSamplesAll by tasks.registering {
-    group = "steal"
-    dependsOn("stealComposeSamplesUi")
-    dependsOn("stealComposeSamplesUiGraphics")
-    dependsOn("stealComposeSamplesAnimationCore")
-    dependsOn("stealComposeSamplesAnimation")
-}
-
-val stealComposeAll by tasks.registering {
-    group = "steal"
-    dependsOn("stealComposeTests")
-    dependsOn("stealComposeAnnotations")
-    dependsOn(stealComposeSourcesAll)
-    dependsOn(stealComposeSamplesAll)
 }
 
 val processStolenStuff by tasks.registering(SourceFunTask::class) {
     group = "steal"
-    dependsOn(stealComposeAll)
+    dependsOn("stealComposeAll")
     src = stolenSamplesKotlinDir
     out = templatesSrcKotlinDir
     setTaskAction { srcTree: FileTree, outDir: Directory ->
