@@ -17,18 +17,24 @@ dependencies {
     defaultAndroTestDeps(configuration = "implementation", withCompose = true)
     // I use test stuff in main sources so I can add some tests sources to playgrounds app
 }
-tasks.configureKotlinCompileTasks()
 
-// region Andro Build Template
+tasks.defaultKotlinCompileOptions()
 
-fun TaskCollection<Task>.configureKotlinCompileTasks() {
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = vers.defaultJvm
-            freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-        }
+// region Kotlin Module Build Template
+
+fun TaskCollection<Task>.defaultKotlinCompileOptions(
+    jvmTargetVer: String = vers.defaultJvm,
+    requiresOptIn: Boolean = true
+) = withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = jvmTargetVer
+        if (requiresOptIn) freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
     }
 }
+
+// endregion Kotlin Module Build Template
+
+// region Andro Build Template
 
 fun ApplicationExtension.defaultAndro(
     appId: String,
