@@ -23,9 +23,9 @@ val stolenSrcJavaDir = srcJavaDir // java files have to be in directories same a
 val stolenSamplesKotlinDir = srcLibUiSamplesKotlinDir / "stolen"
 val stolenAndroTestsDir = rootProjectPath / "lib1/src/androidTest/kotlin/stolen"
 val templatesSrcKotlinDir = srcAppKotlinDir / "templates"
-val appBuildPath = "app/build.gradle.kts".toPath()
-val lib1BuildPath = "lib1/build.gradle.kts".toPath()
-val libUiSamplesBuildPath = "lib-ui-samples/build.gradle.kts".toPath()
+val appBuildPath = rootProjectPath / "app/build.gradle.kts"
+val lib1BuildPath = rootProjectPath / "lib1/build.gradle.kts"
+val libUiSamplesBuildPath = rootProjectPath / "lib-ui-samples/build.gradle.kts"
 
 tasks.registerAllThatGroupFun(
     "inject",
@@ -33,7 +33,10 @@ tasks.registerAllThatGroupFun(
     ::injectBuildTemplates,
 )
 
-fun checkBuildTemplates() = checkAndroModuleBuildTemplates(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
+fun checkBuildTemplates() {
+    checkKotlinModuleBuildTemplates(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
+    checkAndroModuleBuildTemplates(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
+}
 fun injectBuildTemplates() {
     for (path in listOf(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)) {
         injectKotlinModuleBuildTemplate(path)
