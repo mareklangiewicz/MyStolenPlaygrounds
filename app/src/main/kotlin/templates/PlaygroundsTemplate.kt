@@ -1,12 +1,11 @@
+@file:Suppress("FunctionName", "PackageDirectoryMismatch")
+
 package pl.mareklangiewicz.playgrounds
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyGridScope
-import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -18,13 +17,11 @@ import pl.mareklangiewicz.myfancyframe.MyFancyFrame
 
 data class MySampleData(val title: String, val path: String?, val code: @Composable () -> Unit)
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlaygroundsTemplate() {
 
     val samplesDir = "/home/marek/code/kotlin/MyStolenPlaygrounds/lib-ui-samples/src/main/kotlin"
 
-    @OptIn(ExperimentalComposeUiApi::class)
     val samples = listOf(
         MySampleData("Some Sample 0", "${samplesDir}/blabla.kt") { Text("Some Sample 0") }, // REPLACE
         MySampleData("Some Sample 1", "${samplesDir}/blabla.kt") { Text("Some Sample 1") }, // REMOVE
@@ -35,7 +32,7 @@ fun PlaygroundsTemplate() {
     var selectedSample by remember { mutableStateOf(samples[0]) }
 
     Row {
-        LazyVerticalGrid(cells = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
+        LazyVerticalGrid(columns = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
             item { MySimpleAssets("version-details") }
             for (sample in samples)
                 MySampleItem(sample) { selectedSample = it; println(it.path) }
@@ -51,18 +48,15 @@ fun PlaygroundsTemplate() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 fun LazyGridScope.MySampleItem(data: MySampleData, onSampleClick: (MySampleData) -> Unit = {}) {
     MyFancyItem(data.title, { onSampleClick(data) }, data.code)
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 fun LazyGridScope.MyFancyItem(title: String, onClick: () -> Unit = {}, content: @Composable () -> Unit) {
     item { MyFancyFrame(Modifier.size(164.dp, 256.dp), title = title, onClick = onClick) { content() } }
 }
 
 // region Generated Playgrounds from PlaygroundsTemplate
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Playgrounds() {
 
@@ -163,7 +157,7 @@ fun Playgrounds() {
     var selectedSample by remember { mutableStateOf(samples[0]) }
 
     Row {
-        LazyVerticalGrid(cells = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
+        LazyVerticalGrid(columns = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
             item { MySimpleAssets("version-details") }
             for (sample in samples)
                 MySampleItem(sample) { selectedSample = it; println(it.path) }
