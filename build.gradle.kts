@@ -29,16 +29,17 @@ val libUiSamplesBuildPath = "lib-ui-samples/build.gradle.kts".toPath()
 
 tasks.registerAllThatGroupFun(
     "inject",
-    ::checkPlaygroundsBuildTemplates,
-    ::injectAndroAppBuildTemplate,
-    ::injectAndroLib1BuildTemplate,
-    ::injectAndroLibUiSamplesBuildTemplate,
+    ::checkBuildTemplates,
+    ::injectBuildTemplates,
 )
 
-fun checkPlaygroundsBuildTemplates() = checkAndroBuildTemplates(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
-fun injectAndroAppBuildTemplate() = injectAndroAppBuildTemplate(appBuildPath)
-fun injectAndroLib1BuildTemplate() = injectAndroLibBuildTemplate(lib1BuildPath)
-fun injectAndroLibUiSamplesBuildTemplate() = injectAndroLibBuildTemplate(libUiSamplesBuildPath)
+fun checkBuildTemplates() = checkAndroModuleBuildTemplates(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
+fun injectBuildTemplates() {
+    for (path in listOf(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)) {
+        injectKotlinModuleBuildTemplate(path)
+        injectAndroModuleBuildTemplate(path)
+    }
+}
 
 // TODO NOW: test sourceFun DSL
 sourceFun {
