@@ -10,7 +10,7 @@ plugins {
 
 repositories { defaultRepos() }
 
-android { defaultAndroLib("pl.mareklangiewicz.mystolenplaygrounds.libuisamples", withCompose = true) }
+android { defaultAndroLib("androidx.compose.ui.samples", withCompose = true) }
 
 dependencies {
     defaultAndroDeps(withCompose = true)
