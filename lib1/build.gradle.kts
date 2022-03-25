@@ -10,7 +10,7 @@ plugins {
 
 repositories { defaultRepos() }
 
-android { defaultAndro(withCompose = true) }
+android { defaultAndroLib("pl.mareklangiewicz.mystolenplaygrounds.lib1", withCompose = true) }
 
 dependencies {
     defaultAndroDeps(withCompose = true)
@@ -36,28 +36,36 @@ fun TaskCollection<Task>.defaultKotlinCompileOptions(
 
 // region Andro Module Build Template
 
-fun ApplicationExtension.defaultAndro(
+fun ApplicationExtension.defaultAndroApp(
     appId: String,
+    appNamespace: String = appId,
     appVerCode: Int = 1,
     appVerName: String = v(patch = appVerCode),
     jvmVersion: String = vers.defaultJvm,
+    sdkCompile: Int = vers.androidSdkCompile,
+    sdkTarget: Int = vers.androidSdkTarget,
+    sdkMin: Int = vers.androidSdkMin,
     withCompose: Boolean = false,
 ) {
-    compileSdk = vers.androidCompileSdk
+    compileSdk = sdkCompile
     defaultCompileOptions(jvmVersion)
-    defaultDefaultConfig(appId, appVerCode, appVerName)
+    defaultDefaultConfig(appId, appNamespace, appVerCode, appVerName, sdkTarget, sdkMin)
     defaultBuildTypes()
     if (withCompose) defaultComposeStuff()
     defaultPackagingOptions()
 }
 
-fun LibraryExtension.defaultAndro(
+fun LibraryExtension.defaultAndroLib(
+    libNamespace: String,
     jvmVersion: String = vers.defaultJvm,
+    sdkCompile: Int = vers.androidSdkCompile,
+    sdkTarget: Int = vers.androidSdkTarget,
+    sdkMin: Int = vers.androidSdkMin,
     withCompose: Boolean = false,
 ) {
-    compileSdk = vers.androidCompileSdk
+    compileSdk = sdkCompile
     defaultCompileOptions(jvmVersion)
-    defaultDefaultConfig()
+    defaultDefaultConfig(libNamespace, sdkTarget, sdkMin)
     defaultBuildTypes()
     if (withCompose) defaultComposeStuff()
     defaultPackagingOptions()
@@ -65,20 +73,29 @@ fun LibraryExtension.defaultAndro(
 
 fun ApplicationExtension.defaultDefaultConfig(
     appId: String,
+    appNamespace: String = appId,
     appVerCode: Int = 1,
-    appVerName: String = v(patch = appVerCode)
+    appVerName: String = v(patch = appVerCode),
+    sdkTarget: Int = vers.androidSdkTarget,
+    sdkMin: Int = vers.androidSdkMin,
 ) = defaultConfig {
     applicationId = appId
-    minSdk = vers.androidMinSdk
-    targetSdk = vers.androidTargetSdk
+    namespace = appNamespace
+    targetSdk = sdkTarget
+    minSdk = sdkMin
     versionCode = appVerCode
     versionName = appVerName
     testInstrumentationRunner = vers.androidTestRunnerClass
 }
 
-fun LibraryExtension.defaultDefaultConfig() = defaultConfig {
-    minSdk = vers.androidMinSdk
-    targetSdk = vers.androidTargetSdk
+fun LibraryExtension.defaultDefaultConfig(
+    libNamespace: String,
+    sdkTarget: Int = vers.androidSdkTarget,
+    sdkMin: Int = vers.androidSdkMin,
+) = defaultConfig {
+    namespace = libNamespace
+    targetSdk = sdkTarget
+    minSdk = sdkMin
     testInstrumentationRunner = vers.androidTestRunnerClass
 }
 
@@ -103,6 +120,19 @@ fun CommonExtension<*,*,*,*>.defaultComposeStuff() {
 
 fun CommonExtension<*,*,*,*>.defaultPackagingOptions() = packagingOptions {
     resources.excludes.defaultAndroExcludedResources()
+}
+
+fun LibraryExtension.defaultAndroLibPublishVariants(
+    withSources: Boolean = true,
+    withJavadoc: Boolean = true,
+) {
+    publishing {
+        multipleVariants {
+            allVariants()
+            if (withSources) withSourcesJar()
+            if (withJavadoc) withJavadocJar()
+        }
+    }
 }
 
 // endregion Andro Module Build Template
