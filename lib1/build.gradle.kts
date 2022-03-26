@@ -122,9 +122,22 @@ fun CommonExtension<*,*,*,*>.defaultPackagingOptions() = packagingOptions {
     resources.excludes.defaultAndroExcludedResources()
 }
 
-fun LibraryExtension.defaultAndroLibPublishVariants(
+fun LibraryExtension.defaultAndroLibPublishVariant(
+    variant: String = "release",
     withSources: Boolean = true,
-    withJavadoc: Boolean = true,
+    withJavadoc: Boolean = false,
+) {
+    publishing {
+        singleVariant(variant) {
+            if (withSources) withSourcesJar()
+            if (withJavadoc) withJavadocJar()
+        }
+    }
+}
+
+fun LibraryExtension.defaultAndroLibPublishAllVariants(
+    withSources: Boolean = true,
+    withJavadoc: Boolean = false,
 ) {
     publishing {
         multipleVariants {
@@ -133,6 +146,15 @@ fun LibraryExtension.defaultAndroLibPublishVariants(
             if (withJavadoc) withJavadocJar()
         }
     }
+}
+
+fun ApplicationExtension.defaultAndroAppPublishVariant(
+    variant: String = "release",
+    publishAPK: Boolean = true,
+    publishAAB: Boolean = false,
+) {
+    require(!publishAAB || !publishAPK) { "Either APK or AAB can be published, but not both." }
+    publishing { singleVariant(variant) { if (publishAPK) publishApk() } }
 }
 
 // endregion Andro Module Build Template
