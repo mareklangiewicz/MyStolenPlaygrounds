@@ -30,26 +30,26 @@ val stolenSamplesKotlinDir = srcLibUiSamplesKotlinDir / "stolen"
 val stolenAndroTestsDir = rootProjectPath / "lib1/src/androidTest/kotlin/stolen"
 val templatesSrcKotlinDir = srcAppKotlinDir / "templates"
 val rootBuildPath = rootProjectPath / "build.gradle.kts"
-val appBuildPath = rootProjectPath / "app/build.gradle.kts"
-val lib1BuildPath = rootProjectPath / "lib1/build.gradle.kts"
-val libUiSamplesBuildPath = rootProjectPath / "lib-ui-samples/build.gradle.kts"
+val playgroundsAppBuildPath = rootProjectPath / "playgrounds-app/build.gradle.kts"
+val playgroundsBasicBuildPath = rootProjectPath / "playgrounds-basic/build.gradle.kts"
+val playgroundsUiSamplesBuildPath = rootProjectPath / "playgrounds-ui-samples/build.gradle.kts"
 
 tasks.registerAllThatGroupFun("inject", ::checkBuildTemplates, ::injectBuildTemplates)
 
 fun checkBuildTemplates() {
     checkRootBuildTemplate(rootBuildPath)
-    checkKotlinModuleBuildTemplates(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
-    checkAndroCommonBuildTemplates(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
-    checkAndroLibBuildTemplates(lib1BuildPath, libUiSamplesBuildPath)
-    checkAndroAppBuildTemplates(appBuildPath)
+    checkKotlinModuleBuildTemplates(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath)
+    checkAndroCommonBuildTemplates(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath)
+    checkAndroLibBuildTemplates(playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath)
+    checkAndroAppBuildTemplates(playgroundsAppBuildPath)
 }
 
 fun injectBuildTemplates() {
     injectRootBuildTemplate(rootBuildPath)
-    injectKotlinModuleBuildTemplate(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
-    injectAndroCommonBuildTemplate(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
-    injectAndroLibBuildTemplate(lib1BuildPath, libUiSamplesBuildPath)
-    injectAndroAppBuildTemplate(appBuildPath)
+    injectKotlinModuleBuildTemplate(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath)
+    injectAndroCommonBuildTemplate(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath)
+    injectAndroLibBuildTemplate(playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath)
+    injectAndroAppBuildTemplate(playgroundsAppBuildPath)
 }
 
 // TODO NOW: test sourceFun DSL
