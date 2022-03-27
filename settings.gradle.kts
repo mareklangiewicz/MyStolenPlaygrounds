@@ -15,7 +15,7 @@ plugins {
 }
 
 rootProject.name = "MyStolenPlaygrounds"
-include (":app")
-include(":lib1")
-include(":lib-ui-samples")
+include(":playgrounds-app")
+include(":playgrounds-basic")
+include(":playgrounds-ui-samples")
 

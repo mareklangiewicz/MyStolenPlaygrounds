@@ -22,9 +22,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/lib-ui-samples" />
-            <option value="$PROJECT_DIR$/lib1" />
+            <option value="$PROJECT_DIR$/playgrounds-app" />
+            <option value="$PROJECT_DIR$/playgrounds-basic" />
+            <option value="$PROJECT_DIR$/playgrounds-ui-samples" />
             <option value="$PROJECT_DIR$/../deps.kt" />
           </set>
         </option>

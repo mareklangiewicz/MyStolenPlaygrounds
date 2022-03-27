@@ -1,24 +1,49 @@
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.api.dsl.LibraryExtension
 import pl.mareklangiewicz.defaults.*
 import pl.mareklangiewicz.deps.*
+import org.gradle.configurationcache.extensions.*
+import pl.mareklangiewicz.sourcefun.*
+import pl.mareklangiewicz.utils.*
 
 plugins {
-    id("com.android.library") version vers.androidGradlePlugin
+    id("com.android.application") version vers.androidGradlePlugin
     kotlin("android") version vers.kotlin
+    id("maven-publish")
+    id("signing")
 }
 
-repositories { defaultRepos() }
+defaultBuildTemplateForAndroidApp(
+    appId = "pl.mareklangiewicz.playgrounds",
+    withCompose = true,
+    details = libs.MyStolenPlaygrounds,
+    publishVariant = "debug",
+)
 
-android { defaultAndroLib("pl.mareklangiewicz.mystolenplaygrounds.lib1", withCompose = true) }
+val generateVersionDetails by tasks.registering(VersionDetailsTask::class) {
+    generatedAssetsDir provides layout.buildDirectory.dir("generated/assets")
+}
+
+android {
+    sourceSets["main"].assets.srcDir(generateVersionDetails)
+}
 
 dependencies {
-    defaultAndroDeps(withCompose = true)
+    implementation(project(":playgrounds-basic"))
+    implementation(project(":playgrounds-ui-samples"))
     defaultAndroTestDeps(configuration = "implementation", withCompose = true)
     // I use test stuff in main sources so I can add some tests sources to playgrounds app
 }
 
-tasks.defaultKotlinCompileOptions()
+androidComponents {
+    onVariants {
+        val capitalizedVariantName = it.name.capitalized()
+        afterEvaluate {
+            // FIXME_someday: watch: https://issuetracker.google.com/issues/191774971
+            tasks.named("generate${capitalizedVariantName}Assets") { dependsOn("generateVersionDetails") }
+        }
+    }
+}
 
 // region [Kotlin Module Build Template]
 
@@ -58,10 +83,13 @@ fun CommonExtension<*,*,*,*>.defaultPackagingOptions() = packagingOptions {
 
 // endregion [Andro Common Build Template]
 
-// region [Andro Lib Build Template]
+// region [Andro App Build Template]
 
-fun Project.defaultBuildTemplateForAndroidLib(
-    libNamespace: String,
+fun Project.defaultBuildTemplateForAndroidApp(
+    appId: String,
+    appNamespace: String = appId,
+    appVerCode: Int = 1,
+    appVerName: String = v(patch = appVerCode),
     jvmVersion: String = vers.defaultJvm,
     sdkCompile: Int = vers.androidSdkCompile,
     sdkTarget: Int = vers.androidSdkTarget,
@@ -72,8 +100,8 @@ fun Project.defaultBuildTemplateForAndroidLib(
 ) {
     repositories { defaultRepos() }
     android {
-        defaultAndroLib(libNamespace, jvmVersion, sdkCompile, sdkTarget, sdkMin, withCompose)
-        publishVariant?.let { defaultAndroLibPublishVariant(it) }
+        defaultAndroApp(appId, appNamespace, appVerCode, appVerName, jvmVersion, sdkCompile, sdkTarget, sdkMin, withCompose)
+        publishVariant?.let { defaultAndroAppPublishVariant(it) }
     }
     dependencies {
         defaultAndroDeps(withCompose = withCompose)
@@ -82,13 +110,16 @@ fun Project.defaultBuildTemplateForAndroidLib(
     tasks.defaultKotlinCompileOptions()
     defaultGroupAndVerAndDescription(details)
     publishVariant?.let {
-        defaultPublishingOfAndroLib(details, it)
+        defaultPublishingOfAndroApp(details, it)
         defaultSigning()
     }
 }
 
-fun LibraryExtension.defaultAndroLib(
-    libNamespace: String,
+fun ApplicationExtension.defaultAndroApp(
+    appId: String,
+    appNamespace: String = appId,
+    appVerCode: Int = 1,
+    appVerName: String = v(patch = appVerCode),
     jvmVersion: String = vers.defaultJvm,
     sdkCompile: Int = vers.androidSdkCompile,
     sdkTarget: Int = vers.androidSdkTarget,
@@ -97,49 +128,38 @@ fun LibraryExtension.defaultAndroLib(
 ) {
     compileSdk = sdkCompile
     defaultCompileOptions(jvmVersion)
-    defaultDefaultConfig(libNamespace, sdkTarget, sdkMin)
+    defaultDefaultConfig(appId, appNamespace, appVerCode, appVerName, sdkTarget, sdkMin)
     defaultBuildTypes()
     if (withCompose) defaultComposeStuff()
     defaultPackagingOptions()
 }
 
-fun LibraryExtension.defaultDefaultConfig(
-    libNamespace: String,
+fun ApplicationExtension.defaultDefaultConfig(
+    appId: String,
+    appNamespace: String = appId,
+    appVerCode: Int = 1,
+    appVerName: String = v(patch = appVerCode),
     sdkTarget: Int = vers.androidSdkTarget,
     sdkMin: Int = vers.androidSdkMin,
 ) = defaultConfig {
-    namespace = libNamespace
+    applicationId = appId
+    namespace = appNamespace
     targetSdk = sdkTarget
     minSdk = sdkMin
+    versionCode = appVerCode
+    versionName = appVerName
     testInstrumentationRunner = vers.androidTestRunnerClass
 }
 
-fun LibraryExtension.defaultBuildTypes() = buildTypes { release { isMinifyEnabled = false } }
+fun ApplicationExtension.defaultBuildTypes() = buildTypes { release { isMinifyEnabled = false } }
 
-fun LibraryExtension.defaultAndroLibPublishVariant(
+fun ApplicationExtension.defaultAndroAppPublishVariant(
     variant: String = "debug",
-    withSources: Boolean = true,
-    withJavadoc: Boolean = false,
+    publishAPK: Boolean = true,
+    publishAAB: Boolean = false,
 ) {
-    publishing {
-        singleVariant(variant) {
-            if (withSources) withSourcesJar()
-            if (withJavadoc) withJavadocJar()
-        }
-    }
+    require(!publishAAB || !publishAPK) { "Either APK or AAB can be published, but not both." }
+    publishing { singleVariant(variant) { if (publishAPK) publishApk() } }
 }
 
-fun LibraryExtension.defaultAndroLibPublishAllVariants(
-    withSources: Boolean = true,
-    withJavadoc: Boolean = false,
-) {
-    publishing {
-        multipleVariants {
-            allVariants()
-            if (withSources) withSourcesJar()
-            if (withJavadoc) withJavadocJar()
-        }
-    }
-}
-
-// endregion [Andro Lib Build Template]
+// endregion [Andro App Build Template]

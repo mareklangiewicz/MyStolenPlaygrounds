@@ -6,18 +6,16 @@ import pl.mareklangiewicz.deps.*
 plugins {
     id("com.android.library") version vers.androidGradlePlugin
     kotlin("android") version vers.kotlin
+    id("maven-publish")
+    id("signing")
 }
 
-repositories { defaultRepos() }
-
-android { defaultAndroLib("androidx.compose.ui.samples", withCompose = true) }
-
-dependencies {
-    defaultAndroDeps(withCompose = true)
-    defaultAndroTestDeps(withCompose = true)
-}
-
-tasks.defaultKotlinCompileOptions()
+defaultBuildTemplateForAndroidLib(
+    libNamespace = "androidx.compose.ui.samples",
+    withCompose = true,
+    details = libs.MyStolenPlaygrounds,
+    publishVariant = "debug",
+)
 
 // region [Kotlin Module Build Template]
 
