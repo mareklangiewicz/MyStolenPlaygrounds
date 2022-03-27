@@ -8,6 +8,7 @@ import pl.mareklangiewicz.sourcefun.*
 import pl.mareklangiewicz.io.*
 
 plugins {
+    id("io.github.gradle-nexus.publish-plugin") version vers.nexusPublishGradlePlugin
     id("pl.mareklangiewicz.sourcefun")
 }
 
@@ -23,6 +24,7 @@ val stolenSrcJavaDir = srcJavaDir // java files have to be in directories same a
 val stolenSamplesKotlinDir = srcLibUiSamplesKotlinDir / "stolen"
 val stolenAndroTestsDir = rootProjectPath / "lib1/src/androidTest/kotlin/stolen"
 val templatesSrcKotlinDir = srcAppKotlinDir / "templates"
+val rootBuildPath = rootProjectPath / "build.gradle.kts"
 val appBuildPath = rootProjectPath / "app/build.gradle.kts"
 val lib1BuildPath = rootProjectPath / "lib1/build.gradle.kts"
 val libUiSamplesBuildPath = rootProjectPath / "lib-ui-samples/build.gradle.kts"
@@ -30,6 +32,7 @@ val libUiSamplesBuildPath = rootProjectPath / "lib-ui-samples/build.gradle.kts"
 tasks.registerAllThatGroupFun("inject", ::checkBuildTemplates, ::injectBuildTemplates)
 
 fun checkBuildTemplates() {
+    checkRootBuildTemplate(rootBuildPath)
     checkKotlinModuleBuildTemplates(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
     checkAndroCommonBuildTemplates(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
     checkAndroLibBuildTemplates(lib1BuildPath, libUiSamplesBuildPath)
@@ -37,6 +40,7 @@ fun checkBuildTemplates() {
 }
 
 fun injectBuildTemplates() {
+    injectRootBuildTemplate(rootBuildPath)
     injectKotlinModuleBuildTemplate(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
     injectAndroCommonBuildTemplate(appBuildPath, lib1BuildPath, libUiSamplesBuildPath)
     injectAndroLibBuildTemplate(lib1BuildPath, libUiSamplesBuildPath)
@@ -282,3 +286,39 @@ val ureContentWithTemplate = ure {
     1 of ureRegion(ureWhateva(), regionName = regionName)
     1 of ureWhateva(reluctant = false).withName("partAfterGenerationRegion")
 }
+
+// region [Root Build Template]
+
+/**
+ * System.getenv() should contain six env variables with given prefix, like:
+ * * MYKOTLIBS_signing_keyId
+ * * MYKOTLIBS_signing_password
+ * * MYKOTLIBS_signing_key
+ * * MYKOTLIBS_ossrhUsername
+ * * MYKOTLIBS_ossrhPassword
+ * * MYKOTLIBS_sonatypeStagingProfileId
+ * * First three of these used in fun pl.mareklangiewicz.defaults.defaultSigning
+ * * See template-mpp/lib/build.gradle.kts
+ */
+fun Project.defaultSonatypeOssStuffFromSystemEnvs(envKeyMatchPrefix: String = "MYKOTLIBS_") {
+    ext.addAllFromSystemEnvs(envKeyMatchPrefix)
+    defaultSonatypeOssNexusPublishing()
+}
+
+fun Project.defaultSonatypeOssNexusPublishing(
+    sonatypeStagingProfileId: String = rootExt("sonatypeStagingProfileId"),
+    ossrhUsername: String = rootExt("ossrhUsername"),
+    ossrhPassword: String = rootExt("ossrhPassword"),
+) = nexusPublishing {
+    repositories {
+        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
+            stagingProfileId put sonatypeStagingProfileId
+            username put ossrhUsername
+            password put ossrhPassword
+            nexusUrl put uri(repos.sonatypeOssNexus)
+            snapshotRepositoryUrl put uri(repos.sonatypeOssSnapshots)
+        }
+    }
+}
+
+// endregion [Root Build Template]
