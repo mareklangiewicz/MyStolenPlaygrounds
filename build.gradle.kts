@@ -2,6 +2,7 @@ import okio.FileSystem.Companion.SYSTEM
 import okio.Path.Companion.toPath
 import okio.Path
 import okio.Path.Companion.toOkioPath
+import pl.mareklangiewicz.defaults.*
 import pl.mareklangiewicz.ure.*
 import pl.mareklangiewicz.utils.*
 import pl.mareklangiewicz.sourcefun.*
@@ -11,6 +12,10 @@ plugins {
     id("io.github.gradle-nexus.publish-plugin") version vers.nexusPublishGradlePlugin
     id("pl.mareklangiewicz.sourcefun")
 }
+
+defaultGroupAndVerAndDescription(libs.MyStolenPlaygrounds)
+
+defaultSonatypeOssStuffFromSystemEnvs()
 
 //val rootAndroidxPath = "/home/marek/code/android/androidx-main".toPath()
 val rootAndroidxPath = "/home/marek/code/kotlin/compose-jb/compose".toPath()

@@ -9,31 +9,31 @@ import pl.mareklangiewicz.utils.*
 plugins {
     id("com.android.application") version vers.androidGradlePlugin
     kotlin("android") version vers.kotlin
+    id("maven-publish")
+    id("signing")
 }
 
-repositories { defaultRepos() }
+defaultBuildTemplateForAndroidApp(
+    appId = "pl.mareklangiewicz.playgrounds",
+    withCompose = true,
+    details = libs.MyStolenPlaygrounds,
+    publishVariant = "debug",
+)
 
 val generateVersionDetails by tasks.registering(VersionDetailsTask::class) {
     generatedAssetsDir provides layout.buildDirectory.dir("generated/assets")
 }
 
 android {
-    defaultAndroApp("pl.mareklangiewicz.playgrounds", withCompose = true)
     sourceSets["main"].assets.srcDir(generateVersionDetails)
 }
 
 dependencies {
     implementation(project(":lib1"))
     implementation(project(":lib-ui-samples"))
-    defaultAndroDeps(withCompose = true)
     defaultAndroTestDeps(configuration = "implementation", withCompose = true)
     // I use test stuff in main sources so I can add some tests sources to playgrounds app
 }
-
-group = "pl.mareklangiewicz.playgrounds"
-version = "0.0.01"
-
-tasks.defaultKotlinCompileOptions()
 
 androidComponents {
     onVariants {
