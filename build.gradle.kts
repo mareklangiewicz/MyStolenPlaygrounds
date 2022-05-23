@@ -17,22 +17,29 @@ defaultGroupAndVerAndDescription(libs.MyStolenPlaygrounds)
 
 defaultSonatypeOssStuffFromSystemEnvs()
 
+val rootBuildPath = rootProjectPath / "build.gradle.kts"
+
+val playgroundsAppPath = rootProjectPath / "playgrounds-app"
+val playgroundsAppBuildPath = playgroundsAppPath / "build.gradle.kts"
+val playgroundsBasicPath = rootProjectPath / "playgrounds-basic"
+val playgroundsBasicBuildPath = playgroundsBasicPath / "build.gradle.kts"
+val playgroundsUiSamplesPath = rootProjectPath / "playgrounds-ui-samples"
+val playgroundsUiSamplesBuildPath = playgroundsUiSamplesPath / "build.gradle.kts"
+
 //val rootAndroidxPath = "/home/marek/code/android/androidx-main".toPath()
 val rootAndroidxPath = "/home/marek/code/kotlin/compose-jb/compose".toPath()
-val androidxSupportDir = rootAndroidxPath / "frameworks/support"
-val srcLib1KotlinDir = rootProjectPath / "lib1/src/main/kotlin"
-val srcLibUiSamplesKotlinDir = rootProjectPath / "lib-ui-samples/src/main/kotlin"
-val srcAppKotlinDir = rootProjectPath / "app/src/main/kotlin"
-val srcJavaDir = rootProjectPath / "lib1/src/main/java"
-val stolenSrcKotlinDir = srcLib1KotlinDir / "stolen"
-val stolenSrcJavaDir = srcJavaDir // java files have to be in directories same as packages :(
-val stolenSamplesKotlinDir = srcLibUiSamplesKotlinDir / "stolen"
-val stolenAndroTestsDir = rootProjectPath / "lib1/src/androidTest/kotlin/stolen"
-val templatesSrcKotlinDir = srcAppKotlinDir / "templates"
-val rootBuildPath = rootProjectPath / "build.gradle.kts"
-val playgroundsAppBuildPath = rootProjectPath / "playgrounds-app/build.gradle.kts"
-val playgroundsBasicBuildPath = rootProjectPath / "playgrounds-basic/build.gradle.kts"
-val playgroundsUiSamplesBuildPath = rootProjectPath / "playgrounds-ui-samples/build.gradle.kts"
+val androidxSupportPath = rootAndroidxPath / "frameworks/support"
+
+val srcAppKotlinPath = playgroundsAppPath / "src/main/kotlin"
+val srcBasicKotlinPath = playgroundsBasicPath / "src/main/kotlin"
+val srcBasicJavaPath = playgroundsBasicPath / "src/main/java"
+val srcUiSamplesKotlinPath = playgroundsUiSamplesPath / "src/main/kotlin"
+
+val stolenBasicKotlinPath = srcBasicKotlinPath / "stolen"
+val stolenBasicJavaPath = srcBasicJavaPath // java files have to be in directories same as packages :(
+val stolenUiSamplesKotlinPath = srcUiSamplesKotlinPath / "stolen"
+val stolenBasicAndroTestsPath = playgroundsBasicPath / "src/androidTest/kotlin/stolen"
+val templatesAppSrcKotlinPath = srcAppKotlinPath / "templates"
 
 tasks.registerAllThatGroupFun("inject", ::checkBuildTemplates, ::injectBuildTemplates)
 
@@ -56,48 +63,48 @@ fun injectBuildTemplates() {
 sourceFun {
     grp = "steal"
     val stealComposeTests by reg {
-        src = androidxSupportDir / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
-        out = stolenAndroTestsDir / "foundation-tests"
+        src = androidxSupportPath / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
+        out = stolenBasicAndroTestsPath / "foundation-tests"
         setTransformFun { if ("CanvasTest" in name || "Foundation" in name) it else null }
     }
     val stealComposeAnnotations by reg {
-        src = androidxSupportDir / "annotation/annotation-sampled/src/main/java/androidx/annotation"
-        out = stolenSamplesKotlinDir / "androidx-annotation"
+        src = androidxSupportPath / "annotation/annotation-sampled/src/main/java/androidx/annotation"
+        out = stolenUiSamplesKotlinPath / "androidx-annotation"
         setTransformFun { it }
     }
     val stealComposeSourcesJava by reg {
-        src = androidxSupportDir / "compose/ui/ui-android-stubs/src/main/java/android/view"
-        out = stolenSrcJavaDir / "android/view"
+        src = androidxSupportPath / "compose/ui/ui-android-stubs/src/main/java/android/view"
+        out = stolenBasicJavaPath / "android/view"
         setTransformFun { it }
     }
     val stealComposeSourcesTestUtilsCommon by reg {
-        src = androidxSupportDir / "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils"
-        out = stolenSrcKotlinDir / "compose-testutils"
+        src = androidxSupportPath / "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils"
+        out = stolenBasicKotlinPath / "compose-testutils"
         setTransformFun { it }
     }
     val stealComposeSourcesTestUtilsAndro by reg {
-        src = androidxSupportDir / "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils"
-        out = stolenSrcKotlinDir / "compose-testutils"
+        src = androidxSupportPath / "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils"
+        out = stolenBasicKotlinPath / "compose-testutils"
         setTransformFun { if ("Screenshot" in name) null else it }
     }
     val stealComposeSamplesUi by reg {
-        src = androidxSupportDir / "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples"
-        out = stolenSamplesKotlinDir / "samples-ui"
+        src = androidxSupportPath / "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples"
+        out = stolenUiSamplesKotlinPath / "samples-ui"
         setTransformFun { it }
     }
     val stealComposeSamplesUiGraphics by reg {
-        src = androidxSupportDir / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples"
-        out = stolenSamplesKotlinDir / "samples-ui-graphics"
+        src = androidxSupportPath / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples"
+        out = stolenUiSamplesKotlinPath / "samples-ui-graphics"
         setTransformFun { it }
     }
     val stealComposeSamplesAnimationCore by reg {
-        src = androidxSupportDir / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples"
-        out = stolenSamplesKotlinDir / "samples-animation-core"
+        src = androidxSupportPath / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples"
+        out = stolenUiSamplesKotlinPath / "samples-animation-core"
         setTransformFun { it }
     }
     val stealComposeSamplesAnimation by reg {
-        src = androidxSupportDir / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples"
-        out = stolenSamplesKotlinDir / "samples-animation"
+        src = androidxSupportPath / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples"
+        out = stolenUiSamplesKotlinPath / "samples-animation"
         setTransformFun { it }
     }
     val stealComposeSourcesAll by reg { dependsOn(
@@ -120,8 +127,8 @@ sourceFun {
 
     val processStolenStuff by reg {
         dependsOn(stealComposeAll)
-        src = stolenSamplesKotlinDir
-        out = templatesSrcKotlinDir
+        src = stolenUiSamplesKotlinPath
+        out = templatesAppSrcKotlinPath
         setTaskAction { srcTree: FileTree, outDir: Directory ->
             val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
             srcTree.visit {
@@ -147,7 +154,7 @@ fun processComposeTemplates(
     interpolations = mapOf(
 //            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
 //            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
-    srcLibUiSamplesKotlinDir.toString() to "samplesDir",
+    srcUiSamplesKotlinPath.toString() to "samplesDir",
 ))
 
 fun processTemplates(
