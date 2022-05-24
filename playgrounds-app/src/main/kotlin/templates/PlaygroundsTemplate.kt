@@ -1,4 +1,5 @@
 @file:Suppress("FunctionName", "PackageDirectoryMismatch")
+@file:OptIn(ExperimentalComposeUiApi::class)
 
 package pl.mareklangiewicz.playgrounds
 
@@ -62,7 +63,6 @@ fun Playgrounds() {
 
     val samplesDir = "/home/marek/code/kotlin/MyStolenPlaygrounds/lib-ui-samples/src/main/kotlin"
 
-    @OptIn(ExperimentalComposeUiApi::class)
     val samples = listOf(
         MySampleData("androidx.compose.animation.core.samples.GestureAnimationSample", "${samplesDir}/stolen/samples-animation-core/TransitionSamples.kt") { androidx.compose.animation.core.samples.GestureAnimationSample() },
         MySampleData("androidx.compose.animation.core.samples.AnimateFloatSample", "${samplesDir}/stolen/samples-animation-core/TransitionSamples.kt") { androidx.compose.animation.core.samples.AnimateFloatSample() },
@@ -117,6 +117,7 @@ fun Playgrounds() {
         MySampleData("androidx.compose.ui.samples.SubcomponentModifierSample", "${samplesDir}/stolen/samples-ui/ModifierSamples.kt") { androidx.compose.ui.samples.SubcomponentModifierSample() },
         MySampleData("androidx.compose.ui.samples.OnPlaced", "${samplesDir}/stolen/samples-ui/OnPlacedSamples.kt") { androidx.compose.ui.samples.OnPlaced() },
         MySampleData("androidx.compose.ui.samples.PointerIconSample", "${samplesDir}/stolen/samples-ui/PointerIconSample.kt") { androidx.compose.ui.samples.PointerIconSample() },
+        MySampleData("androidx.compose.ui.samples.ViewInComposeNestedScrollInteropSample", "${samplesDir}/stolen/samples-ui/NestedScrollInteropSamples.kt") { androidx.compose.ui.samples.ViewInComposeNestedScrollInteropSample() },
         MySampleData("androidx.compose.ui.samples.NestedScrollConnectionSample", "${samplesDir}/stolen/samples-ui/NestedScrollSamples.kt") { androidx.compose.ui.samples.NestedScrollConnectionSample() },
         MySampleData("androidx.compose.ui.samples.NestedScrollDispatcherSample", "${samplesDir}/stolen/samples-ui/NestedScrollSamples.kt") { androidx.compose.ui.samples.NestedScrollDispatcherSample() },
         MySampleData("androidx.compose.ui.samples.KeyEventSample", "${samplesDir}/stolen/samples-ui/FocusAwareInputSamples.kt") { androidx.compose.ui.samples.KeyEventSample() },
