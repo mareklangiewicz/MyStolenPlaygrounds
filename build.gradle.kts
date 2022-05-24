@@ -20,11 +20,14 @@ defaultSonatypeOssStuffFromSystemEnvs()
 val rootBuildPath = rootProjectPath / "build.gradle.kts"
 
 val playgroundsAppPath = rootProjectPath / "playgrounds-app"
-val playgroundsAppBuildPath = playgroundsAppPath / "build.gradle.kts"
 val playgroundsBasicPath = rootProjectPath / "playgrounds-basic"
-val playgroundsBasicBuildPath = playgroundsBasicPath / "build.gradle.kts"
 val playgroundsUiSamplesPath = rootProjectPath / "playgrounds-ui-samples"
+val playgroundsMaterial3Path = rootProjectPath / "playgrounds-material3"
+
+val playgroundsAppBuildPath = playgroundsAppPath / "build.gradle.kts"
+val playgroundsBasicBuildPath = playgroundsBasicPath / "build.gradle.kts"
 val playgroundsUiSamplesBuildPath = playgroundsUiSamplesPath / "build.gradle.kts"
+val playgroundsMaterial3BuildPath = playgroundsMaterial3Path / "build.gradle.kts"
 
 //val rootAndroidxPath = "/home/marek/code/android/androidx-main".toPath()
 val rootAndroidxPath = "/home/marek/code/kotlin/compose-jb/compose".toPath()
@@ -34,10 +37,12 @@ val srcAppKotlinPath = playgroundsAppPath / "src/main/kotlin"
 val srcBasicKotlinPath = playgroundsBasicPath / "src/main/kotlin"
 val srcBasicJavaPath = playgroundsBasicPath / "src/main/java"
 val srcUiSamplesKotlinPath = playgroundsUiSamplesPath / "src/main/kotlin"
+val srcMaterial3KotlinPath = playgroundsMaterial3Path / "src/main/kotlin"
 
 val stolenBasicKotlinPath = srcBasicKotlinPath / "stolen"
 val stolenBasicJavaPath = srcBasicJavaPath // java files have to be in directories same as packages :(
 val stolenUiSamplesKotlinPath = srcUiSamplesKotlinPath / "stolen"
+val stolenMaterial3KotlinPath = srcMaterial3KotlinPath / "stolen"
 val stolenBasicAndroTestsPath = playgroundsBasicPath / "src/androidTest/kotlin/stolen"
 val templatesAppSrcKotlinPath = srcAppKotlinPath / "templates"
 
@@ -45,17 +50,17 @@ tasks.registerAllThatGroupFun("inject", ::checkBuildTemplates, ::injectBuildTemp
 
 fun checkBuildTemplates() {
     checkRootBuildTemplate(rootBuildPath)
-    checkKotlinModuleBuildTemplates(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath)
-    checkAndroCommonBuildTemplates(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath)
-    checkAndroLibBuildTemplates(playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath)
+    checkKotlinModuleBuildTemplates(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath, playgroundsMaterial3BuildPath)
+    checkAndroCommonBuildTemplates(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath, playgroundsMaterial3BuildPath)
+    checkAndroLibBuildTemplates(playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath, playgroundsMaterial3BuildPath)
     checkAndroAppBuildTemplates(playgroundsAppBuildPath)
 }
 
 fun injectBuildTemplates() {
     injectRootBuildTemplate(rootBuildPath)
-    injectKotlinModuleBuildTemplate(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath)
-    injectAndroCommonBuildTemplate(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath)
-    injectAndroLibBuildTemplate(playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath)
+    injectKotlinModuleBuildTemplate(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath, playgroundsMaterial3BuildPath)
+    injectAndroCommonBuildTemplate(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath, playgroundsMaterial3BuildPath)
+    injectAndroLibBuildTemplate(playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath, playgroundsMaterial3BuildPath)
     injectAndroAppBuildTemplate(playgroundsAppBuildPath)
 }
 
@@ -107,6 +112,11 @@ sourceFun {
         out = stolenUiSamplesKotlinPath / "samples-animation"
         setTransformFun { it }
     }
+    val stealComposeMaterial3Catalog by reg {
+        src = androidxSupportPath / "compose/material3/material3/integration-tests/material3-catalog/src/main/java/androidx/compose/material3/catalog"
+        out = stolenMaterial3KotlinPath / "catalog"
+        setTransformFun { it }
+    }
     val stealComposeSourcesAll by reg { dependsOn(
         stealComposeSourcesJava,
         stealComposeSourcesTestUtilsCommon,
@@ -123,6 +133,7 @@ sourceFun {
         stealComposeAnnotations,
         stealComposeSourcesAll,
         stealComposeSamplesAll,
+        stealComposeMaterial3Catalog,
     ) }
 
     val processStolenStuff by reg {

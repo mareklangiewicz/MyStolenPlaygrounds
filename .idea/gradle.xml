@@ -24,6 +24,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/playgrounds-app" />
             <option value="$PROJECT_DIR$/playgrounds-basic" />
+            <option value="$PROJECT_DIR$/playgrounds-material3" />
             <option value="$PROJECT_DIR$/playgrounds-ui-samples" />
             <option value="$PROJECT_DIR$/../deps.kt" />
           </set>
