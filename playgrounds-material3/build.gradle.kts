@@ -17,6 +17,12 @@ defaultBuildTemplateForAndroidLib(
     publishVariant = "debug",
 )
 
+dependencies {
+    implementation(project(":playgrounds-ui-samples"))
+    implementation(deps.composeAndroidMaterial3)
+    implementation(deps.androidxNavigationCompose)
+}
+
 // region [Kotlin Module Build Template]
 
 fun TaskCollection<Task>.defaultKotlinCompileOptions(

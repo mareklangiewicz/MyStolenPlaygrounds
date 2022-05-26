@@ -112,8 +112,14 @@ sourceFun {
         out = stolenUiSamplesKotlinPath / "samples-animation"
         setTransformFun { it }
     }
+    val m3 = androidxSupportPath / "compose/material3/material3"
+    val stealComposeMaterial3Samples by reg {
+        src = m3 / "samples/src/main/java/androidx/compose/material3/samples"
+        out = stolenMaterial3KotlinPath / "samples"
+        setTransformFun { it }
+    }
     val stealComposeMaterial3Catalog by reg {
-        src = androidxSupportPath / "compose/material3/material3/integration-tests/material3-catalog/src/main/java/androidx/compose/material3/catalog"
+        src = m3 / "integration-tests/material3-catalog/src/main/java/androidx/compose/material3/catalog"
         out = stolenMaterial3KotlinPath / "catalog"
         setTransformFun { it }
     }
@@ -133,6 +139,7 @@ sourceFun {
         stealComposeAnnotations,
         stealComposeSourcesAll,
         stealComposeSamplesAll,
+        stealComposeMaterial3Samples,
         stealComposeMaterial3Catalog,
     ) }
 
