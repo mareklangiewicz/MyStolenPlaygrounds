@@ -123,6 +123,16 @@ sourceFun {
         out = stolenMaterial3KotlinPath / "catalog"
         setTransformFun { it }
     }
+    val stealComposeMaterial3Demos by reg {
+        src = m3 / "integration-tests/material3-demos/src/main/java/androidx/compose/material3/demos"
+        out = stolenMaterial3KotlinPath / "demos"
+        setTransformFun { it }
+    }
+    val stealComposeCommonDemos by reg {
+        src = androidxSupportPath / "compose/integration-tests/demos/common/src/main/java/androidx/compose/integration/demos/common"
+        out = stolenMaterial3KotlinPath / "demos-common"
+        setTransformFun { it }
+    }
     val stealComposeSourcesAll by reg { dependsOn(
         stealComposeSourcesJava,
         stealComposeSourcesTestUtilsCommon,
@@ -134,13 +144,18 @@ sourceFun {
         stealComposeSamplesAnimationCore,
         stealComposeSamplesAnimation,
     ) }
+    val stealComposeMaterial3All by reg { dependsOn(
+        stealComposeMaterial3Samples,
+        stealComposeMaterial3Catalog,
+        stealComposeMaterial3Demos,
+        stealComposeCommonDemos,
+    ) }
     val stealComposeAll by reg { dependsOn(
         stealComposeTests,
         stealComposeAnnotations,
         stealComposeSourcesAll,
         stealComposeSamplesAll,
-        stealComposeMaterial3Samples,
-        stealComposeMaterial3Catalog,
+        stealComposeMaterial3All,
     ) }
 
     val processStolenStuff by reg {
