@@ -30,6 +30,7 @@ fun Color.darken(fraction: Float = 0.1f) = lerp(this, Color.Black, fraction)
     UBox(depthIncrease) { UBasicRow(content) }
 }
 
+/*
 @Composable expect fun ULessBasicBox(
     backgroundColor: Color = Color.Transparent,
     borderColor: Color = Color.Transparent,
@@ -38,6 +39,7 @@ fun Color.darken(fraction: Float = 0.1f) = lerp(this, Color.Black, fraction)
     content: @Composable () -> Unit,
 )
 
+*/
 /*
 @Composable expect fun UBasicBox(content: @Composable () -> Unit)
 
@@ -58,6 +60,7 @@ fun Color.darken(fraction: Float = 0.1f) = lerp(this, Color.Black, fraction)
     depthIncrease: Int = 1,
 ) = UBox(depthIncrease) { UText(text, center, bold, mono) }
 
+/*
 @Composable expect fun UText(
     text: String,
     center: Boolean = false,
@@ -65,6 +68,7 @@ fun Color.darken(fraction: Float = 0.1f) = lerp(this, Color.Black, fraction)
     mono: Boolean = false,
 )
 
+*/
 /*
 @Composable expect fun UBasicText(text: String)
 
