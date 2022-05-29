@@ -10,12 +10,13 @@ import androidx.compose.material3.catalog.library.*
 import androidx.compose.material3.demos.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.*
+import pl.mareklangiewicz.uwidgets.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            UTextTabs(
+            UTabs(
                 "Material 3 Catalog" to { Material3CatalogApp() },
                 "Material 3 Demos" to { MyDemosSelector(Material3Demos) },
                 "My Stolen Playgrounds" to {
@@ -36,23 +37,5 @@ private fun MyDemosSelector(demos: DemoCategory) {
         val content: @Composable () -> Unit = { demo.content {} }
         demo.title to content
     }
-    UTextTabs(*contents.toTypedArray())
-}
-
-// TODO: Polish and move to UWidgets when it supports android platform.
-@Composable
-fun UTextTabs(vararg contents: Pair<String, @Composable () -> Unit>) {
-    var currentIdx by remember { mutableStateOf(0) }
-    Column {
-        TabRow(selectedTabIndex = currentIdx) {
-            contents.forEachIndexed { index, (title, _) ->
-                Tab(
-                    selected = currentIdx == index,
-                    onClick = { currentIdx = index },
-                    text = { Text(title) },
-                )
-            }
-        }
-        contents[currentIdx].second()
-    }
+    UTabs(*contents.toTypedArray())
 }

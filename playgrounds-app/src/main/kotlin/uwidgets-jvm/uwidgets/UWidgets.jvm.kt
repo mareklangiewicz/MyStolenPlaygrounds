@@ -67,7 +67,7 @@ import androidx.compose.ui.unit.*
     TabRow(selectedTabIndex = selectedTabIndex) {
         tabs.forEachIndexed { index, title ->
             Tab(
-                text = { Text(title, style = MaterialTheme.typography.headlineSmall) },
+                text = { Text(title, style = MaterialTheme.typography.titleSmall) },
                 selected = selectedTabIndex == index,
                 onClick = { selectedTabIndex = index; onSelected(index, title) }
             )
