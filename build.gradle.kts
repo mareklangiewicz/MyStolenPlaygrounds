@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 import okio.FileSystem.Companion.SYSTEM
 import okio.Path.Companion.toPath
 import okio.Path
@@ -33,6 +35,10 @@ val playgroundsMaterial3BuildPath = playgroundsMaterial3Path / "build.gradle.kts
 val rootAndroidxPath = "/home/marek/code/kotlin/compose-jb/compose".toPath()
 val androidxSupportPath = rootAndroidxPath / "frameworks/support"
 
+val uwidgetsRootPath = "/home/marek/code/kotlin/UWidgets/uwidgets".toPath()
+val uwidgetsCommonKotlinPath = uwidgetsRootPath / "src/commonMain/kotlin"
+val uwidgetsJvmKotlinPath = uwidgetsRootPath / "src/jvmMain/kotlin"
+
 val srcAppKotlinPath = playgroundsAppPath / "src/main/kotlin"
 val srcBasicKotlinPath = playgroundsBasicPath / "src/main/kotlin"
 val srcBasicJavaPath = playgroundsBasicPath / "src/main/java"
@@ -66,7 +72,9 @@ fun injectBuildTemplates() {
 
 // TODO NOW: test sourceFun DSL
 sourceFun {
+
     grp = "steal"
+
     val stealComposeTests by reg {
         src = androidxSupportPath / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
         out = stolenBasicAndroTestsPath / "foundation-tests"
@@ -133,6 +141,20 @@ sourceFun {
         out = stolenMaterial3KotlinPath / "demos-common"
         setTransformFun { it }
     }
+    val stealUWidgetsCommon by reg {
+        src = uwidgetsCommonKotlinPath
+        out = srcAppKotlinPath / "uwidgets-common"
+        setTransformFun { it.commentOutMultiplatformFun() }
+    }
+    val stealUWidgetsJvm by reg {
+        src = uwidgetsJvmKotlinPath
+        out = srcAppKotlinPath / "uwidgets-jvm"
+        setTransformFun { it.commentOutMultiplatformFun() }
+    }
+    val stealUWidgetsAll by reg { dependsOn(
+        stealUWidgetsCommon,
+        stealUWidgetsJvm,
+    ) }
     val stealComposeSourcesAll by reg { dependsOn(
         stealComposeSourcesJava,
         stealComposeSourcesTestUtilsCommon,
@@ -150,16 +172,17 @@ sourceFun {
         stealComposeMaterial3Demos,
         stealComposeCommonDemos,
     ) }
-    val stealComposeAll by reg { dependsOn(
+    val stealAll by reg { dependsOn(
         stealComposeTests,
         stealComposeAnnotations,
         stealComposeSourcesAll,
         stealComposeSamplesAll,
         stealComposeMaterial3All,
+        stealUWidgetsAll,
     ) }
 
-    val processStolenStuff by reg {
-        dependsOn(stealComposeAll)
+    val processStolenUiSamples by reg {
+        dependsOn(stealComposeSamplesAll)
         src = stolenUiSamplesKotlinPath
         out = templatesAppSrcKotlinPath
         setTaskAction { srcTree: FileTree, outDir: Directory ->
