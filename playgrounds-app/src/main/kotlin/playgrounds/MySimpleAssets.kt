@@ -1,12 +1,13 @@
 package pl.mareklangiewicz.playgrounds
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.*
 import kotlinx.coroutines.*
+import pl.mareklangiewicz.myfancyframe.*
+import pl.mareklangiewicz.uwidgets.*
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MySimpleAssets(path: String) {
     var values by remember { mutableStateOf(emptyList<Pair<String, String>>()) }
@@ -19,8 +20,12 @@ fun MySimpleAssets(path: String) {
             }
         }
     }
-    Column {
-        Text(path)
-        for ((name, content) in values) Text("$name: $content")
+    MyFancyFrame(title = path) {
+        Column {
+            for ((name, content) in values) UColumn {
+                Text(name)
+                Text(content)
+            }
+        }
     }
 }
