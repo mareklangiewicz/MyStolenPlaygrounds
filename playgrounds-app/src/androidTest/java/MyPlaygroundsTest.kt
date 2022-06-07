@@ -13,17 +13,20 @@ class MyPlaygroundsTest {
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @Test
-    fun DisplayStuff() {
-        composeTestRule.onNodeWithText("AlphaSample", substring = true).assertIsDisplayed()
-        composeTestRule.onNodeWithText("AlignmentLineSample", substring = true).assertIsDisplayed()
-    }
+    fun DisplayStuff() { composeTestRule.run {
+        onNodeWithText("Playgrounds").performClick()
+        onAllNodesWithText("GestureAnimationSample", substring = true).assertCountEquals(2)
+        onNodeWithText("AnimateFloatSample", substring = true).assertIsDisplayed()
+    } }
 
     @Test
-    fun ChangeSelectedSample() {
-        composeTestRule.onAllNodesWithText("AlignmentLineSample", substring = true).assertCountEquals(2)
-        composeTestRule.onNodeWithText("AlphaSample").performClick()
-        composeTestRule.onAllNodesWithText("AlignmentLineSample", substring = true).assertCountEquals(1)
+    fun ChangeSelectedSample() = composeTestRule.run {
+        onNodeWithText("Playgrounds").performClick()
+        onAllNodesWithText("DoubleTapToLikeSample", substring = true).assertCountEquals(1)
+        onNodeWithText("DoubleTapToLikeSample", substring = true).performClick()
+        onAllNodesWithText("DoubleTapToLikeSample", substring = true).assertCountEquals(2)
 
 //        composeTestRule.onNodeWithText("sth").assertIsFocused() // TODO: play with this
+        Unit
     }
 }
