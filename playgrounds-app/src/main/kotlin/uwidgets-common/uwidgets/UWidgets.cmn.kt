@@ -2,40 +2,53 @@
 
 package pl.mareklangiewicz.uwidgets
 
-import androidx.compose.ui.graphics.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.*
+import pl.mareklangiewicz.utheme.*
+import pl.mareklangiewicz.uwidgets.UAlignmentType.*
 
-fun Color.lighten(fraction: Float = 0.1f) = lerp(this, Color.White, fraction)
-fun Color.darken(fraction: Float = 0.1f) = lerp(this, Color.Black, fraction)
+enum class UContainerType { UBOX, UROW, UCOLUMN }
 
-@Composable fun UBox(depthIncrease: Int = 1, content: @Composable () -> Unit) {
-    val depth = ULocalDepth.current
-    val bg = ULocalBackground.current.forDepth(depth)
-    ULessBasicBox(
-        backgroundColor = bg,
-        borderColor = bg.darken(.1f),
-        borderWidth = 1.dp,
-        padding = 2.dp,
-    ) {
-        CompositionLocalProvider(ULocalDepth provides depth + depthIncrease, content = content)
+enum class UAlignmentType(val css: String) {
+    USTART("start"), UEND("end"), UCENTER("center"), USTRETCH("stretch");
+    companion object {
+        fun css(css: String) = UAlignmentType.values().first { it.css == css }
     }
 }
 
-@Composable fun UColumn(depthIncrease: Int = 1, content: @Composable () -> Unit) {
-    UBox(depthIncrease) { UBasicColumn(content) }
-}
+fun Color.lighten(fraction: Float = 0.1f) = lerp(this, Color.White, fraction.coerceIn(0f, 1f))
+fun Color.darken(fraction: Float = 0.1f) = lerp(this, Color.Black, fraction.coerceIn(0f, 1f))
 
-@Composable fun URow(depthIncrease: Int = 1, content: @Composable () -> Unit) {
-    UBox(depthIncrease) { UBasicRow(content) }
-}
+@Composable fun UBox(size: DpSize? = null, content: @Composable () -> Unit) = ULessBasicBox(
+    size = size,
+    backgroundColor = UTheme.colors.uboxBackground,
+    borderColor = UTheme.colors.uboxBorder,
+    borderWidth = UTheme.sizes.uboxBorder,
+    padding = UTheme.sizes.uboxPadding,
+    onClick = LocalUOnBoxClick.current
+) { UDepth { CompositionLocalProvider(LocalUOnBoxClick provides null, content = content) } }
+
+// It's a really hacky solution for multiplatform minimalist onClick support.
+// Mostly to avoid more parameters in functions. Probably will be changed later.
+@Composable fun UOnBoxClick(onBoxClick: () -> Unit, content: @Composable () -> Unit) =
+    CompositionLocalProvider(LocalUOnBoxClick provides onBoxClick, content = content)
+
+private val LocalUOnBoxClick = staticCompositionLocalOf<(() -> Unit)?> { null }
+
+
+@Composable fun UColumn(size: DpSize? = null, content: @Composable () -> Unit) = UBox(size) { UBasicColumn(content) }
+
+@Composable fun URow(size: DpSize? = null, content: @Composable () -> Unit) = UBox(size) { UBasicRow(content) }
 
 /*
 @Composable expect fun ULessBasicBox(
+    size: DpSize? = null,
     backgroundColor: Color = Color.Transparent,
     borderColor: Color = Color.Transparent,
     borderWidth: Dp = 0.dp,
     padding: Dp = 0.dp,
+    onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 )
 
@@ -52,34 +65,23 @@ fun Color.darken(fraction: Float = 0.1f) = lerp(this, Color.Black, fraction)
 @Composable expect fun UBasicRow(content: @Composable () -> Unit)
 
 */
-@Composable fun UBoxedText(
-    text: String,
-    center: Boolean = false,
-    bold: Boolean = false,
-    mono: Boolean = false,
-    depthIncrease: Int = 1,
-) = UBox(depthIncrease) { UText(text, center, bold, mono) }
+@Composable fun UBoxedText(text: String, center: Boolean = false, bold: Boolean = false, mono: Boolean = false) =
+    UBox {
+        UAlign(
+            if (center) UCENTER else UTheme.alignments.horizontal,
+            if (center) UCENTER else UTheme.alignments.vertical,
+        ) { UText(text, bold, mono) }
+    }
 
 /*
-@Composable expect fun UText(
-    text: String,
-    center: Boolean = false,
-    bold: Boolean = false,
-    mono: Boolean = false,
-)
+@Composable expect fun UText(text: String, bold: Boolean = false, mono: Boolean = false)
 
 */
 /*
 @Composable expect fun UBasicText(text: String)
 
+
 */
-val ULocalDepth = compositionLocalOf { 0 }
-
-val ULocalBackground = compositionLocalOf { Color.LightGray }
-
-@Composable private fun Color.forDepth(depth: Int) = lighten((depth % 3 + 1) * 0.25f)
-
-
 /*
 @Composable expect fun UTabs(vararg tabs: String, onSelected: (idx: Int, tab: String) -> Unit)
 
@@ -87,15 +89,13 @@ val ULocalBackground = compositionLocalOf { Color.LightGray }
 @Composable fun UTabs(vararg contents: Pair<String, @Composable () -> Unit>) {
     var selectedTabIndex by remember { mutableStateOf(0) }
     UColumn {
-        UTabs(*contents.map { it.first }.toTypedArray()) { idx, tab ->
-            selectedTabIndex = idx
-        }
+        UTabs(*contents.map { it.first }.toTypedArray()) { idx, _ -> selectedTabIndex = idx }
         contents[selectedTabIndex].second()
     }
 }
 
 @Composable
-internal fun UTabsCmn(vararg tabs: String, onSelected: (idx: Int, tab: String) -> Unit) {
+internal fun UTabsCmn(vararg tabs: String, onSelected: (idx: Int, tab: String) -> Unit) = UAlign(USTART, USTART) {
     var selectedTabIndex by remember { mutableStateOf(0) }
     URow {
         tabs.forEachIndexed { index, title ->
@@ -106,11 +106,3 @@ internal fun UTabsCmn(vararg tabs: String, onSelected: (idx: Int, tab: String) -
     }
 }
 
-@Composable
-fun UOnBoxClick(onBoxClick: () -> Unit, content: @Composable () -> Unit) {
-    CompositionLocalProvider(ULocalOnBoxClick provides onBoxClick, content = content)
-}
-
-// It's a really hacky solution for multiplatform minimalist onClick support.
-// Mostly to avoid more parameters in functions. Probably will be changed later.
-val ULocalOnBoxClick = compositionLocalOf<(() -> Unit)?> { null }

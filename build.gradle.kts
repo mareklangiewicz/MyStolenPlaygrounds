@@ -70,15 +70,22 @@ fun injectBuildTemplates() {
     injectAndroAppBuildTemplate(playgroundsAppBuildPath)
 }
 
+fun String.containsOneOf(vararg substrings: String) = substrings.any { it in this }
+
 // TODO NOW: test sourceFun DSL
 sourceFun {
 
     grp = "steal"
 
-    val stealComposeTests by reg {
+    val stealComposeFoundationTests by reg {
         src = androidxSupportPath / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
         out = stolenBasicAndroTestsPath / "foundation-tests"
-        setTransformFun { if ("CanvasTest" in name || "Foundation" in name) it else null }
+        setTransformFun { if (name.containsOneOf("CanvasTest", "Foundation", "TestActivity")) it else null }
+    }
+    val stealComposeFoundationLayoutTests by reg {
+        src = androidxSupportPath / "compose/foundation/foundation-layout/src/androidAndroidTest/kotlin/androidx/compose/foundation/layout"
+        out = stolenBasicAndroTestsPath / "foundation-layout-tests"
+        setTransformFun { if (name.containsOneOf("BoxTest", "LayoutTest")) it else null }
     }
     val stealComposeAnnotations by reg {
         src = androidxSupportPath / "annotation/annotation-sampled/src/main/java/androidx/annotation"
@@ -173,7 +180,8 @@ sourceFun {
         stealComposeCommonDemos,
     ) }
     val stealAll by reg { dependsOn(
-        stealComposeTests,
+        stealComposeFoundationTests,
+        stealComposeFoundationLayoutTests,
         stealComposeAnnotations,
         stealComposeSourcesAll,
         stealComposeSamplesAll,
