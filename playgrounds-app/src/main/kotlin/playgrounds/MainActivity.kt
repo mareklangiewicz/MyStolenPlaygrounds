@@ -10,6 +10,7 @@ import androidx.compose.material3.demos.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.*
 import pl.mareklangiewicz.school.*
+import pl.mareklangiewicz.udemo.*
 import pl.mareklangiewicz.uwidgets.*
 
 class MainActivity : ComponentActivity() {
@@ -23,6 +24,7 @@ class MainActivity : ComponentActivity() {
 private fun MainContent() {
     UTabs(
         "School" to { School() },
+        "UDemo" to { UDemo() },
         "Playgrounds" to {
             UTabs(
                 "My Stolen Playgrounds" to {

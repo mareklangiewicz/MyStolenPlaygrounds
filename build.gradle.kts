@@ -35,9 +35,10 @@ val playgroundsMaterial3BuildPath = playgroundsMaterial3Path / "build.gradle.kts
 val rootAndroidxPath = "/home/marek/code/kotlin/compose-jb/compose".toPath()
 val androidxSupportPath = rootAndroidxPath / "frameworks/support"
 
-val uwidgetsRootPath = "/home/marek/code/kotlin/UWidgets/uwidgets".toPath()
-val uwidgetsCommonKotlinPath = uwidgetsRootPath / "src/commonMain/kotlin"
-val uwidgetsJvmKotlinPath = uwidgetsRootPath / "src/jvmMain/kotlin"
+val uwidgetsRootPath = "/home/marek/code/kotlin/UWidgets".toPath()
+val uwidgetsCommonKotlinPath = uwidgetsRootPath / "uwidgets/src/commonMain/kotlin"
+val uwidgetsJvmKotlinPath = uwidgetsRootPath / "uwidgets/src/jvmMain/kotlin"
+val uwidgetsDemoKotlinPath = uwidgetsRootPath / "udemo/src/commonMain/kotlin"
 
 val srcAppKotlinPath = playgroundsAppPath / "src/main/kotlin"
 val srcBasicKotlinPath = playgroundsBasicPath / "src/main/kotlin"
@@ -78,89 +79,112 @@ sourceFun {
     grp = "steal"
 
     val stealComposeFoundationTests by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
         out = stolenBasicAndroTestsPath / "foundation-tests"
         setTransformFun { if (name.containsOneOf("CanvasTest", "Foundation", "TestActivity")) it else null }
     }
     val stealComposeFoundationLayoutTests by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/foundation/foundation-layout/src/androidAndroidTest/kotlin/androidx/compose/foundation/layout"
         out = stolenBasicAndroTestsPath / "foundation-layout-tests"
         setTransformFun { if (name.containsOneOf("BoxTest", "LayoutTest")) it else null }
     }
     val stealComposeAnnotations by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "annotation/annotation-sampled/src/main/java/androidx/annotation"
         out = stolenUiSamplesKotlinPath / "androidx-annotation"
         setTransformFun { it }
     }
     val stealComposeSourcesJava by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/ui/ui-android-stubs/src/main/java/android/view"
         out = stolenBasicJavaPath / "android/view"
         setTransformFun { it }
     }
     val stealComposeSourcesTestUtilsCommon by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils"
         out = stolenBasicKotlinPath / "compose-testutils"
         setTransformFun { it }
     }
     val stealComposeSourcesTestUtilsAndro by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils"
         out = stolenBasicKotlinPath / "compose-testutils"
         setTransformFun { if ("Screenshot" in name) null else it }
     }
     val stealComposeSamplesUi by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples"
         out = stolenUiSamplesKotlinPath / "samples-ui"
         setTransformFun { it }
     }
     val stealComposeSamplesUiGraphics by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples"
         out = stolenUiSamplesKotlinPath / "samples-ui-graphics"
         setTransformFun { it }
     }
     val stealComposeSamplesAnimationCore by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples"
         out = stolenUiSamplesKotlinPath / "samples-animation-core"
         setTransformFun { it }
     }
     val stealComposeSamplesAnimation by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples"
         out = stolenUiSamplesKotlinPath / "samples-animation"
         setTransformFun { it }
     }
     val m3 = androidxSupportPath / "compose/material3/material3"
     val stealComposeMaterial3Samples by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = m3 / "samples/src/main/java/androidx/compose/material3/samples"
         out = stolenMaterial3KotlinPath / "samples"
         setTransformFun { it }
     }
     val stealComposeMaterial3Catalog by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = m3 / "integration-tests/material3-catalog/src/main/java/androidx/compose/material3/catalog"
         out = stolenMaterial3KotlinPath / "catalog"
         setTransformFun { it }
     }
     val stealComposeMaterial3Demos by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = m3 / "integration-tests/material3-demos/src/main/java/androidx/compose/material3/demos"
         out = stolenMaterial3KotlinPath / "demos"
         setTransformFun { it }
     }
     val stealComposeCommonDemos by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/integration-tests/demos/common/src/main/java/androidx/compose/integration/demos/common"
         out = stolenMaterial3KotlinPath / "demos-common"
         setTransformFun { it }
     }
     val stealUWidgetsCommon by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = uwidgetsCommonKotlinPath
         out = srcAppKotlinPath / "uwidgets-common"
         setTransformFun { it.commentOutMultiplatformFun() }
     }
     val stealUWidgetsJvm by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = uwidgetsJvmKotlinPath
         out = srcAppKotlinPath / "uwidgets-jvm"
+        setTransformFun { it.commentOutMultiplatformFun() }
+    }
+    val stealUWidgetsDemo by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
+        src = uwidgetsDemoKotlinPath
+        out = srcAppKotlinPath / "uwidgets-demo"
         setTransformFun { it.commentOutMultiplatformFun() }
     }
     val stealUWidgetsAll by reg { dependsOn(
         stealUWidgetsCommon,
         stealUWidgetsJvm,
+        stealUWidgetsDemo,
     ) }
     val stealComposeSourcesAll by reg { dependsOn(
         stealComposeSourcesJava,
@@ -190,6 +214,7 @@ sourceFun {
     ) }
 
     val processStolenUiSamples by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         dependsOn(stealComposeSamplesAll)
         src = stolenUiSamplesKotlinPath
         out = templatesAppSrcKotlinPath

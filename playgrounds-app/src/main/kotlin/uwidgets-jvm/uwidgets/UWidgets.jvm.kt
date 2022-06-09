@@ -96,7 +96,7 @@ private fun Alignment.Companion.ofVertical(vertical: UAlignmentType): Alignment.
 @Composable /*actual*/ fun UBasicColumn(content: @Composable () -> Unit) = UContainerJvm(UCOLUMN, content = content)
 @Composable /*actual*/ fun UBasicRow(content: @Composable () -> Unit) = UContainerJvm(UROW, content = content)
 
-@Composable /*actual*/ fun UText(text: String, bold: Boolean, mono: Boolean) {
+@Composable /*actual*/ fun UText(text: String, bold: Boolean = false, mono: Boolean = false) {
     val style = LocalTextStyle.current.copy(
         fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal,
         fontFamily = if (mono) FontFamily.Monospace else FontFamily.Default
