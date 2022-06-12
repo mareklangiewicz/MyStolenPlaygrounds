@@ -8,20 +8,37 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
 
 @Composable
-fun School() {
-    var srednica by remember { mutableStateOf(0f) }
+fun School() = Column {
+    var srednica by remember { mutableStateOf(100f) }
     val animowanaSrednica by animateFloatAsState(targetValue = srednica)
     Column {
-        Button(onClick = { srednica = 100f }) { Text("Ustaw srednicę na 100") }
-        Button(onClick = { srednica = 50f }) { Text("Ustaw srednicę na 50") }
-        Button(onClick = { srednica = 200f }) { Text("Ustaw srednicę na 200") }
+        val drugie = wlacznik(nazwa = "Drugie kolo")
+        val razy2 = wlacznik(nazwa = "Razy 2")
+        val razy3 = wlacznik(nazwa = "Razy 3")
+        srednica = 100f * (if(razy2) 2 else 1) * (if(razy3) 3 else 1)
         Canvas(modifier = Modifier.fillMaxSize()) {
-            // drawCircle(Color.Blue, srednica / 2)
             drawCircle(Color.Blue, animowanaSrednica / 2)
-            // drawCircle(Color.hsv(animowanaSrednica, 1f, 1f), animowanaSrednica / 2)
-            drawCircle(Color.Blue, animowanaSrednica / 2, center + Offset(animowanaSrednica * 3, -animowanaSrednica * animowanaSrednica * 0.02f))
+            if (drugie)
+                drawCircle(Color.Blue, animowanaSrednica / 2, center + Offset(animowanaSrednica * 2, -animowanaSrednica * animowanaSrednica * 0.005f))
         }
     }
 }
+
+@Composable fun wlacznik(nazwa: String, init: Boolean = false): Boolean {
+    var wlaczony by remember { mutableStateOf(init) }
+    val color = if (wlaczony) Color.Blue else Color.Gray
+    val modifier = Modifier
+        .clickable { wlaczony = !wlaczony }
+        .padding(2.dp)
+        .border(2.dp, color)
+        .padding(4.dp)
+    Text(nazwa, modifier, color, style = MaterialTheme.typography.labelMedium)
+    return wlaczony
+}
+
+@Preview
+@Composable fun SchoolPreview() = School()
