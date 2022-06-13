@@ -35,11 +35,6 @@ val playgroundsMaterial3BuildPath = playgroundsMaterial3Path / "build.gradle.kts
 val rootAndroidxPath = "/home/marek/code/kotlin/compose-jb/compose".toPath()
 val androidxSupportPath = rootAndroidxPath / "frameworks/support"
 
-val uwidgetsRootPath = "/home/marek/code/kotlin/UWidgets".toPath()
-val uwidgetsCommonKotlinPath = uwidgetsRootPath / "uwidgets/src/commonMain/kotlin"
-val uwidgetsJvmKotlinPath = uwidgetsRootPath / "uwidgets/src/jvmMain/kotlin"
-val uwidgetsDemoKotlinPath = uwidgetsRootPath / "udemo/src/commonMain/kotlin"
-
 val srcAppKotlinPath = playgroundsAppPath / "src/main/kotlin"
 val srcBasicKotlinPath = playgroundsBasicPath / "src/main/kotlin"
 val srcBasicJavaPath = playgroundsBasicPath / "src/main/java"
@@ -163,29 +158,6 @@ sourceFun {
         out = stolenMaterial3KotlinPath / "demos-common"
         setTransformFun { it }
     }
-    val stealUWidgetsCommon by reg {
-        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
-        src = uwidgetsCommonKotlinPath
-        out = srcAppKotlinPath / "uwidgets-common"
-        setTransformFun { it.commentOutMultiplatformFun() }
-    }
-    val stealUWidgetsJvm by reg {
-        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
-        src = uwidgetsJvmKotlinPath
-        out = srcAppKotlinPath / "uwidgets-jvm"
-        setTransformFun { it.commentOutMultiplatformFun() }
-    }
-    val stealUWidgetsDemo by reg {
-        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
-        src = uwidgetsDemoKotlinPath
-        out = srcAppKotlinPath / "uwidgets-demo"
-        setTransformFun { it.commentOutMultiplatformFun() }
-    }
-    val stealUWidgetsAll by reg { dependsOn(
-        stealUWidgetsCommon,
-        stealUWidgetsJvm,
-        stealUWidgetsDemo,
-    ) }
     val stealComposeSourcesAll by reg { dependsOn(
         stealComposeSourcesJava,
         stealComposeSourcesTestUtilsCommon,
@@ -210,7 +182,6 @@ sourceFun {
         stealComposeSourcesAll,
         stealComposeSamplesAll,
         stealComposeMaterial3All,
-        stealUWidgetsAll,
     ) }
 
     val processStolenUiSamples by reg {
