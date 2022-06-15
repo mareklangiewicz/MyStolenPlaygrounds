@@ -1,12 +1,16 @@
+import android.graphics.*
 import android.util.*
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import pl.mareklangiewicz.playgrounds.MainActivity
 import pl.mareklangiewicz.uspek.*
+import java.io.*
 
 @RunWith(AndroidJUnit4::class)
 class MyPlaygroundsTest {
@@ -19,6 +23,12 @@ class MyPlaygroundsTest {
         onNodeWithText("Playgrounds").performClick()
         onAllNodesWithText("GestureAnimationSample", substring = true).assertCountEquals(2)
         onNodeWithText("AnimateFloatSample", substring = true).assertIsDisplayed()
+    } }
+
+    @Test
+    fun DoScreenshot() { composeTestRule.run {
+        val bitmap = onRoot().captureToImage().asAndroidBitmap()
+        saveScreenshot("SchoolShot_01_" + System.currentTimeMillis().toString(), bitmap)
     } }
 
     @Test
@@ -45,5 +55,14 @@ class MyPlaygroundsTest {
                 }
             }
         }
+    }
+
+
+    private fun saveScreenshot(filename: String, bmp: Bitmap) {
+        val path = InstrumentationRegistry.getInstrumentation().targetContext.filesDir.canonicalPath
+        FileOutputStream("$path/$filename.png").use { out ->
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, out)
+        }
+        println("Saved screenshot to $path/$filename.png")
     }
 }
