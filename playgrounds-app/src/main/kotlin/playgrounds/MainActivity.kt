@@ -9,6 +9,8 @@ import androidx.compose.material3.catalog.library.*
 import androidx.compose.material3.demos.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.platform.*
+import androidx.compose.ui.unit.*
 import pl.mareklangiewicz.school.*
 import pl.mareklangiewicz.udemo.*
 import pl.mareklangiewicz.uwidgets.*
@@ -22,28 +24,31 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun MainContent() {
-    UTabs(
-        "School" to { School() },
-        "UDemo" to { UDemo() },
-        "Playgrounds" to {
-            UTabs(
-                "My Stolen Playgrounds" to {
-                    PlaygroundsTheme {
-                        Surface(color = Color.White) {
-                            Playgrounds()
+    val density = LocalDensity.current
+    CompositionLocalProvider(LocalDensity provides Density(density.density * 0.5f, density.fontScale)) {
+        UTabs(
+            "School" to { School() },
+            "UDemo" to { UDemo() },
+            "Playgrounds" to {
+                UTabs(
+                    "My Stolen Playgrounds" to {
+                        PlaygroundsTheme {
+                            Surface(color = Color.White) {
+                                Playgrounds()
+                            }
                         }
-                    }
-                },
-                "TODO: Other playgrounds??" to { Text("TODO") }
-            )
-        },
-        "Material3" to {
-            UTabs(
-                "Material 3 Catalog" to { Material3CatalogApp() },
-                "Material 3 Demos" to { MyDemosSelector(Material3Demos) },
-            )
-        }
-    )
+                    },
+                    "TODO: Other playgrounds??" to { Text("TODO") }
+                )
+            },
+            "Material3" to {
+                UTabs(
+                    "Material 3 Catalog" to { Material3CatalogApp() },
+                    "Material 3 Demos" to { MyDemosSelector(Material3Demos) },
+                )
+            }
+        )
+    }
 }
 
 @Composable
