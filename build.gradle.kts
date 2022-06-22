@@ -83,7 +83,7 @@ sourceFun {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/foundation/foundation-layout/src/androidAndroidTest/kotlin/androidx/compose/foundation/layout"
         out = stolenBasicAndroTestsPath / "foundation-layout-tests"
-        setTransformFun { if (name.containsOneOf("BoxTest", "LayoutTest")) it else null }
+        setTransformFun { if (name.containsOneOf("BoxTest", "LayoutTest", "IntrinsicTest")) it else null }
     }
     val stealComposeAnnotations by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
