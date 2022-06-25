@@ -1,4 +1,4 @@
-package pl.mareklangiewicz.myfancyframe
+package pl.mareklangiewicz.playgrounds
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CutCornerShape

@@ -5,7 +5,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.*
 import kotlinx.coroutines.*
-import pl.mareklangiewicz.myfancyframe.*
 import pl.mareklangiewicz.uwidgets.*
 
 @Composable

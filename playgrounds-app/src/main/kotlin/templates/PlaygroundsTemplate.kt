@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import pl.mareklangiewicz.myfancyframe.MyFancyFrame
 
 data class MySampleData(val title: String, val path: String?, val code: @Composable () -> Unit)
 
