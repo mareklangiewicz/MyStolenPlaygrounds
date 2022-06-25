@@ -20,45 +20,42 @@ class LayoutUSpek {
         }
     }
 
-    @get:Rule
-    val rule = createComposeRule()
+    @get:Rule val rule = createComposeRule()
 
-    @Test fun simpleTest() = assertEquals(2, 2)
-    @Test fun simpleFailingTest() = assertEquals(3, 4)
+    @USpekTestTree(6) fun layout() = rule.testLayout()
+}
 
-    @USpekTestTree(6)
-    fun layoutUSpek() = with(rule) {
-        "On simple box content" o {
-            setContent {
-                Box {
-                    Text("First simple box")
-                }
+fun ComposeContentTestRule.testLayout() {
+    "On simple box content" o {
+        setContent {
+            Box {
+                Text("First simple box")
             }
         }
-        "On second nothing test" o {
+    }
+    "On second nothing test" o {
+        setContent {
+            Box(Modifier.background(Color.Blue)) {
+                Text("Second simple box")
+            }
+        }
+        sleep(1800)
+        assertEquals(4, 4)
+    }
+    "On third nothing test" o {
+        assertEquals(5, 5)
+        "On inner UI test" o {
             setContent {
-                Box(Modifier.background(Color.Blue)) {
-                    Text("Second simple box")
+                Box(Modifier.background(Color.Cyan)) {
+                    Text("Third inner box")
                 }
             }
-            sleep(1800)
-            assertEquals(4, 4)
-        }
-        "On third nothing test" o {
-            assertEquals(5, 5)
-            "On inner UI test" o {
-                setContent {
-                    Box(Modifier.background(Color.Cyan)) {
-                        Text("Third inner box")
-                    }
-                }
-                "wait a bit with content and fail" o {
-                    sleep(1000)
-                    fail()
-                }
-                "wait a bit again with content and finish" o {
-                    sleep(1000)
-                }
+            "wait a bit with content and fail" o {
+                sleep(1000)
+                fail()
+            }
+            "wait a bit again with content and finish" o {
+                sleep(1000)
             }
         }
     }
