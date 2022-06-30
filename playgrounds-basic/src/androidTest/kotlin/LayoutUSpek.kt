@@ -1,3 +1,5 @@
+package pl.mareklangiewicz.playgrounds
+
 import android.util.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -22,10 +24,19 @@ class LayoutUSpek {
 
     @get:Rule val rule = createComposeRule()
 
-    @USpekTestTree(6) fun layout() = rule.testLayout()
+    // @USpekTestTree(6) fun layout() = rule.exampleTestLayout()
+    @USpekTestTree(2) fun layout() = rule.blabla()
+}
+fun ComposeContentTestRule.blabla() {
+    "On blabla" o {
+        setContent {
+            MyLayoutExample1()
+        }
+        sleep(3000)
+    }
 }
 
-fun ComposeContentTestRule.testLayout() {
+fun ComposeContentTestRule.exampleTestLayout() {
     "On simple box content" o {
         setContent {
             Box {

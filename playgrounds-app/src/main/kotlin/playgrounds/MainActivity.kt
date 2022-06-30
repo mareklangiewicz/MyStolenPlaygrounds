@@ -25,10 +25,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun MainContent() {
     val density = LocalDensity.current
-    CompositionLocalProvider(LocalDensity provides Density(density.density * 0.5f, density.fontScale)) {
+    val scale = 0.7f
+    // val scale = 1f
+    CompositionLocalProvider(LocalDensity provides Density(density.density * scale, density.fontScale)) {
         UTabs(
-            "School" to { School() },
             "UDemo" to { UDemo() },
+            "School" to { School() },
             "Playgrounds" to {
                 UTabs(
                     "My Stolen Playgrounds" to {

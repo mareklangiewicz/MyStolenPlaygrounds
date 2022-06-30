@@ -2,6 +2,7 @@ import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
 import pl.mareklangiewicz.defaults.*
 import pl.mareklangiewicz.deps.*
+import pl.mareklangiewicz.utils.*
 
 plugins {
     id("com.android.library") version vers.androidGradlePlugin
@@ -20,6 +21,22 @@ defaultBuildTemplateForAndroidLib(
 dependencies {
     defaultAndroTestDeps(configuration = "implementation", withCompose = true)
     // I use test stuff in main sources so I can add some tests sources to playgrounds app
+}
+
+android {
+    sourceSets["main"].run {
+        val uwidgetsRootPath = rootProjectPath.parent!! / "UWidgets"
+        val uwidgetsCommonKotlinPath = uwidgetsRootPath / "uwidgets/src/commonMain/kotlin"
+        val uwidgetsHackyKotlinPath = uwidgetsRootPath / "uwidgets/src/hackyMain/kotlin"
+        val uwidgetsJvmKotlinPath = uwidgetsRootPath / "uwidgets/src/jvmMain/kotlin"
+        val uwidgetsDemoKotlinPath = uwidgetsRootPath / "udemo/src/commonMain/kotlin"
+        val uwidgetsPackages = listOf("umath", "utheme", "uwidgets")
+        val uwidgetsPathsForAndroid = uwidgetsPackages.map { uwidgetsCommonKotlinPath / it } +
+                uwidgetsPackages.map { uwidgetsJvmKotlinPath / it } +
+                uwidgetsHackyKotlinPath / "hack" +
+                uwidgetsDemoKotlinPath
+        kotlin.srcDirs(*uwidgetsPathsForAndroid.map { it.toFile() }.toTypedArray())
+    }
 }
 
 // region [Kotlin Module Build Template]

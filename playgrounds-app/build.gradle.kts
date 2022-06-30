@@ -25,22 +25,7 @@ val generateVersionDetails by tasks.registering(VersionDetailsTask::class) {
 }
 
 android {
-    sourceSets["main"].run {
-        assets.srcDir(generateVersionDetails)
-
-        val uwidgetsRootPath = rootProjectPath.parent!! / "UWidgets"
-        val uwidgetsCommonKotlinPath = uwidgetsRootPath / "uwidgets/src/commonMain/kotlin"
-        val uwidgetsHackyKotlinPath = uwidgetsRootPath / "uwidgets/src/hackyMain/kotlin"
-        val uwidgetsJvmKotlinPath = uwidgetsRootPath / "uwidgets/src/jvmMain/kotlin"
-        val uwidgetsDemoKotlinPath = uwidgetsRootPath / "udemo/src/commonMain/kotlin"
-        val uwidgetsPackages = listOf("umath", "utheme", "uwidgets")
-        val uwidgetsPathsForAndroid = uwidgetsPackages.map { uwidgetsCommonKotlinPath / it } +
-                uwidgetsPackages.map { uwidgetsJvmKotlinPath / it } +
-                uwidgetsHackyKotlinPath / "hack" +
-                uwidgetsDemoKotlinPath
-
-        kotlin.srcDirs(*uwidgetsPathsForAndroid.map { it.toFile() }.toTypedArray())
-    }
+    sourceSets["main"].assets.srcDir(generateVersionDetails)
 }
 
 dependencies {
