@@ -1,26 +1,18 @@
 package pl.mareklangiewicz.playgrounds
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.shape.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import androidx.compose.ui.Alignment.Companion.End
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.dp
-import pl.mareklangiewicz.playgrounds.PlaygroundsTheme
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.platform.*
+import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
 
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyFancyFrame(
     modifier: Modifier = Modifier,
@@ -38,14 +30,14 @@ fun MyFancyFrame(
         else -> LocalColorNormal.current
     }
     Box(modifier.padding(6.dp)) {
-        Surface(onClick = onClick, shape = CutCornerShape(topStart = 8.dp, bottomEnd = 2.dp), color = col, elevation = 8.dp) {
+        Surface(onClick = onClick, shape = CutCornerShape(topStart = 8.dp, bottomEnd = 2.dp), color = col, shadowElevation = 8.dp) {
             Column {
                 if (title != null)
                     Text(
                         text = title,
                         modifier = Modifier.padding(start = 8.dp, top = 4.dp, end = 2.dp).wrapContentWidth(End, unbounded = true),
                         maxLines = 1,
-                        style = MaterialTheme.typography.caption
+                        style = MaterialTheme.typography.labelMedium
                     )
                 MyFancySurface {
                     content()
@@ -55,13 +47,12 @@ fun MyFancyFrame(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MyFancySurface(content: @Composable () -> Unit) = Surface(
-    Modifier.padding(1.dp).fillMaxSize(),
+    modifier = Modifier.padding(1.dp).fillMaxSize(),
     shape = CutCornerShape(topStart = 8.dp, bottomEnd = 8.dp),
-    color = MaterialTheme.colors.surface, // TODO: own "theme" for MyFancyFrame
-    elevation = 1.dp
+    color = MaterialTheme.colorScheme.surface, // TODO: own "theme" for MyFancyFrame
+    shadowElevation = 1.dp
 ) {
     Box(Modifier.fillMaxSize().padding(8.dp)) { content() }
 }
