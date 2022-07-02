@@ -67,7 +67,7 @@ fun ExamBasicBox(
     color: Color = Color.Gray,
     size: DpSize = 100.dp.square,
     sizeRequired: Boolean = false,
-    report: (Pair<String, Any>) -> Unit = { println("${it.first} ${it.second.shortInfo}") },
+    report: (Pair<String, Any>) -> Unit = { println("${it.first} ${it.second.str}") },
 ) {
     UBasicBox {
         Box(Modifier
@@ -87,14 +87,18 @@ fun ExamBasicBox(
                 Row(Modifier
                     .padding(2.dp)) {
                     Box(Modifier.width(300.dp)) { Text(key) }
-                    Box(Modifier.weight(1f)) { Text(data.shortInfo) }
+                    Box(Modifier.weight(1f)) { Text(data.str) }
                 }
             }
         }
     }
 }
 
-private val Any.shortInfo: String get() = when (this) {
+data class PlaceInfo(val width: Int, val height: Int, val measuredWidth: Int, val measuredHeight: Int)
+
+val Placeable.info get() = PlaceInfo(width, height, measuredWidth, measuredHeight)
+
+private val Any?.str: String get() = when (this) {
     is Placeable -> "Placeable(width=$width, height=$height, measuredWidth=$measuredWidth, measuredHeight=$measuredHeight)"
     is String -> this
     else -> toString()
@@ -103,7 +107,7 @@ private val Any.shortInfo: String get() = when (this) {
 fun Modifier.reportMeasuring(tag: String, report: (Pair<String, Any>) -> Unit): Modifier = layout { measurable, constraints ->
     report("$tag incoming constraints" to constraints)
     val placeable = measurable.measure(constraints)
-    report("$tag measured placeable" to placeable.shortInfo)
+    report("$tag measured placeable" to placeable.info)
     layout(placeable.width, placeable.height) {
         placeable.placeRelative(0, 0)
     }
