@@ -1,6 +1,8 @@
 package pl.mareklangiewicz.playgrounds
 
 import android.util.*
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -11,6 +13,7 @@ import androidx.compose.ui.layout.*
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import kotlinx.coroutines.*
 import pl.mareklangiewicz.utheme.*
 import pl.mareklangiewicz.uwidgets.*
 import pl.mareklangiewicz.uwidgets.UAlignmentType.*
@@ -23,6 +26,21 @@ import kotlin.Pair
 @Preview @Composable fun MyURowPreview() = MyLayoutExample1(UROW)
 @Preview @Composable fun MyUColumnPreview() = MyLayoutExample1(UCOLUMN)
 
+@OptIn(ExperimentalAnimationApi::class)
+@Preview @Composable fun MyAnimatedContentPreview() {
+    val type by produceState(initialValue = UBOX) {
+        val types = UContainerType.values()
+        for (i in 1..20) {
+            delay(2000)
+            value = types[i % 3]
+        }
+    }
+    AnimatedContent(
+        targetState = type,
+        transitionSpec = { fadeIn(tween(900, delayMillis = 90)) with fadeOut(tween(900, delayMillis = 90)) }
+    ) { target -> MyLayoutExample1(target) }
+}
+
 @Composable
 fun MyLayoutExample1(type: UContainerType = UBOX) {
 
@@ -32,31 +50,56 @@ fun MyLayoutExample1(type: UContainerType = UBOX) {
         reports.add(v)
     }
 
-    Column(Modifier.fillMaxWidth().background(Color.LightGray)) {
-        Box(Modifier.border(4.dp, Color.Blue).padding(4.dp).requiredSize(360.dp)) {
-            MyExaminedLayout1(type, report = ::report)
+    Column(Modifier
+        .fillMaxWidth()
+        .background(Color.LightGray)) {
+        Box(Modifier
+            .border(4.dp, Color.Blue)
+            .padding(4.dp)
+            .requiredSize(360.dp)) {
+            MyExaminedLayout1(
+                type = type,
+                withBox1Cyan = true,
+                withBox2Red = true,
+                withBox3Green = true,
+                withBox4Blue = false,
+                report = ::report,
+            )
         }
         ReportsUi(Modifier.height(400.dp), reports)
     }
 }
 
 @Composable
-fun MyExaminedLayout1(type: UContainerType = UBOX, addStretchedBlueBox: Boolean = false, report: (Pair<String, Any>) -> Unit) {
+fun MyExaminedLayout1(
+    type: UContainerType = UBOX,
+    withBox1Cyan: Boolean = false,
+    withBox2Red: Boolean = false,
+    withBox3Green: Boolean = false,
+    withBox4Blue: Boolean = false,
+    report: (Pair<String, Any>) -> Unit,
+) {
     UAlign(USTART, USTART) {
         when (type) {
-            UBOX -> UBasicBox { MyExaminedLayout1Content(addStretchedBlueBox, report) }
-            UROW -> UBasicRow { MyExaminedLayout1Content(addStretchedBlueBox, report) }
-            UCOLUMN -> UBasicColumn { MyExaminedLayout1Content(addStretchedBlueBox, report) }
+            UBOX -> UBasicBox { MyExaminedLayout1Content(withBox1Cyan, withBox2Red, withBox3Green, withBox4Blue, report) }
+            UROW -> UBasicRow { MyExaminedLayout1Content(withBox1Cyan, withBox2Red, withBox3Green, withBox4Blue, report) }
+            UCOLUMN -> UBasicColumn { MyExaminedLayout1Content(withBox1Cyan, withBox2Red, withBox3Green, withBox4Blue, report) }
         }
     }
 }
 
 @Composable
-private fun MyExaminedLayout1Content(addStretchedBlueBox: Boolean = false, report: (Pair<String, Any>) -> Unit) {
-    UAlign(USTART, UEND) { ExamBasicBox("magenta 160dp box", Color.Magenta, 160.dp.square, report = report) }
-    UAlign(UCENTER, UCENTER) { ExamBasicBox("red 80dp box", Color.Red, 80.dp.square, sizeRequired = true, report = report) }
-    UAlign(UEND, UEND) { ExamBasicBox("green 60dp box", Color.Green, 60.dp.square, report = report) }
-    if (addStretchedBlueBox) UAlign(USTRETCH, USTRETCH) { ExamBasicBox("blue 30dp stretched box", Color.Blue, 30.dp.square, report = report) }
+private fun MyExaminedLayout1Content(
+    withBox1Cyan: Boolean = false,
+    withBox2Red: Boolean = false,
+    withBox3Green: Boolean = false,
+    withBox4Blue: Boolean = false,
+    report: (Pair<String, Any>) -> Unit,
+) {
+    if (withBox1Cyan) UAlign(USTART, UEND) { ExamBasicBox("magenta 160dp box", Color.Cyan, 160.dp.square, report = report) }
+    if (withBox2Red) UAlign(UCENTER, UCENTER) { ExamBasicBox("red 80dp box", Color.Red, 80.dp.square, sizeRequired = true, report = report) }
+    if (withBox3Green) UAlign(UEND, UEND) { ExamBasicBox("green 60dp box", Color.Green, 60.dp.square, report = report) }
+    if (withBox4Blue) UAlign(USTRETCH, USTRETCH) { ExamBasicBox("blue 30dp stretched box", Color.Blue, 30.dp.square, report = report) }
 }
 
 val Dp.square get() = DpSize(this, this)
