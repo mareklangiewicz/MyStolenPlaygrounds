@@ -21,7 +21,6 @@ import pl.mareklangiewicz.uwidgets.UContainerType.*
 import kotlin.Pair
 
 
-
 @Preview @Composable fun MyUBoxPreview() = MyLayoutExample1(UBOX)
 @Preview @Composable fun MyURowPreview() = MyLayoutExample1(UROW)
 @Preview @Composable fun MyUColumnPreview() = MyLayoutExample1(UCOLUMN)
@@ -50,22 +49,15 @@ fun MyLayoutExample1(type: UContainerType = UBOX) {
         reports.add(v)
     }
 
-    Column(Modifier
-        .fillMaxWidth()
-        .background(Color.LightGray)) {
-        Box(Modifier
-            .border(4.dp, Color.Blue)
-            .padding(4.dp)
-            .requiredSize(360.dp)) {
-            MyExaminedLayout1(
-                type = type,
-                withBox1Cyan = true,
-                withBox2Red = true,
-                withBox3Green = true,
-                withBox4Blue = false,
-                report = ::report,
-            )
-        }
+    Column(Modifier.fillMaxWidth()) {
+        MyExaminedLayout1(
+            type = type,
+            withBox1Cyan = true,
+            withBox2Red = true,
+            withBox3Green = true,
+            withBox4Blue = false,
+            report = ::report,
+        )
         ReportsUi(Modifier.height(400.dp), reports)
     }
 }
@@ -80,20 +72,33 @@ fun MyExaminedLayout1(
     report: (Pair<String, Any>) -> Unit,
 ) {
     UAlign(USTART, USTART) {
-        when (type) {
-            UBOX -> UBasicBox { MyExaminedLayout1Content(withBox1Cyan, withBox2Red, withBox3Green, withBox4Blue, report) }
-            UROW -> UBasicRow { MyExaminedLayout1Content(withBox1Cyan, withBox2Red, withBox3Green, withBox4Blue, report) }
-            UCOLUMN -> UBasicColumn { MyExaminedLayout1Content(withBox1Cyan, withBox2Red, withBox3Green, withBox4Blue, report) }
+        RigidBox(report = report) {
+            when (type) {
+                UBOX -> UBasicBox { MyExaminedLayout1Content(withBox1Cyan, withBox2Red, withBox3Green, withBox4Blue, report) }
+                UROW -> UBasicRow { MyExaminedLayout1Content(withBox1Cyan, withBox2Red, withBox3Green, withBox4Blue, report) }
+                UCOLUMN -> UBasicColumn { MyExaminedLayout1Content(withBox1Cyan, withBox2Red, withBox3Green, withBox4Blue, report) }
+            }
         }
     }
 }
 
 @Composable
+fun RigidBox(size: DpSize = 400.dp.square, report: (Pair<String, Any>) -> Unit = {}, content: @Composable () -> Unit) {
+    val modifier = Modifier
+        .background(Color.LightGray)
+        .border(4.dp, Color.Blue)
+        .padding(4.dp)
+        .requiredSize(size)
+        .reportMeasuring("rigid box", report)
+    Box(modifier) { content() }
+}
+
+@Composable
 private fun MyExaminedLayout1Content(
-    withBox1Cyan: Boolean = false,
-    withBox2Red: Boolean = false,
-    withBox3Green: Boolean = false,
-    withBox4Blue: Boolean = false,
+    withBox1Cyan: Boolean,
+    withBox2Red: Boolean,
+    withBox3Green: Boolean,
+    withBox4Blue: Boolean,
     report: (Pair<String, Any>) -> Unit,
 ) {
     if (withBox1Cyan) UAlign(USTART, UEND) { ExamBasicBox("magenta 160dp box", Color.Cyan, 160.dp.square, report = report) }
@@ -126,10 +131,11 @@ fun ExamBasicBox(
 @Composable fun ReportsUi(modifier: Modifier = Modifier, reports: List<Pair<String, Any>>) {
     CompositionLocalProvider(LocalDensity provides Density(1f)) {
         Column(modifier) {
-            for ((key, data) in reports) {
+            reports.forEachIndexed { idx, (key, data) ->
                 Row(Modifier
+                    .background(Color.White.darken(.1f * (idx % 3)))
                     .padding(2.dp)) {
-                    Box(Modifier.width(300.dp)) { Text(key) }
+                    Box(Modifier.width(400.dp)) { Text(key) }
                     Box(Modifier.weight(1f)) { Text(data.str) }
                 }
             }
