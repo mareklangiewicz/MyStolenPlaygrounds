@@ -115,7 +115,7 @@ fun ExamBasicBox(
     UBasicBox {
         Box(Modifier
             .reportMeasuring("$tag outer", report)
-            .background(color)
+            .background(color.copy(alpha = color.alpha * .8f))
             .run { if (sizeRequired) requiredSize(size) else size(size) }
             .reportMeasuring("$tag inner", report)
         )
