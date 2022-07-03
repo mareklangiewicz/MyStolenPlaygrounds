@@ -30,14 +30,14 @@ import kotlin.Pair
 @Preview @Composable fun MyAnimatedContentPreview() {
     val type by produceState(initialValue = UBOX) {
         val types = UContainerType.values()
-        for (i in 1..20) {
+        for (i in 1..200) {
             delay(2000)
             value = types[i % 3]
         }
     }
     AnimatedContent(
         targetState = type,
-        transitionSpec = { fadeIn(tween(900, delayMillis = 90)) with fadeOut(tween(900, delayMillis = 90)) }
+        transitionSpec = { fadeIn(tween(900, easing = LinearEasing)) with fadeOut(tween(900, easing = LinearEasing)) }
     ) { target -> MyLayoutExample1(target) }
 }
 
