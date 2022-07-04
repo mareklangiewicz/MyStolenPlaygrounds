@@ -37,11 +37,10 @@ import kotlin.Pair
     AnimatedContent(
         targetState = type,
         transitionSpec = { fadeIn(tween(900, easing = LinearEasing)) with fadeOut(tween(900, easing = LinearEasing)) }
-    ) { target -> MyLayoutExample1(target) }
+    ) { MyLayoutExample1(it) }
 }
 
-@Composable
-fun MyLayoutExample1(type: UContainerType = UBOX) {
+@Composable fun MyLayoutExample1(type: UContainerType = UBOX) {
 
     val reports = remember { mutableStateListOf<Pair<String, Any>>() }
     fun report(v: Pair<String, Any>) {
@@ -62,8 +61,7 @@ fun MyLayoutExample1(type: UContainerType = UBOX) {
     }
 }
 
-@Composable
-fun MyExaminedLayout1(
+@Composable fun MyExaminedLayout1(
     type: UContainerType = UBOX,
     withBox1Cyan: Boolean = false,
     withBox2Red: Boolean = false,
@@ -82,8 +80,11 @@ fun MyExaminedLayout1(
     }
 }
 
-@Composable
-fun RigidBox(size: DpSize = 400.dp.square, report: (Pair<String, Any>) -> Unit = {}, content: @Composable () -> Unit) {
+@Composable fun RigidBox(
+    size: DpSize = 400.dp.square,
+    report: (Pair<String, Any>) -> Unit = {},
+    content: @Composable () -> Unit,
+) {
     val modifier = Modifier
         .background(Color.LightGray)
         .border(4.dp, Color.Blue)
@@ -93,24 +94,22 @@ fun RigidBox(size: DpSize = 400.dp.square, report: (Pair<String, Any>) -> Unit =
     Box(modifier) { content() }
 }
 
-@Composable
-private fun MyExaminedLayout1Content(
+@Composable private fun MyExaminedLayout1Content(
     withBox1Cyan: Boolean,
     withBox2Red: Boolean,
     withBox3Green: Boolean,
     withBox4Blue: Boolean,
     report: (Pair<String, Any>) -> Unit,
 ) {
-    if (withBox1Cyan) UAlign(USTART, UEND) { ExamBasicBox("magenta 160dp box", Color.Cyan, 160.dp.square, report = report) }
-    if (withBox2Red) UAlign(UCENTER, UCENTER) { ExamBasicBox("red 80dp box", Color.Red, 80.dp.square, sizeRequired = true, report = report) }
-    if (withBox3Green) UAlign(UEND, UEND) { ExamBasicBox("green 60dp box", Color.Green, 60.dp.square, report = report) }
-    if (withBox4Blue) UAlign(USTRETCH, USTRETCH) { ExamBasicBox("blue 30dp stretched box", Color.Blue, 30.dp.square, report = report) }
+    if (withBox1Cyan) UAlign(USTART, UEND) { ExamBasicBox("cyan box", Color.Cyan, 160.dp.square, report = report) }
+    if (withBox2Red) UAlign(UCENTER, UCENTER) { ExamBasicBox("red box", Color.Red, 80.dp.square, sizeRequired = true, report = report) }
+    if (withBox3Green) UAlign(UEND, UEND) { ExamBasicBox("green box", Color.Green, 60.dp.square, report = report) }
+    if (withBox4Blue) UAlign(USTRETCH, USTRETCH) { ExamBasicBox("blue box", Color.Blue, 30.dp.square, report = report) }
 }
 
 val Dp.square get() = DpSize(this, this)
 
-@Composable
-fun ExamBasicBox(
+@Composable fun ExamBasicBox(
     tag: String,
     color: Color = Color.Gray,
     size: DpSize = 100.dp.square,
@@ -122,8 +121,7 @@ fun ExamBasicBox(
             .reportMeasuring("$tag outer", report)
             .background(color.copy(alpha = color.alpha * .8f))
             .run { if (sizeRequired) requiredSize(size) else size(size) }
-            .reportMeasuring("$tag inner", report)
-        )
+            .reportMeasuring("$tag inner", report))
     }
 }
 
@@ -147,16 +145,17 @@ data class PlaceInfo(val width: Int, val height: Int, val measuredWidth: Int, va
 
 val Placeable.info get() = PlaceInfo(width, height, measuredWidth, measuredHeight)
 
-private val Any?.str: String get() = when (this) {
-    is Placeable -> "Placeable(width=$width, height=$height, measuredWidth=$measuredWidth, measuredHeight=$measuredHeight)"
-    is String -> this
-    else -> toString()
-}
+private val Any?.str: String
+    get() = when (this) {
+        is Placeable -> "Placeable(width=$width, height=$height, measuredWidth=$measuredWidth, measuredHeight=$measuredHeight)"
+        is String -> this
+        else -> toString()
+    }
 
 fun Modifier.reportMeasuring(tag: String, report: (Pair<String, Any>) -> Unit): Modifier = layout { measurable, constraints ->
     report("$tag incoming constraints" to constraints)
     val placeable = measurable.measure(constraints)
-    report("$tag measured placeable" to placeable.info)
+    report("$tag measured place info" to placeable.info)
     layout(placeable.width, placeable.height) {
         placeable.placeRelative(0, 0)
     }
