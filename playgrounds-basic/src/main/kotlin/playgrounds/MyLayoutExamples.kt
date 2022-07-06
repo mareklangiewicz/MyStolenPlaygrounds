@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.platform.*
@@ -90,7 +91,7 @@ import kotlin.Pair
         .border(4.dp, Color.Blue)
         .padding(4.dp)
         .requiredSize(size)
-        .reportMeasuring("rigid box", report)
+        .reportMeasuringAndPlacement("rigid box", report)
     Box(modifier) { content() }
 }
 
@@ -108,20 +109,21 @@ import kotlin.Pair
 }
 
 val Dp.square get() = DpSize(this, this)
+val Int.square get() = IntSize(this, this)
 
 @Composable fun ExamBasicBox(
     tag: String,
     color: Color = Color.Gray,
     size: DpSize = 100.dp.square,
     sizeRequired: Boolean = false,
-    report: (Pair<String, Any>) -> Unit = { println("${it.first} ${it.second.str}") },
+    report: (Pair<String, Any>) -> Unit = { println("${it.first}: ${it.second.str}") },
 ) {
     UBasicBox {
         Box(Modifier
-            .reportMeasuring("$tag outer", report)
+            .reportMeasuringAndPlacement("$tag outer", report)
             .background(color.copy(alpha = color.alpha * .8f))
             .run { if (sizeRequired) requiredSize(size) else size(size) }
-            .reportMeasuring("$tag inner", report))
+            .reportMeasuringAndPlacement("$tag inner", report))
     }
 }
 
@@ -141,22 +143,61 @@ val Dp.square get() = DpSize(this, this)
     }
 }
 
-data class PlaceInfo(val width: Int, val height: Int, val measuredWidth: Int, val measuredHeight: Int)
+data class PlaceableData(val width: Int, val height: Int, val measuredWidth: Int = width, val measuredHeight: Int = height)
 
-val Placeable.info get() = PlaceInfo(width, height, measuredWidth, measuredHeight)
+val Placeable.data get() = PlaceableData(width, height, measuredWidth, measuredHeight)
 
-private val Any?.str: String
-    get() = when (this) {
-        is Placeable -> "Placeable(width=$width, height=$height, measuredWidth=$measuredWidth, measuredHeight=$measuredHeight)"
-        is String -> this
-        else -> toString()
-    }
+data class LayoutCoordinatesData(
+    val size: IntSize,
+    val parentLayoutCoordinatesData: LayoutCoordinatesData?,
+    val parentCoordinatesData: LayoutCoordinatesData?,
+    val isAttached: Boolean,
+
+    // computed when creating data class
+    val positionInWindow: Offset,
+    val positionInRoot: Offset,
+    val positionInParent: Offset,
+    val boundsInWindow: Rect,
+    val boundsInRoot: Rect,
+    val boundsInParent: Rect,
+)
+
+val LayoutCoordinates.data: LayoutCoordinatesData get() = LayoutCoordinatesData(size = size,
+    parentLayoutCoordinatesData = parentLayoutCoordinates?.data,
+    parentCoordinatesData = parentCoordinates?.data,
+    isAttached = isAttached,
+    positionInWindow = positionInWindow(),
+    positionInRoot = positionInRoot(),
+    positionInParent = positionInParent(),
+    boundsInWindow = boundsInWindow(),
+    boundsInRoot = boundsInRoot(),
+    boundsInParent = boundsInParent(),
+)
 
 fun Modifier.reportMeasuring(tag: String, report: (Pair<String, Any>) -> Unit): Modifier = layout { measurable, constraints ->
-    report("$tag incoming constraints" to constraints)
+    report("$tag measure with" to constraints)
     val placeable = measurable.measure(constraints)
-    report("$tag measured place info" to placeable.info)
-    layout(placeable.width, placeable.height) {
-        placeable.placeRelative(0, 0)
-    }
+    report("$tag measured" to placeable.data)
+    layout(placeable.width, placeable.height) { placeable.place(0, 0) }
 }
+
+
+fun Modifier.reportPlacement(tag: String, report: (Pair<String, Any>) -> Unit): Modifier = onPlaced {
+    report("$tag placed" to it.data)
+}
+
+fun Modifier.reportMeasuringAndPlacement(tag: String, report: (Pair<String, Any>) -> Unit): Modifier =
+    reportMeasuring(tag, report).reportPlacement(tag, report)
+
+val Any?.str: String
+    get() = when (this) {
+        is Offset -> "($x,$y)"
+        is Rect -> "rect: ${topLeft.str} - ${bottomRight.str}"
+        is Placeable -> "placeable: $width x $height, measured = $measuredWidth x $measuredHeight"
+        is PlaceableData -> "placeable: $width x $height, measured = $measuredWidth x $measuredHeight"
+        is LayoutCoordinatesData -> "coordinates: size = $size, bounds in parent = ${boundsInParent.str}, attached = ${isAttached.markIfTrue()}, parent layout = ${parentLayoutCoordinatesData.markIfNull()}, parent = ${parentCoordinatesData.markIfNull()}"
+        is Constraints -> "constraints: min = $minWidth x $minHeight, max = $maxWidth x $maxHeight"
+        else -> toString()
+    }
+private fun Any?.markIfNull(markNotNull: String = "T", markNull: String = "F"): String = if (this != null) markNotNull else markNull
+private fun Boolean.markIfTrue(markTrue: String = "T", markFalse: String = "F"): String = if (this) markTrue else markFalse

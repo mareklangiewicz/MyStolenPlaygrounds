@@ -20,12 +20,12 @@ import kotlin.Pair
 
     @get:Rule val rule = createComposeRule()
 
-    @USpekTestTree(10) fun layout() = rule.layout()
+    @USpekTestTree(12) fun layout() = rule.layout()
 }
 
 private val reports = mutableStateListOf<Pair<String, Any>>()
 private fun report(v: Pair<String, Any>) {
-    Log.d("uspek report", "${v.first}: ${v.second}")
+    Log.d("rspek", "${v.first}: ${v.second.str}") // rspek so I can filter logs with uspek/rspek/spek
     reports.add(v)
 }
 
@@ -49,6 +49,7 @@ fun ComposeContentTestRule.layout() = with(density) {
                 report = ::report
             )
         }
+        waitForIdle()
 
         val rigidBoxDp = 400.dp
         val rigidBoxPx = rigidBoxDp.roundToPx()
@@ -57,11 +58,18 @@ fun ComposeContentTestRule.layout() = with(density) {
 
             "With no child boxes" o {
 
-                "only outer rigid box is measured" o { reports.size eq 2 }
+                "only root rigid box is measured and placed" o { reports.size eq 3 }
 
                 "whole layout content is fixed to 400.dp.square box" o {
-                    reports[0] eq ("rigid box incoming constraints" to Constraints.fixed(rigidBoxPx, rigidBoxPx))
-                    reports[1] eq ("rigid box measured place info" to PlaceInfo(rigidBoxPx, rigidBoxPx, rigidBoxPx, rigidBoxPx))
+                    reports[0] eq ("rigid box measure with" to Constraints.fixed(rigidBoxPx, rigidBoxPx))
+                    reports[1] eq ("rigid box measured" to PlaceableData(rigidBoxPx, rigidBoxPx))
+                }
+                "whole layout content is placed and attached" o {
+                    val (key, data) = reports[2]
+                    key eq "rigid box placed"
+                    data as LayoutCoordinatesData
+                    data.size eq rigidBoxPx.square
+                    data.isAttached eq true
                 }
             }
 
@@ -70,27 +78,39 @@ fun ComposeContentTestRule.layout() = with(density) {
                 waitForIdle()
 
                 val cyanBoxPx = 160.dp.roundToPx()
-                "cyan box gets measured" o {
-                    reports[2] eq ("cyan box outer incoming constraints" to Constraints(0, rigidBoxPx, 0, rigidBoxPx))
-                    reports[3] eq ("cyan box inner incoming constraints" to Constraints.fixed(cyanBoxPx, cyanBoxPx))
-                    reports[4] eq ("cyan box inner measured place info" to PlaceInfo(cyanBoxPx, cyanBoxPx, cyanBoxPx, cyanBoxPx))
-                    reports[5] eq ("cyan box outer measured place info" to PlaceInfo(cyanBoxPx, cyanBoxPx, cyanBoxPx, cyanBoxPx))
+                "cyan box gets measured and placed" o {
+                    reports[3] eq ("cyan box outer measure with" to Constraints(0, rigidBoxPx, 0, rigidBoxPx))
+                    reports[4] eq ("cyan box inner measure with" to Constraints.fixed(cyanBoxPx, cyanBoxPx))
+                    reports[5] eq ("cyan box inner measured" to PlaceableData(cyanBoxPx, cyanBoxPx))
+                    reports[6] eq ("cyan box outer measured" to PlaceableData(cyanBoxPx, cyanBoxPx))
+                    reports[7].first eq "cyan box outer placed" // TODO_later: check LayoutConstraintsData
+                    reports[8].first eq "cyan box inner placed" // TODO_later: check LayoutConstraintsData
                 }
-                "rigid box gets remeasured same way as before" o {
-                    reports[6] eq reports[0]
-                    reports[7] eq reports[1]
-                    reports.size eq 8
+                "rigid box gets remeasured and placed the same way as before" o {
+                    reports[9] eq reports[0]
+                    reports[10] eq reports[1]
+                    reports[11] eq reports[2]
+                    reports.size eq 12
                 }
 
                 "When blue box gets enabled" o {
                     withBox4Blue = true
                     waitForIdle()
 
-                    "blue box gets measured with fixed rigid box size" o {
-                        reports[8] eq ("blue box outer incoming constraints" to Constraints.fixed(rigidBoxPx, rigidBoxPx))
-                        reports[9] eq ("blue box inner incoming constraints" to Constraints.fixed(rigidBoxPx, rigidBoxPx))
-                        reports[10] eq ("blue box inner measured place info" to PlaceInfo(rigidBoxPx, rigidBoxPx, rigidBoxPx, rigidBoxPx))
-                        reports[11] eq ("blue box outer measured place info" to PlaceInfo(rigidBoxPx, rigidBoxPx, rigidBoxPx, rigidBoxPx))
+                    "blue box gets measured and placed with fixed rigid box size" o {
+                        reports[12] eq ("blue box outer measure with" to Constraints.fixed(rigidBoxPx, rigidBoxPx))
+                        reports[13] eq ("blue box inner measure with" to Constraints.fixed(rigidBoxPx, rigidBoxPx))
+                        reports[14] eq ("blue box inner measured" to PlaceableData(rigidBoxPx, rigidBoxPx))
+                        reports[15] eq ("blue box outer measured" to PlaceableData(rigidBoxPx, rigidBoxPx))
+                        reports[16].first eq "blue box outer placed" // TODO_later: check LayoutConstraintsData
+                        reports[17].first eq "blue box inner placed" // TODO_later: check LayoutConstraintsData
+                    }
+
+                    "rigid box gets remeasured again and placed the same way as before" o {
+                        reports[18] eq reports[0]
+                        reports[19] eq reports[1]
+                        reports[20] eq reports[2]
+                        reports.size eq 21
                     }
                 }
             }
