@@ -9,6 +9,7 @@ import org.junit.runner.*
 import pl.mareklangiewicz.uspek.*
 import pl.mareklangiewicz.uwidgets.UContainerType.*
 import kotlin.Pair
+import kotlin.math.*
 
 @RunWith(USpekJUnit4Runner::class) class LayoutUSpek {
     init {
@@ -60,17 +61,12 @@ fun ComposeContentTestRule.layout() = with(density) {
 
                 "only root rigid container is measured and placed" o { reports.size eq 3 }
 
-                "rigid container is fixed to 400.dp.square box" o {
+                "rigid container gets measured with fixed constraints" o {
                     reports[0] eq ("rigid container measure with" to rigidSizePx.toFixedConstraints())
                     reports[1] eq ("rigid container measured" to rigidSizePx.toPlaceableData())
                 }
                 "rigid container is placed and attached" o {
-                    val (key, data) = reports[2]
-                    key eq "rigid container placed"
-                    data as LayoutCoordinatesData // FIXME NOW: check details??
-                    data.size eq rigidSizePx
-                    data.isAttached eq true
-                    reports.size eq 3
+                    reports[2].reportedPlacement("rigid container") { size == rigidSizePx && isAttached }
                 }
             }
 
@@ -93,9 +89,13 @@ fun ComposeContentTestRule.layout() = with(density) {
                     reports[9] eq reports[2]
                 }
 
-                "cyan box gets placed" o {
-                    reports[10].first eq "cyan box outer placed" // TODO_NOW: check LayoutConstraintsData
-                    reports[11].first eq "cyan box inner placed" // TODO_NOW: check LayoutConstraintsData
+                "cyan box gets placed on bottom left side" o {
+                    reports[10].reportedPlacement("cyan box outer") {
+                        size == cyanBoxSizePx && boundsInParent.left == 0f && boundsInParent.bottom.roundToInt() == rigidSizePx.height
+                    }
+                    reports[11].reportedPlacement("cyan box inner") {
+                        size == cyanBoxSizePx && boundsInParent.left == 0f && boundsInParent.bottom.roundToInt() == rigidSizePx.height
+                    }
                 }
 
                 "rigid container starts measure again with the same constraints" o { reports[12] eq reports[0] }
@@ -111,13 +111,13 @@ fun ComposeContentTestRule.layout() = with(density) {
                         reports[16] eq ("blue box outer measured" to rigidSizePx.toPlaceableData())
                     }
 
-                    "rigid container gets remeasured and placed the same way as before" o {
+                    "rigid container gets remeasured and placed the same way" o {
                         reports[17] eq reports[1]
                         reports[18] eq reports[2]
                     }
-                    "cyan box gets placed again" o {
-                        reports[19].first eq "cyan box outer placed" // TODO_NOW: check LayoutConstraintsData
-                        reports[20].first eq "cyan box inner placed" // TODO_NOW: check LayoutConstraintsData
+                    "cyan box gets placed again the same way" o {
+                        reports[19] eq reports[10]
+                        reports[20] eq reports[11]
                     }
                     "blue box gets placed with fixed rigid box size" o {
                         reports[21].first eq "blue box outer placed" // TODO_later: check LayoutConstraintsData
@@ -130,3 +130,15 @@ fun ComposeContentTestRule.layout() = with(density) {
         }
     }
 }
+
+
+@Suppress("UNCHECKED_CAST")
+fun <T> Pair<String, Any>.reported(key: String? = null, checkData: T.() -> Boolean = { true }) {
+    if (key != null) first eq key
+    val data = second as T
+    check(data.checkData()) { "Unexpected data reported at: $key"}
+}
+
+fun Pair<String, Any>.reportedPlacement(tag: String, checkData: LayoutCoordinatesData.() -> Boolean = { true }) =
+    reported("$tag placed", checkData)
+
