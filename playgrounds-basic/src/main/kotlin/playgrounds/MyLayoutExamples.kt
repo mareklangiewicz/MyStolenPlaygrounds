@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.geometry.*
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.platform.*
@@ -20,6 +21,7 @@ import pl.mareklangiewicz.uwidgets.*
 import pl.mareklangiewicz.uwidgets.UAlignmentType.*
 import pl.mareklangiewicz.uwidgets.UContainerType.*
 import kotlin.Pair
+import kotlin.math.*
 
 
 @Preview @Composable fun MyUBoxPreview() = MyLayoutExample1(UBOX)
@@ -64,6 +66,7 @@ import kotlin.Pair
 
 @Composable fun MyExaminedLayout1(
     type: UContainerType = UBOX,
+    size: DpSize = 400.dp.square,
     withBox1Cyan: Boolean = false,
     withBox2Red: Boolean = false,
     withBox3Green: Boolean = false,
@@ -71,41 +74,28 @@ import kotlin.Pair
     report: (Pair<String, Any>) -> Unit,
 ) {
     UAlign(USTART, USTART) {
-        RigidBox(report = report) {
-            when (type) {
-                UBOX -> UBasicBox { MyExaminedLayout1Content(withBox1Cyan, withBox2Red, withBox3Green, withBox4Blue, report) }
-                UROW -> UBasicRow { MyExaminedLayout1Content(withBox1Cyan, withBox2Red, withBox3Green, withBox4Blue, report) }
-                UCOLUMN -> UBasicColumn { MyExaminedLayout1Content(withBox1Cyan, withBox2Red, withBox3Green, withBox4Blue, report) }
-            }
+        RigidContainer(type, size, report) {
+            if (withBox1Cyan) UAlign(USTART, UEND) { ExamBasicBox("cyan box", Color.Cyan, 160.dp.square, report = report) }
+            if (withBox2Red) UAlign(UCENTER, UCENTER) { ExamBasicBox("red box", Color.Red, 80.dp.square, sizeRequired = true, report = report) }
+            if (withBox3Green) UAlign(UEND, UEND) { ExamBasicBox("green box", Color.Green, 60.dp.square, report = report) }
+            if (withBox4Blue) UAlign(USTRETCH, USTRETCH) { ExamBasicBox("blue box", Color.Blue, 30.dp.square, report = report) }
         }
     }
 }
 
-@Composable fun RigidBox(
+@Composable fun RigidContainer(
+    type: UContainerType = UBOX,
     size: DpSize = 400.dp.square,
     report: (Pair<String, Any>) -> Unit = {},
     content: @Composable () -> Unit,
 ) {
-    val modifier = Modifier
+    val m = Modifier
         .background(Color.LightGray)
         .border(4.dp, Color.Blue)
         .padding(4.dp)
         .requiredSize(size)
-        .reportMeasuringAndPlacement("rigid box", report)
-    Box(modifier) { content() }
-}
-
-@Composable private fun MyExaminedLayout1Content(
-    withBox1Cyan: Boolean,
-    withBox2Red: Boolean,
-    withBox3Green: Boolean,
-    withBox4Blue: Boolean,
-    report: (Pair<String, Any>) -> Unit,
-) {
-    if (withBox1Cyan) UAlign(USTART, UEND) { ExamBasicBox("cyan box", Color.Cyan, 160.dp.square, report = report) }
-    if (withBox2Red) UAlign(UCENTER, UCENTER) { ExamBasicBox("red box", Color.Red, 80.dp.square, sizeRequired = true, report = report) }
-    if (withBox3Green) UAlign(UEND, UEND) { ExamBasicBox("green box", Color.Green, 60.dp.square, report = report) }
-    if (withBox4Blue) UAlign(USTRETCH, USTRETCH) { ExamBasicBox("blue box", Color.Blue, 30.dp.square, report = report) }
+        .reportMeasuringAndPlacement("rigid container", report)
+    UContainerJvm(type, m, content)
 }
 
 val Dp.square get() = DpSize(this, this)
@@ -118,13 +108,12 @@ val Int.square get() = IntSize(this, this)
     sizeRequired: Boolean = false,
     report: (Pair<String, Any>) -> Unit = { println("${it.first}: ${it.second.str}") },
 ) {
-    UBasicBox {
-        Box(Modifier
-            .reportMeasuringAndPlacement("$tag outer", report)
-            .background(color.copy(alpha = color.alpha * .8f))
-            .run { if (sizeRequired) requiredSize(size) else size(size) }
-            .reportMeasuringAndPlacement("$tag inner", report))
-    }
+    val m = Modifier
+        .reportMeasuringAndPlacement("$tag outer", report)
+        .background(color.copy(alpha = color.alpha * .8f))
+        .run { if (sizeRequired) requiredSize(size) else size(size) }
+        .reportMeasuringAndPlacement("$tag inner", report)
+    UContainerJvm(UBOX, m)
 }
 
 
@@ -146,6 +135,8 @@ val Int.square get() = IntSize(this, this)
 data class PlaceableData(val width: Int, val height: Int, val measuredWidth: Int = width, val measuredHeight: Int = height)
 
 val Placeable.data get() = PlaceableData(width, height, measuredWidth, measuredHeight)
+
+fun IntSize.toPlaceableData() = PlaceableData(width, height)
 
 data class LayoutCoordinatesData(
     val size: IntSize,
@@ -188,6 +179,11 @@ fun Modifier.reportPlacement(tag: String, report: (Pair<String, Any>) -> Unit): 
 
 fun Modifier.reportMeasuringAndPlacement(tag: String, report: (Pair<String, Any>) -> Unit): Modifier =
     reportMeasuring(tag, report).reportPlacement(tag, report)
+
+fun Size.roundToIntSize() = IntSize(width.roundToInt(), height.roundToInt())
+fun IntSize.toFixedConstraints() = Constraints(width, width, height, height)
+fun IntSize.toMaxConstraints() = Constraints(0, width, 0, height)
+fun Size.roundToFixedConstraints() = roundToIntSize().toFixedConstraints()
 
 val Any?.str: String
     get() = when (this) {
