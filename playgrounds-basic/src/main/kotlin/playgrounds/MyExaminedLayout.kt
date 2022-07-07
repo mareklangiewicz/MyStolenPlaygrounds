@@ -54,7 +54,7 @@ import kotlin.Pair
         RigidFather(type, size, report) {
             if (withSon1Cyan) UAlign(USTART, UEND) { ColoredSon("cyan son", Color.Cyan, 160.dp.square, report = report) }
             if (withSon2Red) UAlign(UCENTER, UCENTER) { ColoredSon("red son", Color.Red, 80.dp.square, sizeRequired = true, report = report) }
-            if (withSon3Green) UAlign(UEND, UEND) { ColoredSon("green son", Color.Green, 60.dp.square, report = report) }
+            if (withSon3Green) UAlign(USTRETCH, UEND) { ColoredSon("green son", Color.Green, 60.dp.square, report = report) }
             if (withSon4Blue) UAlign(USTRETCH, USTRETCH) { ColoredSon("blue son", Color.Blue, 30.dp.square, report = report) }
         }
     }
