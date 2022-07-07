@@ -2,6 +2,7 @@ package pl.mareklangiewicz.playgrounds
 
 import android.util.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.geometry.*
 import androidx.compose.ui.test.junit4.*
 import androidx.compose.ui.unit.*
 import org.junit.*
@@ -119,8 +120,8 @@ fun ComposeContentTestRule.layout() = with(density) {
                         reports[20] eq reports[11]
                     }
                     "blue son gets placed with fixed rigid father size" o {
-                        reports[21].first eq "blue son outer placed" // TODO_NOW: check LayoutConstraintsData
-                        reports[22].first eq "blue son inner placed" // TODO_NOW: check LayoutConstraintsData
+                        reports[21].reportedPlacement("blue son outer") { size == rigidSizePx && positionInParent == Offset.Zero }
+                        reports[22].reportedPlacement("blue son inner") { size == rigidSizePx && positionInParent == Offset.Zero }
                     }
 
                     "no other reports" o { reports.size eq 23 }
