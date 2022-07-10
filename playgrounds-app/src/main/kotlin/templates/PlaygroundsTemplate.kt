@@ -3,17 +3,14 @@
 
 package pl.mareklangiewicz.playgrounds
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.*
+import androidx.compose.ui.platform.*
+import androidx.compose.ui.tooling.preview.*
+import androidx.compose.ui.unit.*
 
 data class MySampleData(val title: String, val path: String?, val code: @Composable () -> Unit)
 
