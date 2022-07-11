@@ -73,7 +73,7 @@ import kotlin.Pair
         .padding(4.dp)
         .requiredSize(size)
         .reportMeasuringAndPlacement("rigid father", report)
-    UContainerJvm(type, m, content)
+    UBasicContainerJvm(type, m, content)
 }
 
 @Composable fun ColoredSon(
@@ -88,7 +88,7 @@ import kotlin.Pair
         .background(color.copy(alpha = color.alpha * .8f), RoundedCornerShape(4.dp))
         .run { if (sizeRequired) requiredSize(size) else size(size) }
         .reportMeasuringAndPlacement("$tag inner", report)
-    UContainerJvm(UBOX, m)
+    UBasicContainerJvm(UBOX, m)
 }
 
 
