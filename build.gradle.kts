@@ -11,6 +11,7 @@ import pl.mareklangiewicz.sourcefun.*
 import pl.mareklangiewicz.io.*
 
 plugins {
+    kotlin("android") apply false
     id("io.github.gradle-nexus.publish-plugin") version vers.nexusPublishGradlePlugin
     id("pl.mareklangiewicz.sourcefun")
 }
@@ -50,21 +51,9 @@ val templatesAppSrcKotlinPath = srcAppKotlinPath / "templates"
 
 tasks.registerAllThatGroupFun("inject", ::checkBuildTemplates, ::injectBuildTemplates)
 
-fun checkBuildTemplates() {
-    checkRootBuildTemplate(rootBuildPath)
-    checkKotlinModuleBuildTemplates(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath, playgroundsMaterial3BuildPath)
-    checkAndroCommonBuildTemplates(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath, playgroundsMaterial3BuildPath)
-    checkAndroLibBuildTemplates(playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath, playgroundsMaterial3BuildPath)
-    checkAndroAppBuildTemplates(playgroundsAppBuildPath)
-}
+fun checkBuildTemplates() = checkAllKnownRegionsInProject()
 
-fun injectBuildTemplates() {
-    injectRootBuildTemplate(rootBuildPath)
-    injectKotlinModuleBuildTemplate(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath, playgroundsMaterial3BuildPath)
-    injectAndroCommonBuildTemplate(playgroundsAppBuildPath, playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath, playgroundsMaterial3BuildPath)
-    injectAndroLibBuildTemplate(playgroundsBasicBuildPath, playgroundsUiSamplesBuildPath, playgroundsMaterial3BuildPath)
-    injectAndroAppBuildTemplate(playgroundsAppBuildPath)
-}
+fun injectBuildTemplates() = injectAllKnownRegionsInProject()
 
 fun String.containsOneOf(vararg substrings: String) = substrings.any { it in this }
 
