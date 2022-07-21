@@ -49,7 +49,7 @@ fun RepositoryHandler.defaultRepos(
 }
 
 fun TaskCollection<Task>.defaultKotlinCompileOptions(
-    jvmTargetVer: String = pl.mareklangiewicz.deps.vers.defaultJvm,
+    jvmTargetVer: String = vers.defaultJvm,
     requiresOptIn: Boolean = true
 ) = withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions {
