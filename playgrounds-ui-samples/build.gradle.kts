@@ -28,6 +28,7 @@ fun RepositoryHandler.defaultRepos(
     withKotlinx: Boolean = true,
     withKotlinxHtml: Boolean = false,
     withComposeJbDev: Boolean = false,
+    withComposeCompilerAndroidxDev: Boolean = false,
     withKtorEap: Boolean = false,
     withJitpack: Boolean = false,
 ) {
@@ -38,6 +39,7 @@ fun RepositoryHandler.defaultRepos(
     if (withKotlinx) maven(repos.kotlinx)
     if (withKotlinxHtml) maven(repos.kotlinxHtml)
     if (withComposeJbDev) maven(repos.composeJbDev)
+    if (withComposeCompilerAndroidxDev) maven(repos.composeCompilerAndroidxDev)
     if (withKtorEap) maven(repos.ktorEap)
     if (withJitpack) maven(repos.jitpack)
 }
@@ -212,7 +214,7 @@ fun CommonExtension<*,*,*,*>.defaultComposeStuff() {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = vers.composeAndroidCompiler
+        kotlinCompilerExtensionVersion = vers.composeCompiler
     }
 }
 
@@ -255,7 +257,7 @@ fun Project.defaultBuildTemplateForAndroidLib(
     details: LibDetails = libs.Unknown,
     publishVariant: String? = null, // null means disable publishing to maven repo
 ) {
-    repositories { defaultRepos() }
+    repositories { defaultRepos(withComposeCompilerAndroidxDev = withCompose) }
     android {
         defaultAndroLib(libNamespace, jvmVersion, sdkCompile, sdkTarget, sdkMin, withCompose)
         publishVariant?.let { defaultAndroLibPublishVariant(it) }
