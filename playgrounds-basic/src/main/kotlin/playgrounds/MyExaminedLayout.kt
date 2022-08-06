@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import kotlinx.coroutines.*
+import pl.mareklangiewicz.umath.*
 import pl.mareklangiewicz.utheme.*
 import pl.mareklangiewicz.uwidgets.*
 import pl.mareklangiewicz.uwidgets.UAlignmentType.*
@@ -73,7 +74,7 @@ import kotlin.Pair
         .padding(4.dp)
         .requiredSize(size)
         .reportMeasuringAndPlacement("rigid father", report)
-    UBasicContainerJvm(type, m, content)
+    UBasicContainerJvm(type, m, content = content)
 }
 
 @Composable fun ColoredSon(

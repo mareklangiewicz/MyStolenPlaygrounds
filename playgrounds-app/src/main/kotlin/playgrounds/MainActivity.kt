@@ -1,8 +1,8 @@
 package pl.mareklangiewicz.playgrounds
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import android.os.*
+import androidx.activity.*
+import androidx.activity.compose.*
 import androidx.compose.integration.demos.common.*
 import androidx.compose.material3.*
 import androidx.compose.material3.catalog.library.*

@@ -7,6 +7,7 @@ import androidx.compose.ui.test.junit4.*
 import androidx.compose.ui.unit.*
 import org.junit.*
 import org.junit.runner.*
+import pl.mareklangiewicz.umath.*
 import pl.mareklangiewicz.uspek.*
 import pl.mareklangiewicz.uwidgets.UContainerType.*
 import kotlin.math.*

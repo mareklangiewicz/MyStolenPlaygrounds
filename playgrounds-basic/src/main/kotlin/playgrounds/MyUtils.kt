@@ -4,9 +4,7 @@ import androidx.compose.ui.geometry.*
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.unit.*
 import kotlin.math.*
-
-val Dp.square get() = DpSize(this, this)
-val Int.square get() = IntSize(this, this)
+import pl.mareklangiewicz.umath.str as ustr
 
 fun Size.copyToIntSize(w: Int = width.toInt(), h: Int = height.toInt()) = IntSize(w, h)
 fun Size.copyRoundToIntSize(w: Int = width.roundToInt(), h: Int = height.roundToInt()) = IntSize(w, h)
@@ -22,6 +20,8 @@ val Any?.str: String
         is PlaceableData -> "placeable: $width x $height, measured = $measuredWidth x $measuredHeight"
         is LayoutCoordinatesData -> "coordinates: size = $size, bounds in parent = ${boundsInParent.str}, attached = ${isAttached.markIfTrue()}, parent layout = ${parentLayoutCoordinatesData.markIfNull()}, parent = ${parentCoordinatesData.markIfNull()}"
         is Constraints -> "constraints: min = $minWidth x $minHeight, max = $maxWidth x $maxHeight"
+        is Double -> ustr
+        is Float -> ustr
         else -> toString()
     }
 private fun Any?.markIfNull(markNotNull: String = "T", markNull: String = "F"): String = if (this != null) markNotNull else markNull
