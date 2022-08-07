@@ -9,8 +9,12 @@ import org.junit.*
 import org.junit.runner.*
 import pl.mareklangiewicz.umath.*
 import pl.mareklangiewicz.uspek.*
+import pl.mareklangiewicz.uwidgets.*
 import pl.mareklangiewicz.uwidgets.UContainerType.*
 import kotlin.math.*
+
+
+// TODO: Move it all to udemo in UWidgets repo
 
 @RunWith(USpekJUnit4Runner::class)
 class MyExaminedLayoutUSpek {
@@ -26,11 +30,11 @@ class MyExaminedLayoutUSpek {
     @USpekTestTree(23) fun layout() = rule.layout()
 }
 
-private val reportsModel = ReportsModel()
+private val reportsModel = UReportsModel { Log.i("rspek", it.ustr) }
 
 fun ComposeContentTestRule.layout() = with(density) {
 
-    val reports = reportsModel.reports
+    val reports = reportsModel.ureports
     val report = reportsModel::report
 
     reports.clear()
@@ -64,7 +68,7 @@ fun ComposeContentTestRule.layout() = with(density) {
 
                 "rigid father gets measured with fixed constraints" o {
                     reports[0] eq ("rigid father measure with" to rigidSizePx.copyToAllConstraints())
-                    reports[1] eq ("rigid father measured" to rigidSizePx.copyToPlaceableData())
+                    reports[1] eq ("rigid father measured" to rigidSizePx.copyToUPlaceableData())
                 }
                 "rigid father is placed and attached" o {
                     reports[2].reportedPlacement("rigid father") { size == rigidSizePx && isAttached }
@@ -81,8 +85,8 @@ fun ComposeContentTestRule.layout() = with(density) {
                 "cyan son gets measured" o {
                     reports[4] eq ("cyan son outer measure with" to rigidSizePx.copyToMaxConstraints())
                     reports[5] eq ("cyan son inner measure with" to cyanSonSizePx.copyToAllConstraints())
-                    reports[6] eq ("cyan son inner measured" to cyanSonSizePx.copyToPlaceableData())
-                    reports[7] eq ("cyan son outer measured" to cyanSonSizePx.copyToPlaceableData())
+                    reports[6] eq ("cyan son inner measured" to cyanSonSizePx.copyToUPlaceableData())
+                    reports[7] eq ("cyan son outer measured" to cyanSonSizePx.copyToUPlaceableData())
                 }
 
                 "rigid father gets remeasured and placed the same way as before" o {
@@ -108,8 +112,8 @@ fun ComposeContentTestRule.layout() = with(density) {
                     "blue son gets measured" o {
                         reports[13] eq ("blue son outer measure with" to rigidSizePx.copyToAllConstraints())
                         reports[14] eq ("blue son inner measure with" to rigidSizePx.copyToAllConstraints())
-                        reports[15] eq ("blue son inner measured" to rigidSizePx.copyToPlaceableData())
-                        reports[16] eq ("blue son outer measured" to rigidSizePx.copyToPlaceableData())
+                        reports[15] eq ("blue son inner measured" to rigidSizePx.copyToUPlaceableData())
+                        reports[16] eq ("blue son outer measured" to rigidSizePx.copyToUPlaceableData())
                     }
                     "rigid father gets remeasured and placed the same way" o {
                         reports[17] eq reports[1]
@@ -134,8 +138,8 @@ fun ComposeContentTestRule.layout() = with(density) {
                     "green son gets measured" o {
                         reports[13] eq ("green son outer measure with" to rigidSizePx.copyToAllConstraints(minH = 0))
                         reports[14] eq ("green son inner measure with" to rigidSizePx.copyToAllConstraints(minH = greenSonSizePx.height, maxH = greenSonSizePx.height))
-                        reports[15] eq ("green son inner measured" to rigidSizePx.copyToPlaceableData(h = greenSonSizePx.height))
-                        reports[16] eq ("green son outer measured" to rigidSizePx.copyToPlaceableData(h = greenSonSizePx.height))
+                        reports[15] eq ("green son inner measured" to rigidSizePx.copyToUPlaceableData(h = greenSonSizePx.height))
+                        reports[16] eq ("green son outer measured" to rigidSizePx.copyToUPlaceableData(h = greenSonSizePx.height))
                     }
                     "rigid father gets remeasured and placed the same way" o {
                         reports[17] eq reports[1]

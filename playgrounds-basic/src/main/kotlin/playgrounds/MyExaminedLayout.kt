@@ -26,7 +26,7 @@ import pl.mareklangiewicz.uwidgets.UContainerType.*
 
 @Composable fun MyExaminedLayoutPlayground(type: UContainerType = UBOX) {
 
-    val reportsModel = rememberReportsModel()
+    val reportsModel = rememberUReportsModel { Log.d("rspek", it.ustr) } // rspek so I can filter logs with uspek/rspek/spek
 
     Column(Modifier.fillMaxWidth()) {
         MyExaminedLayout(
@@ -37,7 +37,7 @@ import pl.mareklangiewicz.uwidgets.UContainerType.*
             withSon4Blue = false,
             report = reportsModel::report,
         )
-        ReportsUi(reportsModel, Modifier.height(400.dp))
+        UReportsUi(reportsModel, Modifier.height(400.dp))
     }
 }
 
@@ -48,7 +48,7 @@ import pl.mareklangiewicz.uwidgets.UContainerType.*
     withSon2Red: Boolean = false,
     withSon3Green: Boolean = false,
     withSon4Blue: Boolean = false,
-    report: (Report) -> Unit,
+    report: (UReport) -> Unit = {},
 ) {
     UAlign(USTART, USTART) {
         RigidFather(type, size, report) {
@@ -64,7 +64,7 @@ import pl.mareklangiewicz.uwidgets.UContainerType.*
 @Composable fun RigidFather(
     type: UContainerType = UBOX,
     size: DpSize = 400.dp.square,
-    report: (Report) -> Unit = {},
+    report: (UReport) -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     val m = Modifier
@@ -81,7 +81,7 @@ import pl.mareklangiewicz.uwidgets.UContainerType.*
     color: Color = Color.Gray,
     size: DpSize = 100.dp.square,
     sizeRequired: Boolean = false,
-    report: (Report) -> Unit = { println("${it.first}: ${it.second.str}") },
+    report: (UReport) -> Unit = {},
 ) {
     val m = Modifier
         .reportMeasuringAndPlacement("$tag outer", report)

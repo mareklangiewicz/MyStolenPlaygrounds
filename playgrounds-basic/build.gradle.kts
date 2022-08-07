@@ -29,12 +29,17 @@ android {
         val uwidgetsCommonKotlinPath = uwidgetsRootPath / "uwidgets/src/commonMain/kotlin"
         val uwidgetsHackyKotlinPath = uwidgetsRootPath / "uwidgets/src/hackyMain/kotlin"
         val uwidgetsJvmKotlinPath = uwidgetsRootPath / "uwidgets/src/jvmMain/kotlin"
-        val uwidgetsDemoKotlinPath = uwidgetsRootPath / "udemo/src/commonMain/kotlin"
+        val udemoCommonKotlinPath = uwidgetsRootPath / "udemo/src/commonMain/kotlin"
+        val udemoHackyKotlinPath = uwidgetsRootPath / "udemo/src/hackyMain/kotlin"
+        val udemoJvmKotlinPath = uwidgetsRootPath / "udemo/src/jvmMain/kotlin"
         val uwidgetsPackages = listOf("umath", "utheme", "uwidgets")
         val uwidgetsPathsForAndroid = uwidgetsPackages.map { uwidgetsCommonKotlinPath / it } +
                 uwidgetsPackages.map { uwidgetsJvmKotlinPath / it } +
                 uwidgetsHackyKotlinPath / "hack" +
-                uwidgetsDemoKotlinPath
+                udemoCommonKotlinPath / "udemo" +
+                udemoJvmKotlinPath / "udemo" +
+                udemoHackyKotlinPath / "hack"
+
         kotlin.srcDirs(*uwidgetsPathsForAndroid.map { it.toFile() }.toTypedArray())
     }
 }
