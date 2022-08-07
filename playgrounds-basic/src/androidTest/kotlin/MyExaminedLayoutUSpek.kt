@@ -55,7 +55,7 @@ fun ComposeContentTestRule.layout() = with(density) {
                 withSon2Red = withSon2Red,
                 withSon3Green = withSon3Green,
                 withSon4Blue = withSon4Blue,
-                report = report
+                onUReport = report
             )
         }
         waitForIdle()

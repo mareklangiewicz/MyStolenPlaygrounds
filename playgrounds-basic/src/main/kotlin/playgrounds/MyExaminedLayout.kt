@@ -35,7 +35,7 @@ import pl.mareklangiewicz.uwidgets.UContainerType.*
             withSon2Red = true,
             withSon3Green = true,
             withSon4Blue = false,
-            report = reportsModel::report,
+            onUReport = reportsModel::invoke,
         )
         UReportsUi(reportsModel, Modifier.height(400.dp))
     }
@@ -48,14 +48,14 @@ import pl.mareklangiewicz.uwidgets.UContainerType.*
     withSon2Red: Boolean = false,
     withSon3Green: Boolean = false,
     withSon4Blue: Boolean = false,
-    report: (UReport) -> Unit = {},
+    onUReport: OnUReport = {},
 ) {
     UAlign(USTART, USTART) {
-        RigidFather(type, size, report) {
-            if (withSon1Cyan) UAlign(USTART, UEND) { ColoredSon("cyan son", Color.Cyan, 160.dp.square, report = report) }
-            if (withSon2Red) UAlign(UCENTER, UCENTER) { ColoredSon("red son", Color.Red, 80.dp.square, sizeRequired = true, report = report) }
-            if (withSon3Green) UAlign(USTRETCH, UEND) { ColoredSon("green son", Color.Green, 60.dp.square, report = report) }
-            if (withSon4Blue) UAlign(USTRETCH, USTRETCH) { ColoredSon("blue son", Color.Blue, 30.dp.square, report = report) }
+        RigidFather(type, size, onUReport) {
+            if (withSon1Cyan) UAlign(USTART, UEND) { ColoredSon("cyan son", Color.Cyan, 160.dp.square, onUReport = onUReport) }
+            if (withSon2Red) UAlign(UCENTER, UCENTER) { ColoredSon("red son", Color.Red, 80.dp.square, sizeRequired = true, onUReport = onUReport) }
+            if (withSon3Green) UAlign(USTRETCH, UEND) { ColoredSon("green son", Color.Green, 60.dp.square, onUReport = onUReport) }
+            if (withSon4Blue) UAlign(USTRETCH, USTRETCH) { ColoredSon("blue son", Color.Blue, 30.dp.square, onUReport = onUReport) }
         }
     }
 }
@@ -81,13 +81,13 @@ import pl.mareklangiewicz.uwidgets.UContainerType.*
     color: Color = Color.Gray,
     size: DpSize = 100.dp.square,
     sizeRequired: Boolean = false,
-    report: (UReport) -> Unit = {},
+    onUReport: OnUReport = {},
 ) {
     val m = Modifier
-        .reportMeasuringAndPlacement("$tag outer", report)
+        .reportMeasuringAndPlacement("$tag outer", onUReport)
         .background(color.copy(alpha = color.alpha * .8f), RoundedCornerShape(4.dp))
         .run { if (sizeRequired) requiredSize(size) else size(size) }
-        .reportMeasuringAndPlacement("$tag inner", report)
+        .reportMeasuringAndPlacement("$tag inner", onUReport)
     UBasicContainerJvm(UBOX, m)
 }
 
