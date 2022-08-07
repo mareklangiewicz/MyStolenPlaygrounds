@@ -42,8 +42,8 @@ class ReportsModel(val tag: String = "rspek") {
 
 @Composable fun rememberReportsModel(tag: String = "rspek") = remember { ReportsModel(tag) }
 
-@Composable fun ReportsUi(modifier: Modifier = Modifier, model: ReportsModel = rememberReportsModel()) = ReportsUi(modifier, model.reports)
-@Composable fun ReportsUi(modifier: Modifier = Modifier, reports: List<Report>) {
+@Composable fun ReportsUi(model: ReportsModel, modifier: Modifier = Modifier) = ReportsUi(model.reports, modifier)
+@Composable fun ReportsUi(reports: List<Report>, modifier: Modifier = Modifier) {
     CompositionLocalProvider(LocalDensity provides Density(1f)) {
         Column(modifier) {
             reports.forEachIndexed { idx, (key, data) ->

@@ -38,7 +38,7 @@ import kotlin.Pair
             withSon4Blue = false,
             report = reportsModel::report,
         )
-        ReportsUi(Modifier.height(400.dp), reportsModel)
+        ReportsUi(reportsModel, Modifier.height(400.dp))
     }
 }
 
