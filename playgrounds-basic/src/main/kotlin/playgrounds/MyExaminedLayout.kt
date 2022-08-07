@@ -17,7 +17,6 @@ import pl.mareklangiewicz.utheme.*
 import pl.mareklangiewicz.uwidgets.*
 import pl.mareklangiewicz.uwidgets.UAlignmentType.*
 import pl.mareklangiewicz.uwidgets.UContainerType.*
-import kotlin.Pair
 
 
 @Preview @Composable fun MyUBoxPreview() = MyExaminedLayoutPlayground(UBOX)
@@ -65,7 +64,7 @@ import kotlin.Pair
 @Composable fun RigidFather(
     type: UContainerType = UBOX,
     size: DpSize = 400.dp.square,
-    report: (Pair<String, Any>) -> Unit = {},
+    report: (Report) -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     val m = Modifier
@@ -82,7 +81,7 @@ import kotlin.Pair
     color: Color = Color.Gray,
     size: DpSize = 100.dp.square,
     sizeRequired: Boolean = false,
-    report: (Pair<String, Any>) -> Unit = { println("${it.first}: ${it.second.str}") },
+    report: (Report) -> Unit = { println("${it.first}: ${it.second.str}") },
 ) {
     val m = Modifier
         .reportMeasuringAndPlacement("$tag outer", report)
