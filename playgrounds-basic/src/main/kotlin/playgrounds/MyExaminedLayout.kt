@@ -49,7 +49,7 @@ import kotlin.Pair
     withSon2Red: Boolean = false,
     withSon3Green: Boolean = false,
     withSon4Blue: Boolean = false,
-    report: (Pair<String, Any>) -> Unit,
+    report: (Report) -> Unit,
 ) {
     UAlign(USTART, USTART) {
         RigidFather(type, size, report) {
