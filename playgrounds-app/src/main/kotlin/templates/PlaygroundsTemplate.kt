@@ -54,7 +54,6 @@ fun LazyGridScope.MyFancyItem(title: String, onClick: () -> Unit = {}, content: 
 }
 
 // region Generated Playgrounds from PlaygroundsTemplate
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Playgrounds() {
 
@@ -94,6 +93,8 @@ fun Playgrounds() {
         MySampleData("androidx.compose.ui.samples.ChangeOpacity", "${samplesDir}/stolen/samples-ui/LayerModifierSamples.kt") { androidx.compose.ui.samples.ChangeOpacity() },
         MySampleData("androidx.compose.ui.samples.AnimateFadeIn", "${samplesDir}/stolen/samples-ui/LayerModifierSamples.kt") { androidx.compose.ui.samples.AnimateFadeIn() },
         MySampleData("androidx.compose.ui.samples.InspectableModifierSample", "${samplesDir}/stolen/samples-ui/InspectableModifierSample.kt") { androidx.compose.ui.samples.InspectableModifierSample() },
+        MySampleData("androidx.compose.ui.samples.LookaheadLayoutSample", "${samplesDir}/stolen/samples-ui/LookaheadLayoutSample.kt") { androidx.compose.ui.samples.LookaheadLayoutSample() },
+        MySampleData("androidx.compose.ui.samples.LookaheadLayoutCoordinatesSample", "${samplesDir}/stolen/samples-ui/LookaheadLayoutSample.kt") { androidx.compose.ui.samples.LookaheadLayoutCoordinatesSample() },
         MySampleData("androidx.compose.ui.samples.PopupSample", "${samplesDir}/stolen/samples-ui/PopupSample.kt") { androidx.compose.ui.samples.PopupSample() },
         MySampleData("androidx.compose.ui.samples.AlignmentLineSample", "${samplesDir}/stolen/samples-ui/AlignmentLineSample.kt") { androidx.compose.ui.samples.AlignmentLineSample() },
         MySampleData("androidx.compose.ui.samples.FocusableSample", "${samplesDir}/stolen/samples-ui/FocusSamples.kt") { androidx.compose.ui.samples.FocusableSample() },
@@ -107,6 +108,7 @@ fun Playgrounds() {
         MySampleData("androidx.compose.ui.samples.FocusPropertiesSample", "${samplesDir}/stolen/samples-ui/FocusSamples.kt") { androidx.compose.ui.samples.FocusPropertiesSample() },
         MySampleData("androidx.compose.ui.samples.ShadowSample", "${samplesDir}/stolen/samples-ui/ShadowSample.kt") { androidx.compose.ui.samples.ShadowSample() },
         MySampleData("androidx.compose.ui.samples.AlphaSample", "${samplesDir}/stolen/samples-ui/AlphaSample.kt") { androidx.compose.ui.samples.AlphaSample() },
+        MySampleData("androidx.compose.ui.samples.PlacementScopeCoordinatesSample", "${samplesDir}/stolen/samples-ui/PlacementScopeCoordinatesSample.kt") { androidx.compose.ui.samples.PlacementScopeCoordinatesSample() },
         MySampleData("androidx.compose.ui.samples.RotateSample", "${samplesDir}/stolen/samples-ui/RotateSample.kt") { androidx.compose.ui.samples.RotateSample() },
         MySampleData("androidx.compose.ui.samples.ModifierUsageSample", "${samplesDir}/stolen/samples-ui/ModifierSamples.kt") { androidx.compose.ui.samples.ModifierUsageSample() },
         MySampleData("androidx.compose.ui.samples.ModifierFactorySample", "${samplesDir}/stolen/samples-ui/ModifierSamples.kt") { androidx.compose.ui.samples.ModifierFactorySample() },
@@ -114,6 +116,7 @@ fun Playgrounds() {
         MySampleData("androidx.compose.ui.samples.SubcomponentModifierSample", "${samplesDir}/stolen/samples-ui/ModifierSamples.kt") { androidx.compose.ui.samples.SubcomponentModifierSample() },
         MySampleData("androidx.compose.ui.samples.OnPlaced", "${samplesDir}/stolen/samples-ui/OnPlacedSamples.kt") { androidx.compose.ui.samples.OnPlaced() },
         MySampleData("androidx.compose.ui.samples.PointerIconSample", "${samplesDir}/stolen/samples-ui/PointerIconSample.kt") { androidx.compose.ui.samples.PointerIconSample() },
+        MySampleData("androidx.compose.ui.samples.ComposeInCooperatingViewNestedScrollInteropSample", "${samplesDir}/stolen/samples-ui/NestedScrollInteropSamples.kt") { androidx.compose.ui.samples.ComposeInCooperatingViewNestedScrollInteropSample() },
         MySampleData("androidx.compose.ui.samples.ViewInComposeNestedScrollInteropSample", "${samplesDir}/stolen/samples-ui/NestedScrollInteropSamples.kt") { androidx.compose.ui.samples.ViewInComposeNestedScrollInteropSample() },
         MySampleData("androidx.compose.ui.samples.NestedScrollConnectionSample", "${samplesDir}/stolen/samples-ui/NestedScrollSamples.kt") { androidx.compose.ui.samples.NestedScrollConnectionSample() },
         MySampleData("androidx.compose.ui.samples.NestedScrollDispatcherSample", "${samplesDir}/stolen/samples-ui/NestedScrollSamples.kt") { androidx.compose.ui.samples.NestedScrollDispatcherSample() },
