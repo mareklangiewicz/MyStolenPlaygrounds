@@ -30,14 +30,13 @@ class MyExaminedLayoutUSpek {
     @USpekTestTree(23) fun layout() = rule.layout()
 }
 
-private val reportsModel = UReportsModel { Log.i("rspek", it.ustr) }
+private val ureports = UReports { Log.i("rspek", it.ustr) }
 
 fun ComposeContentTestRule.layout() = with(density) {
 
-    val reports = reportsModel.ureports
-    val report = reportsModel::report
+    val history = ureports.history
 
-    reports.clear()
+    history.clear()
 
     "On MyExaminedLayout" o {
         var type by mutableStateOf(UBOX)
@@ -55,7 +54,7 @@ fun ComposeContentTestRule.layout() = with(density) {
                 withSon2Red = withSon2Red,
                 withSon3Green = withSon3Green,
                 withSon4Blue = withSon4Blue,
-                onUReport = report
+                onUReport = ureports::invoke
             )
         }
         waitForIdle()
@@ -64,14 +63,14 @@ fun ComposeContentTestRule.layout() = with(density) {
 
             "With no children" o {
 
-                "only root rigid father is measured and placed" o { reports.size eq 3 }
+                "only root rigid father is measured and placed" o { history.size eq 3 }
 
                 "rigid father gets measured with fixed constraints" o {
-                    reports[0] eq ("rigid father measure with" to rigidSizePx.copyToAllConstraints())
-                    reports[1] eq ("rigid father measured" to rigidSizePx.copyToUPlaceableData())
+                    history[0] eq ("rigid father measure with" to rigidSizePx.copyToAllConstraints())
+                    history[1] eq ("rigid father measured" to rigidSizePx.copyToUPlaceableData())
                 }
                 "rigid father is placed and attached" o {
-                    reports[2].reportedPlacement("rigid father") { size == rigidSizePx && isAttached }
+                    history[2].reportedPlacement("rigid father") { size == rigidSizePx && isAttached }
                 }
             }
 
@@ -79,55 +78,55 @@ fun ComposeContentTestRule.layout() = with(density) {
                 withSon1Cyan = true
                 waitForIdle()
 
-                "rigid father starts measure again with the same constraints" o { reports[3] eq reports[0] }
+                "rigid father starts measure again with the same constraints" o { history[3] eq history[0] }
 
                 val cyanSonSizePx = 160.dp.square.toSize().copyRoundToIntSize()
                 "cyan son gets measured" o {
-                    reports[4] eq ("cyan son outer measure with" to rigidSizePx.copyToMaxConstraints())
-                    reports[5] eq ("cyan son inner measure with" to cyanSonSizePx.copyToAllConstraints())
-                    reports[6] eq ("cyan son inner measured" to cyanSonSizePx.copyToUPlaceableData())
-                    reports[7] eq ("cyan son outer measured" to cyanSonSizePx.copyToUPlaceableData())
+                    history[4] eq ("cyan son outer measure with" to rigidSizePx.copyToMaxConstraints())
+                    history[5] eq ("cyan son inner measure with" to cyanSonSizePx.copyToAllConstraints())
+                    history[6] eq ("cyan son inner measured" to cyanSonSizePx.copyToUPlaceableData())
+                    history[7] eq ("cyan son outer measured" to cyanSonSizePx.copyToUPlaceableData())
                 }
 
                 "rigid father gets remeasured and placed the same way as before" o {
-                    reports[8] eq reports[1]
-                    reports[9] eq reports[2]
+                    history[8] eq history[1]
+                    history[9] eq history[2]
                 }
 
                 "cyan son gets placed on bottom left side" o {
-                    reports[10].reportedPlacement("cyan son outer") {
+                    history[10].reportedPlacement("cyan son outer") {
                         size == cyanSonSizePx && boundsInParent.left == 0f && boundsInParent.bottom.roundToInt() == rigidSizePx.height
                     }
-                    reports[11].reportedPlacement("cyan son inner") {
+                    history[11].reportedPlacement("cyan son inner") {
                         size == cyanSonSizePx && boundsInParent.left == 0f && boundsInParent.bottom.roundToInt() == rigidSizePx.height
                     }
                 }
 
-                "rigid father starts measure again with the same constraints" o { reports[12] eq reports[0] }
+                "rigid father starts measure again with the same constraints" o { history[12] eq history[0] }
 
                 "When blue son stretched both ways gets enabled" o {
                     withSon4Blue = true
                     waitForIdle()
 
                     "blue son gets measured" o {
-                        reports[13] eq ("blue son outer measure with" to rigidSizePx.copyToAllConstraints())
-                        reports[14] eq ("blue son inner measure with" to rigidSizePx.copyToAllConstraints())
-                        reports[15] eq ("blue son inner measured" to rigidSizePx.copyToUPlaceableData())
-                        reports[16] eq ("blue son outer measured" to rigidSizePx.copyToUPlaceableData())
+                        history[13] eq ("blue son outer measure with" to rigidSizePx.copyToAllConstraints())
+                        history[14] eq ("blue son inner measure with" to rigidSizePx.copyToAllConstraints())
+                        history[15] eq ("blue son inner measured" to rigidSizePx.copyToUPlaceableData())
+                        history[16] eq ("blue son outer measured" to rigidSizePx.copyToUPlaceableData())
                     }
                     "rigid father gets remeasured and placed the same way" o {
-                        reports[17] eq reports[1]
-                        reports[18] eq reports[2]
+                        history[17] eq history[1]
+                        history[18] eq history[2]
                     }
                     "cyan son gets placed again the same way" o {
-                        reports[19] eq reports[10]
-                        reports[20] eq reports[11]
+                        history[19] eq history[10]
+                        history[20] eq history[11]
                     }
                     "blue son gets placed with fixed rigid father size" o {
-                        reports[21].reportedPlacement("blue son outer") { size == rigidSizePx && positionInParent == Offset.Zero }
-                        reports[22].reportedPlacement("blue son inner") { size == rigidSizePx && positionInParent == Offset.Zero }
+                        history[21].reportedPlacement("blue son outer") { size == rigidSizePx && positionInParent == Offset.Zero }
+                        history[22].reportedPlacement("blue son inner") { size == rigidSizePx && positionInParent == Offset.Zero }
                     }
-                    "no other reports" o { reports.size eq 23 }
+                    "no other reports" o { history.size eq 23 }
                 }
 
                 "When green son stretched horizontally gets enabled" o {
@@ -136,34 +135,34 @@ fun ComposeContentTestRule.layout() = with(density) {
 
                     val greenSonSizePx = 60.dp.square.toSize().copyRoundToIntSize()
                     "green son gets measured" o {
-                        reports[13] eq ("green son outer measure with" to rigidSizePx.copyToAllConstraints(minH = 0))
-                        reports[14] eq ("green son inner measure with" to rigidSizePx.copyToAllConstraints(minH = greenSonSizePx.height, maxH = greenSonSizePx.height))
-                        reports[15] eq ("green son inner measured" to rigidSizePx.copyToUPlaceableData(h = greenSonSizePx.height))
-                        reports[16] eq ("green son outer measured" to rigidSizePx.copyToUPlaceableData(h = greenSonSizePx.height))
+                        history[13] eq ("green son outer measure with" to rigidSizePx.copyToAllConstraints(minH = 0))
+                        history[14] eq ("green son inner measure with" to rigidSizePx.copyToAllConstraints(minH = greenSonSizePx.height, maxH = greenSonSizePx.height))
+                        history[15] eq ("green son inner measured" to rigidSizePx.copyToUPlaceableData(h = greenSonSizePx.height))
+                        history[16] eq ("green son outer measured" to rigidSizePx.copyToUPlaceableData(h = greenSonSizePx.height))
                     }
                     "rigid father gets remeasured and placed the same way" o {
-                        reports[17] eq reports[1]
-                        reports[18] eq reports[2]
+                        history[17] eq history[1]
+                        history[18] eq history[2]
                     }
                     "cyan son gets placed again the same way" o {
-                        reports[19] eq reports[10]
-                        reports[20] eq reports[11]
+                        history[19] eq history[10]
+                        history[20] eq history[11]
                     }
                     "green son gets placed stretched horizontally" o {
-                        reports[21].reportedPlacement("green son outer") {
+                        history[21].reportedPlacement("green son outer") {
                             size.width == rigidSizePx.width
                                 && size.height == greenSonSizePx.height
                                 && boundsInParent.left == 0f
                                 && boundsInParent.bottom.roundToInt() == rigidSizePx.height
                         }
-                        reports[22].reportedPlacement("green son inner") {
+                        history[22].reportedPlacement("green son inner") {
                             size.width == rigidSizePx.width
                                 && size.height == greenSonSizePx.height
                                 && boundsInParent.left == 0f
                                 && boundsInParent.bottom.roundToInt() == rigidSizePx.height
                         }
                     }
-                    "no other reports" o { reports.size eq 23 }
+                    "no other reports" o { history.size eq 23 }
                 }
                 // TODO NOW: other types UROW UCOLUMN
             }

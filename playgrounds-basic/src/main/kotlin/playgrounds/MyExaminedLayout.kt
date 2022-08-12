@@ -26,7 +26,7 @@ import pl.mareklangiewicz.uwidgets.UContainerType.*
 
 @Composable fun MyExaminedLayoutPlayground(type: UContainerType = UBOX) {
 
-    val reportsModel = rememberUReportsModel { Log.d("rspek", it.ustr) } // rspek so I can filter logs with uspek/rspek/spek
+    val reportsModel = rememberUReports { Log.d("rspek", it.ustr) } // rspek so I can filter logs with uspek/rspek/spek
 
     Column(Modifier.fillMaxWidth()) {
         MyExaminedLayout(
