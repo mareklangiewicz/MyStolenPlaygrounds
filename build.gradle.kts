@@ -32,8 +32,8 @@ val playgroundsBasicBuildPath = playgroundsBasicPath / "build.gradle.kts"
 val playgroundsUiSamplesBuildPath = playgroundsUiSamplesPath / "build.gradle.kts"
 val playgroundsMaterial3BuildPath = playgroundsMaterial3Path / "build.gradle.kts"
 
-//val rootAndroidxPath = "/home/marek/code/android/androidx-main".toPath()
-val rootAndroidxPath = "/home/marek/code/kotlin/compose-jb/compose".toPath()
+val rootAndroidxPath = "/home/marek/code/android/androidx-main".toPath()
+// val rootAndroidxPath = "/home/marek/code/kotlin/compose-jb/compose".toPath()
 val androidxSupportPath = rootAndroidxPath / "frameworks/support"
 
 val srcAppKotlinPath = playgroundsAppPath / "src/main/kotlin"

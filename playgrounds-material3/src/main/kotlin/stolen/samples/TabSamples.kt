@@ -55,20 +55,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Sampled
 @Composable
 fun TextTabs() {
     var state by remember { mutableStateOf(0) }
-    val titles = listOf("TAB 1", "TAB 2", "TAB 3 WITH LOTS OF TEXT")
+    val titles = listOf("Tab 1", "Tab 2", "Tab 3 with lots of text")
     Column {
         TabRow(selectedTabIndex = state) {
             titles.forEachIndexed { index, title ->
                 Tab(
-                    text = { Text(title) },
                     selected = state == index,
-                    onClick = { state = index }
+                    onClick = { state = index },
+                    text = { Text(text = title, maxLines = 2, overflow = TextOverflow.Ellipsis) }
                 )
             }
         }
@@ -88,9 +89,9 @@ fun IconTabs() {
         TabRow(selectedTabIndex = state) {
             icons.forEachIndexed { index, icon ->
                 Tab(
-                    icon = { Icon(icon, contentDescription = "Favorite") },
                     selected = state == index,
-                    onClick = { state = index }
+                    onClick = { state = index },
+                    icon = { Icon(icon, contentDescription = "Favorite") }
                 )
             }
         }
@@ -106,18 +107,18 @@ fun IconTabs() {
 fun TextAndIconTabs() {
     var state by remember { mutableStateOf(0) }
     val titlesAndIcons = listOf(
-        "TAB 1" to Icons.Filled.Favorite,
-        "TAB 2" to Icons.Filled.Favorite,
-        "TAB 3 WITH LOTS OF TEXT" to Icons.Filled.Favorite
+        "Tab 1" to Icons.Filled.Favorite,
+        "Tab 2" to Icons.Filled.Favorite,
+        "Tab 3 with lots of text" to Icons.Filled.Favorite
     )
     Column {
         TabRow(selectedTabIndex = state) {
             titlesAndIcons.forEachIndexed { index, (title, icon) ->
                 Tab(
-                    text = { Text(title) },
-                    icon = { Icon(icon, contentDescription = null) },
                     selected = state == index,
-                    onClick = { state = index }
+                    onClick = { state = index },
+                    text = { Text(text = title, maxLines = 2, overflow = TextOverflow.Ellipsis) },
+                    icon = { Icon(icon, contentDescription = null) }
                 )
             }
         }
@@ -133,18 +134,18 @@ fun TextAndIconTabs() {
 fun LeadingIconTabs() {
     var state by remember { mutableStateOf(0) }
     val titlesAndIcons = listOf(
-        "TAB" to Icons.Filled.Favorite,
-        "TAB & ICON" to Icons.Filled.Favorite,
-        "TAB 3 WITH LOTS OF TEXT" to Icons.Filled.Favorite
+        "Tab" to Icons.Filled.Favorite,
+        "Tab & icon" to Icons.Filled.Favorite,
+        "Tab 3 with lots of text" to Icons.Filled.Favorite
     )
     Column {
-        TabRow(selectedTabIndex = state) {
+        ScrollableTabRow(selectedTabIndex = state) {
             titlesAndIcons.forEachIndexed { index, (title, icon) ->
                 LeadingIconTab(
-                    text = { Text(title) },
-                    icon = { Icon(icon, contentDescription = null) },
                     selected = state == index,
-                    onClick = { state = index }
+                    onClick = { state = index },
+                    text = { Text(title) },
+                    icon = { Icon(icon, contentDescription = null) }
                 )
             }
         }
@@ -160,24 +161,24 @@ fun LeadingIconTabs() {
 fun ScrollingTextTabs() {
     var state by remember { mutableStateOf(0) }
     val titles = listOf(
-        "TAB 1",
-        "TAB 2",
-        "TAB 3 WITH LOTS OF TEXT",
-        "TAB 4",
-        "TAB 5",
-        "TAB 6 WITH LOTS OF TEXT",
-        "TAB 7",
-        "TAB 8",
-        "TAB 9 WITH LOTS OF TEXT",
-        "TAB 10"
+        "Tab 1",
+        "Tab 2",
+        "Tab 3 with lots of text",
+        "Tab 4",
+        "Tab 5",
+        "Tab 6 with lots of text",
+        "Tab 7",
+        "Tab 8",
+        "Tab 9 with lots of text",
+        "Tab 10"
     )
     Column {
         ScrollableTabRow(selectedTabIndex = state) {
             titles.forEachIndexed { index, title ->
                 Tab(
-                    text = { Text(title) },
                     selected = state == index,
-                    onClick = { state = index }
+                    onClick = { state = index },
+                    text = { Text(title) }
                 )
             }
         }
@@ -193,7 +194,7 @@ fun ScrollingTextTabs() {
 @Composable
 fun FancyTabs() {
     var state by remember { mutableStateOf(0) }
-    val titles = listOf("TAB 1", "TAB 2", "TAB 3")
+    val titles = listOf("Tab 1", "Tab 2", "Tab 3")
     Column {
         TabRow(selectedTabIndex = state) {
             titles.forEachIndexed { index, title ->
@@ -212,11 +213,14 @@ fun FancyTabs() {
 @Composable
 fun FancyIndicatorTabs() {
     var state by remember { mutableStateOf(0) }
-    val titles = listOf("TAB 1", "TAB 2", "TAB 3")
+    val titles = listOf("Tab 1", "Tab 2", "Tab 3")
 
     // Reuse the default offset animation modifier, but use our own indicator
     val indicator = @Composable { tabPositions: List<TabPosition> ->
-        FancyIndicator(Color.White, Modifier.tabIndicatorOffset(tabPositions[state]))
+        FancyIndicator(
+            MaterialTheme.colorScheme.primary,
+            Modifier.tabIndicatorOffset(tabPositions[state])
+        )
     }
 
     Column {
@@ -226,9 +230,9 @@ fun FancyIndicatorTabs() {
         ) {
             titles.forEachIndexed { index, title ->
                 Tab(
-                    text = { Text(title) },
                     selected = state == index,
-                    onClick = { state = index }
+                    onClick = { state = index },
+                    text = { Text(title) }
                 )
             }
         }
@@ -244,7 +248,7 @@ fun FancyIndicatorTabs() {
 @Composable
 fun FancyIndicatorContainerTabs() {
     var state by remember { mutableStateOf(0) }
-    val titles = listOf("TAB 1", "TAB 2", "TAB 3")
+    val titles = listOf("Tab 1", "Tab 2", "Tab 3")
 
     val indicator = @Composable { tabPositions: List<TabPosition> ->
         FancyAnimatedIndicator(tabPositions = tabPositions, selectedTabIndex = state)
@@ -257,9 +261,9 @@ fun FancyIndicatorContainerTabs() {
         ) {
             titles.forEachIndexed { index, title ->
                 Tab(
-                    text = { Text(title) },
                     selected = state == index,
-                    onClick = { state = index }
+                    onClick = { state = index },
+                    text = { Text(title) }
                 )
             }
         }
@@ -275,16 +279,16 @@ fun FancyIndicatorContainerTabs() {
 fun ScrollingFancyIndicatorContainerTabs() {
     var state by remember { mutableStateOf(0) }
     val titles = listOf(
-        "TAB 1",
-        "TAB 2",
-        "TAB 3 WITH LOTS OF TEXT",
-        "TAB 4",
-        "TAB 5",
-        "TAB 6 WITH LOTS OF TEXT",
-        "TAB 7",
-        "TAB 8",
-        "TAB 9 WITH LOTS OF TEXT",
-        "TAB 10"
+        "Tab 1",
+        "Tab 2",
+        "Tab 3 with lots of text",
+        "Tab 4",
+        "Tab 5",
+        "Tab 6 with lots of text",
+        "Tab 7",
+        "Tab 8",
+        "Tab 9 with lots of text",
+        "Tab 10"
     )
     val indicator = @Composable { tabPositions: List<TabPosition> ->
         FancyAnimatedIndicator(tabPositions = tabPositions, selectedTabIndex = state)
@@ -297,9 +301,9 @@ fun ScrollingFancyIndicatorContainerTabs() {
         ) {
             titles.forEachIndexed { index, title ->
                 Tab(
-                    text = { Text(title) },
                     selected = state == index,
-                    onClick = { state = index }
+                    onClick = { state = index },
+                    text = { Text(title) }
                 )
             }
         }
@@ -322,7 +326,9 @@ fun FancyTab(title: String, onClick: () -> Unit, selected: Boolean) {
             Box(
                 Modifier.size(10.dp)
                     .align(Alignment.CenterHorizontally)
-                    .background(color = if (selected) Color.Red else Color.White)
+                    .background(
+                        color = if (selected) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.background)
             )
             Text(
                 text = title,
@@ -349,7 +355,11 @@ fun FancyIndicator(color: Color, modifier: Modifier = Modifier) {
 @Sampled
 @Composable
 fun FancyAnimatedIndicator(tabPositions: List<TabPosition>, selectedTabIndex: Int) {
-    val colors = listOf(Color.Yellow, Color.Red, Color.Green)
+    val colors = listOf(
+        MaterialTheme.colorScheme.primary,
+        MaterialTheme.colorScheme.secondary,
+        MaterialTheme.colorScheme.tertiary,
+    )
     val transition = updateTransition(selectedTabIndex)
     val indicatorStart by transition.animateDp(
         transitionSpec = {

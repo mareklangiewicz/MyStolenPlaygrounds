@@ -22,7 +22,11 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.catalog.library.model.Theme
 import androidx.compose.material3.catalog.library.ui.theme.ThemePicker
 import androidx.compose.material3.catalog.library.util.GuidelinesUrl
@@ -33,9 +37,10 @@ import androidx.compose.material3.catalog.library.util.ReleasesUrl
 import androidx.compose.material3.catalog.library.util.SourceUrl
 import androidx.compose.material3.catalog.library.util.TermsUrl
 import androidx.compose.material3.catalog.library.util.openUrl
+import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -88,8 +93,8 @@ fun CatalogScaffold(
             scrimColor = SheetScrimColor
         ) {
             val context = LocalContext.current
-            val state = rememberTopAppBarScrollState()
-            val scrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior(state) }
+            val scrollBehavior =
+                TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
             Scaffold(
                 topBar = {
                     CatalogTopAppBar(
