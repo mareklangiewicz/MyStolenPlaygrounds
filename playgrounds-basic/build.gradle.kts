@@ -28,13 +28,15 @@ android {
     val uwidgetsCommonKotlinPath = uwidgetsRootPath / "uwidgets/src/commonMain/kotlin"
     val uwidgetsHackyKotlinPath = uwidgetsRootPath / "uwidgets/src/hackyMain/kotlin"
     val uwidgetsJvmKotlinPath = uwidgetsRootPath / "uwidgets/src/jvmMain/kotlin"
+    val uwidgetsAndroKotlinPath = uwidgetsRootPath / "uwidgets/src/androidMain/kotlin"
     val udemoCommonKotlinPath = uwidgetsRootPath / "udemo/src/commonMain/kotlin"
     val udemoHackyKotlinPath = uwidgetsRootPath / "udemo/src/hackyMain/kotlin"
     val udemoJvmKotlinPath = uwidgetsRootPath / "udemo/src/jvmMain/kotlin"
-    val uwidgetsPackages = listOf("umath", "utheme", "uwidgets") // ulog skipped because we implement android version
+    val uwidgetsPackages = listOf("umath", "utheme", "uwidgets", "ulogapi")
     val uwidgetsPathsForAndroid = uwidgetsPackages.map { uwidgetsCommonKotlinPath / it } +
         uwidgetsPackages.map { uwidgetsJvmKotlinPath / it } +
         uwidgetsHackyKotlinPath / "hack" +
+        uwidgetsAndroKotlinPath / "ulogandro" +
         udemoCommonKotlinPath / "udemo" +
         udemoJvmKotlinPath / "udemo" +
         udemoHackyKotlinPath / "hack"
