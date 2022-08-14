@@ -24,24 +24,24 @@ dependencies {
 }
 
 android {
-    sourceSets["main"].run {
-        val uwidgetsRootPath = rootProjectPath.parent!! / "UWidgets"
-        val uwidgetsCommonKotlinPath = uwidgetsRootPath / "uwidgets/src/commonMain/kotlin"
-        val uwidgetsHackyKotlinPath = uwidgetsRootPath / "uwidgets/src/hackyMain/kotlin"
-        val uwidgetsJvmKotlinPath = uwidgetsRootPath / "uwidgets/src/jvmMain/kotlin"
-        val udemoCommonKotlinPath = uwidgetsRootPath / "udemo/src/commonMain/kotlin"
-        val udemoHackyKotlinPath = uwidgetsRootPath / "udemo/src/hackyMain/kotlin"
-        val udemoJvmKotlinPath = uwidgetsRootPath / "udemo/src/jvmMain/kotlin"
-        val uwidgetsPackages = listOf("umath", "utheme", "uwidgets")
-        val uwidgetsPathsForAndroid = uwidgetsPackages.map { uwidgetsCommonKotlinPath / it } +
-                uwidgetsPackages.map { uwidgetsJvmKotlinPath / it } +
-                uwidgetsHackyKotlinPath / "hack" +
-                udemoCommonKotlinPath / "udemo" +
-                udemoJvmKotlinPath / "udemo" +
-                udemoHackyKotlinPath / "hack"
+    val uwidgetsRootPath = rootProjectPath.parent!! / "UWidgets"
+    val uwidgetsJvmTestPath = uwidgetsRootPath / "uwidgets/src/jvmTest/kotlin"
+    val uwidgetsCommonKotlinPath = uwidgetsRootPath / "uwidgets/src/commonMain/kotlin"
+    val uwidgetsHackyKotlinPath = uwidgetsRootPath / "uwidgets/src/hackyMain/kotlin"
+    val uwidgetsJvmKotlinPath = uwidgetsRootPath / "uwidgets/src/jvmMain/kotlin"
+    val udemoCommonKotlinPath = uwidgetsRootPath / "udemo/src/commonMain/kotlin"
+    val udemoHackyKotlinPath = uwidgetsRootPath / "udemo/src/hackyMain/kotlin"
+    val udemoJvmKotlinPath = uwidgetsRootPath / "udemo/src/jvmMain/kotlin"
+    val uwidgetsPackages = listOf("umath", "utheme", "uwidgets") // ulog skipped because we implement android version
+    val uwidgetsPathsForAndroid = uwidgetsPackages.map { uwidgetsCommonKotlinPath / it } +
+        uwidgetsPackages.map { uwidgetsJvmKotlinPath / it } +
+        uwidgetsHackyKotlinPath / "hack" +
+        udemoCommonKotlinPath / "udemo" +
+        udemoJvmKotlinPath / "udemo" +
+        udemoHackyKotlinPath / "hack"
 
-        kotlin.srcDirs(*uwidgetsPathsForAndroid.map { it.toFile() }.toTypedArray())
-    }
+    sourceSets["main"].kotlin.srcDirs(*uwidgetsPathsForAndroid.map { it.toFile() }.toTypedArray())
+    sourceSets["androidTest"].kotlin.srcDir(uwidgetsJvmTestPath.toFile())
 }
 
 // region [Kotlin Module Build Template]
