@@ -25,7 +25,6 @@ dependencies {
 
 android {
     val uwidgetsRootPath = rootProjectPath.parent!! / "UWidgets"
-    val uwidgetsJvmTestPath = uwidgetsRootPath / "uwidgets/src/jvmTest/kotlin"
     val uwidgetsCommonKotlinPath = uwidgetsRootPath / "uwidgets/src/commonMain/kotlin"
     val uwidgetsHackyKotlinPath = uwidgetsRootPath / "uwidgets/src/hackyMain/kotlin"
     val uwidgetsJvmKotlinPath = uwidgetsRootPath / "uwidgets/src/jvmMain/kotlin"
@@ -39,9 +38,10 @@ android {
         udemoCommonKotlinPath / "udemo" +
         udemoJvmKotlinPath / "udemo" +
         udemoHackyKotlinPath / "hack"
-
     sourceSets["main"].kotlin.srcDirs(*uwidgetsPathsForAndroid.map { it.toFile() }.toTypedArray())
-    sourceSets["androidTest"].kotlin.srcDir(uwidgetsJvmTestPath.toFile())
+
+    val udemoJvmUSpekFunPath = uwidgetsRootPath / "udemo/src/jvmTest/kotlin/uspekfun"
+    sourceSets["androidTest"].kotlin.srcDir(udemoJvmUSpekFunPath.toFile())
 }
 
 // region [Kotlin Module Build Template]
