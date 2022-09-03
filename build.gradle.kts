@@ -71,6 +71,14 @@ sourceFun {
             if (interesting && "Window" !in name) it else null
         }
     }
+    val stealComposeUiGraphicsTest by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
+        src = androidxSupportPath / "compose/ui/ui-graphics/src/androidAndroidTest/kotlin/androidx/compose/ui/graphics"
+        out = stolenBasicAndroTestsPath / "ui-graphics-tests"
+        setTransformFun { it }
+    }
+
+
     val stealComposeAnnotations by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "annotation/annotation-sampled/src/main/java/androidx/annotation"
@@ -164,6 +172,7 @@ sourceFun {
     val stealAll by reg { dependsOn(
         stealComposeFoundationTests,
         stealComposeFoundationLayoutTests,
+        stealComposeUiGraphicsTest,
         stealComposeAnnotations,
         stealComposeSourcesAll,
         stealComposeSamplesAll,
