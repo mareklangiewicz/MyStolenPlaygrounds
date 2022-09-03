@@ -32,7 +32,7 @@ android {
     val udemoCommonKotlinPath = uwidgetsRootPath / "udemo/src/commonMain/kotlin"
     val udemoHackyKotlinPath = uwidgetsRootPath / "udemo/src/hackyMain/kotlin"
     val udemoJvmKotlinPath = uwidgetsRootPath / "udemo/src/jvmMain/kotlin"
-    val uwidgetsPackages = listOf("udata", "ulogapi", "umath", "usystem", "utheme", "uwidgets")
+    val uwidgetsPackages = listOf("udata", "ulogapi", "umath", "usystem", "uneons", "utheme", "uwidgets")
     val uwidgetsPathsForAndroid = uwidgetsPackages.map { uwidgetsCommonKotlinPath / it } +
         uwidgetsPackages.map { uwidgetsJvmKotlinPath / it } +
         uwidgetsHackyKotlinPath / "hack" +

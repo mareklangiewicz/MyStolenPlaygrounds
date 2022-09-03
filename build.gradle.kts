@@ -20,20 +20,14 @@ defaultGroupAndVerAndDescription(libs.MyStolenPlaygrounds)
 
 defaultSonatypeOssStuffFromSystemEnvs()
 
-val rootBuildPath = rootProjectPath / "build.gradle.kts"
-
 val playgroundsAppPath = rootProjectPath / "playgrounds-app"
 val playgroundsBasicPath = rootProjectPath / "playgrounds-basic"
 val playgroundsUiSamplesPath = rootProjectPath / "playgrounds-ui-samples"
 val playgroundsMaterial3Path = rootProjectPath / "playgrounds-material3"
 
-val playgroundsAppBuildPath = playgroundsAppPath / "build.gradle.kts"
-val playgroundsBasicBuildPath = playgroundsBasicPath / "build.gradle.kts"
-val playgroundsUiSamplesBuildPath = playgroundsUiSamplesPath / "build.gradle.kts"
-val playgroundsMaterial3BuildPath = playgroundsMaterial3Path / "build.gradle.kts"
-
 val rootAndroidxPath = "/home/marek/code/android/androidx-main".toPath()
 // val rootAndroidxPath = "/home/marek/code/kotlin/compose-jb/compose".toPath()
+
 val androidxSupportPath = rootAndroidxPath / "frameworks/support"
 
 val srcAppKotlinPath = playgroundsAppPath / "src/main/kotlin"
