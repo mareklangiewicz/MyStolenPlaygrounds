@@ -9,10 +9,30 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.*
+import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 
 data class MySampleData(val title: String, val path: String?, val code: @Composable () -> Unit)
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+fun PlaygroundsTemplatePreview() {
+    PlaygroundsTheme(darkTheme = false) {
+        PlaygroundsTemplate()
+    }
+}
+
+@Composable
+private fun HelloColumn() {
+    MyFancyFrame(title = "Hello!") {
+        val d = LocalDensity.current.density
+        Column {
+            for (a in 1..5)
+                Text(text = "Hello $a d:$d")
+        }
+    }
+}
 
 @Composable
 fun PlaygroundsTemplate() {
@@ -20,19 +40,17 @@ fun PlaygroundsTemplate() {
     val samplesDir = "/home/marek/code/kotlin/MyStolenPlaygrounds/lib-ui-samples/src/main/kotlin"
 
     val samples = listOf(
-        MySampleData("Some Sample 0", "${samplesDir}/blabla.kt") { Text("Some Sample 0") }, // REPLACE
-        MySampleData("Some Sample 1", "${samplesDir}/blabla.kt") { Text("Some Sample 1") }, // REMOVE
+        MySampleData("Version details", null) { MySimpleAssets("version-details") },
+        MySampleData("Some Sample 1", "${samplesDir}/blabla.kt") { Text("Some Sample 1") }, // REPLACE
         MySampleData("Some Sample 2", "${samplesDir}/blabla.kt") { Text("Some Sample 2") }, // REMOVE
-        MySampleData("Some Sample 3", "${samplesDir}/blabla.kt") { Text("Some Sample 3") } // REMOVE
+        MySampleData("Some Sample 3", "${samplesDir}/blabla.kt") { Text("Some Sample 3") }, // REMOVE
     )
 
     var selectedSample by remember { mutableStateOf(samples[0]) }
 
     Row {
         LazyVerticalGrid(columns = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
-            item { MySimpleAssets("version-details") }
-            for (sample in samples)
-                MySampleItem(sample) { selectedSample = it; println(it.path) }
+            for (sample in samples) MySampleItem(sample) { selectedSample = it; println(it.path) }
             MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
             MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
             MyFancyItem("Some Sample") { Text("Some Sample") } // REMOVE
@@ -49,8 +67,16 @@ fun LazyGridScope.MySampleItem(data: MySampleData, onSampleClick: (MySampleData)
     MyFancyItem(data.title, { onSampleClick(data) }, data.code)
 }
 
+internal val LocalFancyItemShowContent = staticCompositionLocalOf { false }
+
 fun LazyGridScope.MyFancyItem(title: String, onClick: () -> Unit = {}, content: @Composable () -> Unit) {
-    item { MyFancyFrame(Modifier.size(164.dp, 256.dp), title = title, onClick = onClick) { content() } }
+    item {
+        val showContent = LocalFancyItemShowContent.current
+        val m = if (showContent) Modifier.size(164.dp, 256.dp) else Modifier
+        MyFancyFrame(m, title = title, onClick = onClick) {
+            if (showContent) content() else Text("Show", Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        }
+    }
 }
 
 // region Generated Playgrounds from PlaygroundsTemplate
@@ -60,6 +86,7 @@ fun Playgrounds() {
     val samplesDir = "/home/marek/code/kotlin/MyStolenPlaygrounds/lib-ui-samples/src/main/kotlin"
 
     val samples = listOf(
+        MySampleData("Version details", null) { MySimpleAssets("version-details") },
         MySampleData("androidx.compose.animation.core.samples.GestureAnimationSample", "${samplesDir}/stolen/samples-animation-core/TransitionSamples.kt") { androidx.compose.animation.core.samples.GestureAnimationSample() },
         MySampleData("androidx.compose.animation.core.samples.AnimateFloatSample", "${samplesDir}/stolen/samples-animation-core/TransitionSamples.kt") { androidx.compose.animation.core.samples.AnimateFloatSample() },
         MySampleData("androidx.compose.animation.core.samples.DoubleTapToLikeSample", "${samplesDir}/stolen/samples-animation-core/TransitionSamples.kt") { androidx.compose.animation.core.samples.DoubleTapToLikeSample() },
@@ -159,9 +186,7 @@ fun Playgrounds() {
 
     Row {
         LazyVerticalGrid(columns = GridCells.Adaptive(164.dp), modifier = Modifier.weight(.5f)) {
-            item { MySimpleAssets("version-details") }
-            for (sample in samples)
-                MySampleItem(sample) { selectedSample = it; println(it.path) }
+            for (sample in samples) MySampleItem(sample) { selectedSample = it; println(it.path) }
         }
         MyFancyFrame(Modifier.weight(1f), selectedSample.title) {
             selectedSample.code()
@@ -170,22 +195,3 @@ fun Playgrounds() {
 }
 // endregion Generated Playgrounds from PlaygroundsTemplate
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
-@Composable
-fun PlaygroundsTemplatePreview() {
-    PlaygroundsTheme(darkTheme = false) {
-        PlaygroundsTemplate()
-    }
-}
-
-
-@Composable
-private fun HelloColumn() {
-    MyFancyFrame(title = "Hello!") {
-        val d = LocalDensity.current.density
-        Column {
-            for (a in 1..5)
-                Text(text = "Hello $a d:$d")
-        }
-    }
-}

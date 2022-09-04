@@ -19,12 +19,10 @@ fun MySimpleAssets(path: String) {
             }
         }
     }
-    MyFancyFrame(title = path) {
-        Column {
-            for ((name, content) in values) UColumn {
-                Text(name)
-                Text(content)
-            }
+    Column {
+        for ((name, content) in values) UColumn {
+            UText(name)
+            UBoxedText(content, bold = true, mono = true)
         }
     }
 }

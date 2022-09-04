@@ -30,17 +30,24 @@ private fun MainContent() {
     CompositionLocalProvider(LocalDensity provides Density(density.density * scale, density.fontScale)) {
         UTabs(
             "UDemo" to { UDemo() },
-            "School" to { School() },
             "Playgrounds" to {
                 UTabs(
-                    "My Stolen Playgrounds" to {
+                    "My Stolen Playgrounds (show on click)" to {
                         PlaygroundsTheme {
                             Surface(color = Color.White) {
                                 Playgrounds()
                             }
                         }
                     },
-                    "TODO: Other playgrounds??" to { Text("TODO") }
+                    "My Stolen Playgrounds (show in grid)" to {
+                        PlaygroundsTheme {
+                            Surface(color = Color.White) {
+                                CompositionLocalProvider(LocalFancyItemShowContent provides true) { Playgrounds() }
+                            }
+                        }
+
+                    },
+                    "School" to { School() },
                 )
             },
             "Material3" to {
