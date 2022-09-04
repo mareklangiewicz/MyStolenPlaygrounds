@@ -9,12 +9,8 @@ import pl.mareklangiewicz.uwidgets.*
 
 @RunWith(USpekJUnit4Runner::class)
 class MyPlaygroundsUSpek {
-
-    init {
-        uspekLog = { ulogw("uspek ${it.status}") }
-    }
-
+    init { uspekLog = { ulogw("uspek ${it.status}") } }
     @get:Rule val rule = createComposeRule()
-
-    @USpekTestTree(33) fun melusf() = rule.MyExaminedLayoutUSpekFun()
+    private val controller = URuleComposeController(rule)
+    @USpekTestTree(33) fun melusf() = controller.MyExaminedLayoutUSpekFun()
 }
