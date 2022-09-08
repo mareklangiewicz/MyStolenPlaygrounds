@@ -43,7 +43,7 @@ android {
         udemoHackyKotlinPath / "hack"
     sourceSets["main"].kotlin.srcDirs(*uwidgetsPathsForAndroid.map { it.toFile() }.toTypedArray())
 
-    val udemoJvmUSpekFunPath = uwidgetsRootPath / "udemo/src/jvmTest/kotlin/uspekrule"
+    val udemoJvmUSpekFunPath = uwidgetsRootPath / "udemo/src/jvmTest/kotlin/uspekstuff"
     sourceSets["androidTest"].kotlin.srcDir(udemoJvmUSpekFunPath.toFile())
 }
 

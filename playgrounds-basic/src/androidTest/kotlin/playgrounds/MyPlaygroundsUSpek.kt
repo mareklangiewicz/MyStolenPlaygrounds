@@ -11,6 +11,6 @@ import pl.mareklangiewicz.uwidgets.*
 class MyPlaygroundsUSpek {
     init { uspekLog = { ulogw("uspek ${it.status}") } }
     @get:Rule val rule = createComposeRule()
-    private val controller = URuleComposeController(rule)
-    @USpekTestTree(33) fun melusf() = controller.MyExaminedLayoutUSpekFun()
+    private val scope = UComposeRuleScope(rule)
+    @USpekTestTree(33) fun melusf() = scope.MyExaminedLayoutUSpekFun(rule.density)
 }
