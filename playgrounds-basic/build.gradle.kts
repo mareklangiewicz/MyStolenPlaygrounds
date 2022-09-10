@@ -38,12 +38,13 @@ android {
         uwidgetsHackyKotlinPath / "hack" +
         uwidgetsAndroKotlinPath / "ulogandro" +
         udemoCommonKotlinPath / "udemo" +
+        udemoCommonKotlinPath / "uspek" +
         udemoCommonKotlinPath / "uspekfun" +
         udemoJvmKotlinPath / "udemo" +
         udemoHackyKotlinPath / "hack"
     sourceSets["main"].kotlin.srcDirs(*uwidgetsPathsForAndroid.map { it.toFile() }.toTypedArray())
 
-    val udemoJvmUSpekFunPath = uwidgetsRootPath / "udemo/src/jvmTest/kotlin/uspekstuff"
+    val udemoJvmUSpekFunPath = uwidgetsRootPath / "udemo/src/jvmTest/kotlin/uspek"
     sourceSets["androidTest"].kotlin.srcDir(udemoJvmUSpekFunPath.toFile())
 }
 
