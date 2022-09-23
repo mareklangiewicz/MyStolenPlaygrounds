@@ -8,7 +8,6 @@ import org.junit.runner.*
 import pl.mareklangiewicz.udemo.*
 import pl.mareklangiewicz.ulog.*
 import pl.mareklangiewicz.uspek.*
-import pl.mareklangiewicz.uwidgets.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(USpekJUnit4Runner::class)
