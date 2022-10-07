@@ -1,7 +1,6 @@
 package pl.mareklangiewicz.playgrounds
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.*
 import kotlinx.coroutines.*
@@ -22,7 +21,7 @@ fun MySimpleAssets(path: String) {
     Column {
         for ((name, content) in values) UColumn {
             UText(name)
-            UBoxedText(content, bold = true, mono = true)
+            UText(content, bold = true, mono = true)
         }
     }
 }
