@@ -453,17 +453,17 @@ fun CustomOutlinedTextFieldBasedOnDecorationBox() {
                     start = 8.dp, end = 8.dp
                 ),
                 // update border thickness and shape
-                border = {
-                    TextFieldDefaults.BorderBox(
-                        enabled = enabled,
-                        isError = false,
-                        colors = colors,
-                        interactionSource = interactionSource,
-                        shape = RectangleShape,
-                        unfocusedBorderThickness = 2.dp,
-                        focusedBorderThickness = 4.dp
-                    )
-                },
+                // border = {
+                //     TextFieldDefaults.BorderBox(
+                //         enabled = enabled,
+                //         isError = false,
+                //         colors = colors,
+                //         interactionSource = interactionSource,
+                //         shape = RectangleShape,
+                //         unfocusedBorderThickness = 2.dp,
+                //         focusedBorderThickness = 4.dp
+                //     )
+                // },
                 // update border colors
                 colors = colors
             )
