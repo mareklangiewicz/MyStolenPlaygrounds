@@ -115,6 +115,12 @@ sourceFun {
         out = stolenUiSamplesKotlinPath / "samples-ui-graphics"
         setTransformFun { it }
     }
+    val stealComposeSamplesFoundation by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
+        src = androidxSupportPath / "compose/foundation/foundation/samples/src/main/java/androidx/compose/foundation/samples"
+        out = stolenUiSamplesKotlinPath / "samples-foundation"
+        setTransformFun { it }
+    }
     val stealComposeSamplesAnimationCore by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples"
@@ -160,6 +166,7 @@ sourceFun {
     val stealComposeSamplesAll by reg { dependsOn(
         stealComposeSamplesUi,
         stealComposeSamplesUiGraphics,
+        stealComposeSamplesFoundation,
         stealComposeSamplesAnimationCore,
         stealComposeSamplesAnimation,
     ) }
