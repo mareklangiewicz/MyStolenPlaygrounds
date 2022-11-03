@@ -29,6 +29,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.browser:browser:1.4.0")
     implementation(project(":playgrounds-basic"))
     implementation(project(":playgrounds-ui-samples"))
     implementation(project(":playgrounds-material3"))
