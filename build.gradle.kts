@@ -40,6 +40,7 @@ val stolenBasicKotlinPath = srcBasicKotlinPath / "stolen"
 val stolenBasicJavaPath = srcBasicJavaPath // java files have to be in directories same as packages :(
 val stolenUiSamplesKotlinPath = srcUiSamplesKotlinPath / "stolen"
 val stolenMaterial3KotlinPath = srcMaterial3KotlinPath / "stolen"
+val stolenBasicUnitTestsPath = playgroundsBasicPath / "src/test/kotlin/stolen"
 val stolenBasicAndroTestsPath = playgroundsBasicPath / "src/androidTest/kotlin/stolen"
 val templatesAppSrcKotlinPath = srcAppKotlinPath / "templates"
 
@@ -56,13 +57,20 @@ sourceFun {
 
     grp = "steal"
 
-    val stealComposeFoundationTests by reg {
+    val stealComposeFoundationUnitTests by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
+        src = androidxSupportPath / "compose/foundation/foundation/src/test/kotlin/androidx/compose/foundation"
+        out = stolenBasicUnitTestsPath / "foundation-tests"
+        setTransformFun { it }
+    }
+
+    val stealComposeFoundationAndroTests by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
         out = stolenBasicAndroTestsPath / "foundation-tests"
         setTransformFun { if (name.containsOneOf("CanvasTest", "Foundation", "TestActivity")) it else null }
     }
-    val stealComposeFoundationLayoutTests by reg {
+    val stealComposeFoundationLayoutAndroTests by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/foundation/foundation-layout/src/androidAndroidTest/kotlin/androidx/compose/foundation/layout"
         out = stolenBasicAndroTestsPath / "foundation-layout-tests"
@@ -71,7 +79,7 @@ sourceFun {
             if (interesting && "Window" !in name) it else null
         }
     }
-    val stealComposeUiGraphicsTest by reg {
+    val stealComposeUiGraphicsAndroTests by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/ui/ui-graphics/src/androidAndroidTest/kotlin/androidx/compose/ui/graphics"
         out = stolenBasicAndroTestsPath / "ui-graphics-tests"
@@ -89,6 +97,19 @@ sourceFun {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/ui/ui-android-stubs/src/main/java/android/view"
         out = stolenBasicJavaPath / "android/view"
+        setTransformFun { it }
+    }
+
+    val stealComposeSourcesUtilsCommon by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
+        src = androidxSupportPath / "compose/ui/ui-util/src/commonMain/kotlin/androidx/compose/ui/util"
+        out = stolenBasicKotlinPath / "compose-utils"
+        setTransformFun { it }
+    }
+    val stealComposeSourcesUtilsAndro by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
+        src = androidxSupportPath / "compose/ui/ui-util/src/androidMain/kotlin/androidx/compose/ui/util"
+        out = stolenBasicKotlinPath / "compose-androutils"
         setTransformFun { it }
     }
     val stealComposeSourcesTestUtilsCommon by reg {
@@ -160,6 +181,8 @@ sourceFun {
     }
     val stealComposeSourcesAll by reg { dependsOn(
         stealComposeSourcesJava,
+        stealComposeSourcesUtilsCommon,
+        stealComposeSourcesUtilsAndro,
         stealComposeSourcesTestUtilsCommon,
         stealComposeSourcesTestUtilsAndro,
     ) }
@@ -177,9 +200,10 @@ sourceFun {
         stealComposeCommonDemos,
     ) }
     val stealAll by reg { dependsOn(
-        stealComposeFoundationTests,
-        stealComposeFoundationLayoutTests,
-        stealComposeUiGraphicsTest,
+        stealComposeFoundationUnitTests,
+        stealComposeFoundationAndroTests,
+        stealComposeFoundationLayoutAndroTests,
+        stealComposeUiGraphicsAndroTests,
         stealComposeAnnotations,
         stealComposeSourcesAll,
         stealComposeSamplesAll,
