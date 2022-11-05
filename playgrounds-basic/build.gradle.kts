@@ -46,6 +46,10 @@ android {
 
     val udemoJvmUSpekFunPath = uwidgetsRootPath / "udemo/src/jvmTest/kotlin/uspek"
     sourceSets["androidTest"].kotlin.srcDir(udemoJvmUSpekFunPath.toFile())
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 // region [Kotlin Module Build Template]
@@ -207,6 +211,7 @@ fun DependencyHandler.defaultAndroTestDeps(
 ) = deps.run {
     addAll(
         configuration,
+        kotlinTestJUnit,
         junit4, // FIXME_someday: when will android move to JUnit5?
         uspekxJUnit4,
         androidxEspressoCore,
@@ -215,10 +220,8 @@ fun DependencyHandler.defaultAndroTestDeps(
         androidxTestRunner,
         androidxTestExtTruth,
         androidxTestExtJUnit,
-        "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0",
-//        mockitoKotlin2,
-        mockitoAndroid
     )
+    addMockitoStuffFIXME(configuration)
     if (withCompose) addAll(
         configuration,
         composeAndroidUiTest,
@@ -226,6 +229,19 @@ fun DependencyHandler.defaultAndroTestDeps(
         composeAndroidUiTestManifest,
     )
 }
+
+// FIXME: fix mockito issues with some unit tests
+// like TextSelectionLongPressDragTest
+// see also: https://github.com/mockito/mockito/issues/2625
+fun DependencyHandler.addMockitoStuffFIXME(configuration: String) = deps.run { addAll(configuration,
+    // "net.bytebuddy:byte-buddy:1.12.10",
+    "net.bytebuddy:byte-buddy:1.9.0",
+    "org.mockito:mockito-core:2.23.0",
+    "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0",
+    // mockitoKotlin2,
+    // mockitoKotlin4,
+    mockitoAndroid // FIXME: also sync version with androidx repo
+) }
 
 fun MutableSet<String>.defaultAndroExcludedResources() = addAll(
     listOf(
