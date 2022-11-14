@@ -1,3 +1,4 @@
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE")
 /*
  * Copyright 2019 The Android Open Source Project
  *
@@ -43,6 +44,7 @@ class TextDelegateTest {
         )
 
         assertThat(textDelegate.maxLines).isEqualTo(Int.MAX_VALUE)
+        assertThat(textDelegate.minLines).isEqualTo(DefaultMinLines)
         assertThat(textDelegate.overflow).isEqualTo(TextOverflow.Clip)
     }
 
@@ -72,6 +74,21 @@ class TextDelegateTest {
         )
 
         assertThat(textDelegate.maxLines).isEqualTo(maxLines)
+    }
+
+    @Test
+    fun `constructor with customized minLines`() {
+        val minLines = 8
+
+        val textDelegate = TextDelegate(
+            text = AnnotatedString(text = ""),
+            style = TextStyle.Default,
+            minLines = minLines,
+            density = density,
+            fontFamilyResolver = fontFamilyResolver
+        )
+
+        assertThat(textDelegate.minLines).isEqualTo(minLines)
     }
 
     @Test

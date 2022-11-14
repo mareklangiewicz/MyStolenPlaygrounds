@@ -185,7 +185,7 @@ fun DependencyHandler.defaultAndroTestDeps(
         androidxTestRunner,
         androidxTestExtTruth,
         androidxTestExtJUnit,
-        mockitoKotlin2nhaarman,
+        mockitoKotlin4,
     )
     if (withCompose) addAll(
         configuration,

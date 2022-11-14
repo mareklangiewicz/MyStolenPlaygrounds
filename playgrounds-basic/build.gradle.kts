@@ -220,7 +220,7 @@ fun DependencyHandler.defaultAndroTestDeps(
         androidxTestRunner,
         androidxTestExtTruth,
         androidxTestExtJUnit,
-        mockitoKotlin2nhaarman,
+        mockitoKotlin4,
     )
     if (withCompose) addAll(
         configuration,
@@ -229,8 +229,6 @@ fun DependencyHandler.defaultAndroTestDeps(
         composeAndroidUiTestManifest,
     )
 }
-// FIXME_someday: fix mockito issues with some unit tests
-// like TextSelectionLongPressDragTest
 
 fun MutableSet<String>.defaultAndroExcludedResources() = addAll(
     listOf(

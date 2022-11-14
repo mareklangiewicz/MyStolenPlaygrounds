@@ -121,6 +121,7 @@ fun Playgrounds() {
         MySampleData("androidx.compose.ui.samples.PainterResourceSample", "${samplesDir}/stolen/samples-ui/PainterSample.kt") { androidx.compose.ui.samples.PainterResourceSample() },
         MySampleData("androidx.compose.ui.samples.ChangeOpacity", "${samplesDir}/stolen/samples-ui/LayerModifierSamples.kt") { androidx.compose.ui.samples.ChangeOpacity() },
         MySampleData("androidx.compose.ui.samples.AnimateFadeIn", "${samplesDir}/stolen/samples-ui/LayerModifierSamples.kt") { androidx.compose.ui.samples.AnimateFadeIn() },
+        MySampleData("androidx.compose.ui.samples.CompositingStrategyModulateAlpha", "${samplesDir}/stolen/samples-ui/LayerModifierSamples.kt") { androidx.compose.ui.samples.CompositingStrategyModulateAlpha() },
         MySampleData("androidx.compose.ui.samples.InspectableModifierSample", "${samplesDir}/stolen/samples-ui/InspectableModifierSample.kt") { androidx.compose.ui.samples.InspectableModifierSample() },
         MySampleData("androidx.compose.ui.samples.LookaheadLayoutSample", "${samplesDir}/stolen/samples-ui/LookaheadLayoutSample.kt") { androidx.compose.ui.samples.LookaheadLayoutSample() },
         MySampleData("androidx.compose.ui.samples.LookaheadLayoutCoordinatesSample", "${samplesDir}/stolen/samples-ui/LookaheadLayoutSample.kt") { androidx.compose.ui.samples.LookaheadLayoutCoordinatesSample() },
