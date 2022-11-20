@@ -96,6 +96,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+// import androidx.paging.compose.demos.PagingDemos
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -125,6 +126,7 @@ val LazyListDemos = listOf(
     ComposableDemo("List drag and drop") { LazyColumnDragAndDropDemo() },
     ComposableDemo("Grid drag and drop") { LazyGridDragAndDropDemo() },
     ComposableDemo("Staggered grid") { LazyStaggeredGridDemo() },
+    // PagingDemos
 )
 
 @Preview
