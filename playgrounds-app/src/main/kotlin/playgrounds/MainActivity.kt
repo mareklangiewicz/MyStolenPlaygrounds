@@ -6,6 +6,7 @@ import android.os.*
 import androidx.activity.*
 import androidx.activity.compose.*
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.demos.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.integration.demos.common.*
 import androidx.compose.material3.*
@@ -57,10 +58,11 @@ fun MainContent() {
                     "School" to { School() },
                 )
             },
-            "Material3" to {
+            "AX Demos" to {
                 UTabs(
                     "Material 3 Catalog" to { Material3CatalogApp() },
                     "Material 3 Demos" to { MyDemosSelector(Material3Demos) },
+                    "Foundation Demos" to { MyDemosSelector(FoundationDemos) },
                 )
             },
             "Browser" to {
