@@ -18,5 +18,5 @@ rootProject.name = "MyStolenPlaygrounds"
 include(":playgrounds-app")
 include(":playgrounds-basic")
 include(":playgrounds-ui-samples")
-include(":playgrounds-material3") // TODO NOW: rename to playgrounds-demos
+include(":playgrounds-demos")
 
