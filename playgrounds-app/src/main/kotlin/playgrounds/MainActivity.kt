@@ -5,7 +5,7 @@ import android.net.*
 import android.os.*
 import androidx.activity.*
 import androidx.activity.compose.*
-import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.*
 import androidx.compose.foundation.demos.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.integration.demos.common.*
@@ -83,8 +83,12 @@ private fun Context.launchBrowser(url: String) {
 
 @Composable
 private fun MyDemosSelector(demos: DemoCategory) {
-    val contents = demos.allLaunchableDemos().filterIsInstance<ComposableDemo>().map { demo ->
-        val content: @Composable () -> Unit = { demo.content {} }
+    val contents = demos.demos.map { demo ->
+        val content: @Composable () -> Unit = when (demo) {
+            is ComposableDemo -> { { demo.content {} } }
+            is DemoCategory -> { { MyDemosSelector(demo) } }
+            else -> { { UText(text = "$demo not supported") } }
+        }
         demo.title to content
     }
     UTabs(*contents.toTypedArray())
