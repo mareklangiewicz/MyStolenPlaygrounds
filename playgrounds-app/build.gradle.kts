@@ -31,7 +31,7 @@ android {
 dependencies {
     implementation("androidx.browser:browser:1.4.0")
     implementation(project(":playgrounds-basic"))
-    implementation(project(":playgrounds-ui-samples"))
+    implementation(project(":playgrounds-samples"))
     implementation(project(":playgrounds-demos"))
     defaultAndroTestDeps(configuration = "implementation", withCompose = true)
     // I use test stuff in main sources so I can add some tests sources to playgrounds app

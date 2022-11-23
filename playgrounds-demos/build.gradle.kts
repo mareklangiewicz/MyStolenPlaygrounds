@@ -19,7 +19,7 @@ defaultBuildTemplateForAndroidLib(
 )
 
 dependencies {
-    implementation(project(":playgrounds-ui-samples"))
+    implementation(project(":playgrounds-samples"))
     implementation(deps.composeAndroidMaterial3)
     implementation(deps.androidxNavigationCompose)
 }

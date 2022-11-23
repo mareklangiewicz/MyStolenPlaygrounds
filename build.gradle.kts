@@ -22,7 +22,7 @@ defaultSonatypeOssStuffFromSystemEnvs()
 
 val playgroundsAppPath = rootProjectPath / "playgrounds-app"
 val playgroundsBasicPath = rootProjectPath / "playgrounds-basic"
-val playgroundsUiSamplesPath = rootProjectPath / "playgrounds-ui-samples"
+val playgroundsSamplesPath = rootProjectPath / "playgrounds-samples"
 val playgroundsDemosPath = rootProjectPath / "playgrounds-demos"
 
 val rootAndroidxPath = "/home/marek/code/android/androidx-main".toPath()
@@ -33,12 +33,12 @@ val androidxSupportPath = rootAndroidxPath / "frameworks/support"
 val srcAppKotlinPath = playgroundsAppPath / "src/main/kotlin"
 val srcBasicKotlinPath = playgroundsBasicPath / "src/main/kotlin"
 val srcBasicJavaPath = playgroundsBasicPath / "src/main/java"
-val srcUiSamplesKotlinPath = playgroundsUiSamplesPath / "src/main/kotlin"
+val srcSamplesKotlinPath = playgroundsSamplesPath / "src/main/kotlin"
 val srcDemosKotlinPath = playgroundsDemosPath / "src/main/kotlin"
 
 val stolenBasicKotlinPath = srcBasicKotlinPath / "stolen"
 val stolenBasicJavaPath = srcBasicJavaPath // java files have to be in directories same as packages :(
-val stolenUiSamplesKotlinPath = srcUiSamplesKotlinPath / "stolen"
+val stolenSamplesKotlinPath = srcSamplesKotlinPath / "stolen"
 val stolenDemosKotlinPath = srcDemosKotlinPath / "stolen"
 val stolenBasicUnitTestsPath = playgroundsBasicPath / "src/test/kotlin/stolen"
 val stolenBasicAndroTestsPath = playgroundsBasicPath / "src/androidTest/kotlin/stolen"
@@ -90,7 +90,7 @@ sourceFun {
     val stealComposeAnnotations by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "annotation/annotation-sampled/src/main/java/androidx/annotation"
-        out = stolenUiSamplesKotlinPath / "androidx-annotation"
+        out = stolenSamplesKotlinPath / "androidx-annotation"
         setTransformFun { it }
     }
     val stealComposeSourcesJava by reg {
@@ -127,32 +127,32 @@ sourceFun {
     val stealComposeSamplesUi by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples"
-        out = stolenUiSamplesKotlinPath / "samples-ui"
+        out = stolenSamplesKotlinPath / "samples-ui"
         setTransformFun { it }
     }
     val stealComposeSamplesUiGraphics by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples"
-        out = stolenUiSamplesKotlinPath / "samples-ui-graphics"
+        out = stolenSamplesKotlinPath / "samples-ui-graphics"
         setTransformFun { it }
     }
     val foundation = androidxSupportPath / "compose/foundation/foundation"
     val stealComposeSamplesFoundation by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = foundation / "samples/src/main/java/androidx/compose/foundation/samples"
-        out = stolenUiSamplesKotlinPath / "samples-foundation"
+        out = stolenSamplesKotlinPath / "samples-foundation"
         setTransformFun { it }
     }
     val stealComposeSamplesAnimationCore by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples"
-        out = stolenUiSamplesKotlinPath / "samples-animation-core"
+        out = stolenSamplesKotlinPath / "samples-animation-core"
         setTransformFun { it }
     }
     val stealComposeSamplesAnimation by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples"
-        out = stolenUiSamplesKotlinPath / "samples-animation"
+        out = stolenSamplesKotlinPath / "samples-animation"
         setTransformFun { it }
     }
     val m3 = androidxSupportPath / "compose/material3/material3"
@@ -221,7 +221,7 @@ sourceFun {
     val processStolenUiSamples by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         dependsOn(stealComposeSamplesAll)
-        src = stolenUiSamplesKotlinPath
+        src = stolenSamplesKotlinPath
         out = templatesAppSrcKotlinPath
         setTaskAction { srcTree: FileTree, outDir: Directory ->
             val samples = mutableListOf<Pair<String, Path?>>() // funName to filePath
@@ -248,7 +248,7 @@ fun processComposeTemplates(
     interpolations = mapOf(
 //            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
 //            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
-    srcUiSamplesKotlinPath.toString() to "samplesDir",
+    srcSamplesKotlinPath.toString() to "samplesDir",
 ))
 
 fun processTemplates(
