@@ -305,12 +305,12 @@ fun String.interpolate(interpolations: Map<String, String>) =
 
 fun Path.toShortStr(interpolations: Map<String, String>) = toString().interpolate(interpolations)
 
-
 val ureSampledFunHeader = ure {
     1 of BOL
-    1 of ir("@Sampled")
+    // FIXME_later: sth like ureInAnyOrder...
+    1 of (ir("@Sampled") or ir("@Composable"))
     1..MAX of space
-    1 of ir("@Composable")
+    1 of (ir("@Sampled") or ir("@Composable"))
     1..MAX of space
     1 of ir("fun")
     1..MAX of space
