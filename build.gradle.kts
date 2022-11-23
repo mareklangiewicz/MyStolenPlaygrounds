@@ -218,7 +218,7 @@ sourceFun {
         stealComposeMaterial3All,
     ) }
 
-    val processStolenUiSamples by reg {
+    val processStolenSamples by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         dependsOn(stealComposeSamplesAll)
         src = stolenSamplesKotlinPath
