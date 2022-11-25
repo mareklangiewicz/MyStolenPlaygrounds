@@ -85,8 +85,8 @@ fun TaskCollection<Task>.defaultKotlinCompileOptions(
     kotlinOptions {
         jvmTarget = jvmTargetVer
         if (renderInternalDiagnosticNames) freeCompilerArgs = freeCompilerArgs + "-Xrender-internal-diagnostic-names"
-            // useful for example to suppress some errors when accessing internal code from some library, like:
-            // @file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER")
+        // useful for example to suppress some errors when accessing internal code from some library, like:
+        // @file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER")
     }
 }
 

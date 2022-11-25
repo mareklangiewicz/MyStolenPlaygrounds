@@ -46,11 +46,13 @@ fun RepositoryHandler.defaultRepos(
 
 fun TaskCollection<Task>.defaultKotlinCompileOptions(
     jvmTargetVer: String = vers.defaultJvm,
-    requiresOptIn: Boolean = true,
+    renderInternalDiagnosticNames: Boolean = false,
 ) = withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions {
         jvmTarget = jvmTargetVer
-        if (requiresOptIn) freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
+        if (renderInternalDiagnosticNames) freeCompilerArgs = freeCompilerArgs + "-Xrender-internal-diagnostic-names"
+        // useful for example to suppress some errors when accessing internal code from some library, like:
+        // @file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER")
     }
 }
 
@@ -177,6 +179,7 @@ fun DependencyHandler.defaultAndroTestDeps(
 ) = deps.run {
     addAll(
         configuration,
+        kotlinTestJUnit,
         junit4, // FIXME_someday: when will android move to JUnit5?
         uspekxJUnit4,
         androidxEspressoCore,
