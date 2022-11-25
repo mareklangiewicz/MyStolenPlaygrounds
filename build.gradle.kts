@@ -61,7 +61,7 @@ sourceFun {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/foundation/foundation/src/test/kotlin/androidx/compose/foundation"
         out = stolenBasicUnitTestsPath / "foundation-tests"
-        setTransformFun { it }
+        setTransformFun { it.withInternalAccessIssuesSuppressed() }
     }
 
     val stealComposeFoundationAndroTests by reg {
@@ -235,6 +235,16 @@ sourceFun {
             processComposeTemplates(outDir, samples)
         }
     }
+}
+
+fun String.withInternalAccessIssuesSuppressed(): String {
+    val r = ureKtComposeTestOutline().compile().matchEntire(this) ?: error("Incorrect compose test file")
+    val ktLicenceComment by r
+    val ktPackageLine by r
+    val ktRest by r
+    val ktFileSuppress = """@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE")"""
+
+    return "$ktLicenceComment\n\n$ktFileSuppress\n\n$ktPackageLine\n$ktRest"
 }
 
 fun String.ktFindPackageName() = urePackageLine().compile().find(this)!!["ktPackageName"]
