@@ -68,13 +68,13 @@ sourceFun {
     val srcFoundation = androidxSupportPath / "compose/foundation/foundation/src"
     val srcFoundationLayout = androidxSupportPath / "compose/foundation/foundation-layout/src"
 
-    val srcUiInputUT = srcUiUi / "test/kotlin/androidx/compose/ui/input"
+    val srcUiUT = srcUiUi / "test/kotlin/androidx/compose/ui"
     val srcUiGraphicsAT = srcUiGraphics / "androidAndroidTest/kotlin/androidx/compose/ui/graphics"
     val srcFoundationUT = srcFoundation / "test/kotlin/androidx/compose/foundation"
     val srcFoundationAT = srcFoundation / "androidAndroidTest/kotlin/androidx/compose/foundation"
     val srcFoundationLayoutAT = srcFoundationLayout / "androidAndroidTest/kotlin/androidx/compose/foundation/layout"
 
-    val stealComposeUiInputUnitTests by regSteal(srcUiInputUT, stolenBasicUnitTestsPath / "ui-input-tests") { it.withInternalAccessIssuesSuppressed() }
+    val stealComposeUiUnitTests by regSteal(srcUiUT, stolenBasicUnitTestsPath / "ui-tests") { it.withInternalAccessIssuesSuppressed() }
     val stealComposeFoundationUnitTests by regSteal(srcFoundationUT, stolenBasicUnitTestsPath / "foundation-tests") { it.withInternalAccessIssuesSuppressed() }
     val stealComposeFoundationAndroTests by regSteal(srcFoundationAT, stolenBasicAndroTestsPath / "foundation-tests") {
         if (name.containsOneOf("CanvasTest", "Foundation", "TestActivity")) it else null
@@ -101,18 +101,18 @@ sourceFun {
         setTransformFun { it }
     }
 
-    val stealComposeSourcesUtilsCommon by reg {
-        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
-        src = androidxSupportPath / "compose/ui/ui-util/src/commonMain/kotlin/androidx/compose/ui/util"
-        out = stolenBasicKotlinPath / "compose-utils"
-        setTransformFun { it }
-    }
-    val stealComposeSourcesUtilsAndro by reg {
-        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
-        src = androidxSupportPath / "compose/ui/ui-util/src/androidMain/kotlin/androidx/compose/ui/util"
-        out = stolenBasicKotlinPath / "compose-androutils"
-        setTransformFun { it }
-    }
+    // val stealComposeSourcesUtilsCommon by reg {
+    //     doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
+    //     src = androidxSupportPath / "compose/ui/ui-util/src/commonMain/kotlin/androidx/compose/ui/util"
+    //     out = stolenBasicKotlinPath / "compose-utils"
+    //     setTransformFun { it }
+    // }
+    // val stealComposeSourcesUtilsAndro by reg {
+    //     doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
+    //     src = androidxSupportPath / "compose/ui/ui-util/src/androidMain/kotlin/androidx/compose/ui/util"
+    //     out = stolenBasicKotlinPath / "compose-androutils"
+    //     setTransformFun { it }
+    // }
     val stealComposeSourcesTestUtilsCommon by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         src = androidxSupportPath / "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils"
@@ -189,8 +189,8 @@ sourceFun {
     }
     val stealComposeSourcesAll by reg { dependsOn(
         stealComposeSourcesJava,
-        stealComposeSourcesUtilsCommon,
-        stealComposeSourcesUtilsAndro,
+        // stealComposeSourcesUtilsCommon,
+        // stealComposeSourcesUtilsAndro,
         stealComposeSourcesTestUtilsCommon,
         stealComposeSourcesTestUtilsAndro,
     ) }
@@ -209,7 +209,7 @@ sourceFun {
         stealComposeCommonDemos,
     ) }
     val stealAll by reg { dependsOn(
-        stealComposeUiInputUnitTests,
+        stealComposeUiUnitTests,
         stealComposeFoundationUnitTests,
         stealComposeFoundationAndroTests,
         stealComposeFoundationLayoutAndroTests,
@@ -244,7 +244,7 @@ fun String.withInternalAccessIssuesSuppressed(): String {
     val ktLicenceComment by r
     val ktPackageLine by r
     val ktRest by r
-    val ktFileSuppress = """@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE")"""
+    val ktFileSuppress = """@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER")"""
 
     return "$ktLicenceComment\n\n$ktFileSuppress\n\n$ktPackageLine\n$ktRest"
 }

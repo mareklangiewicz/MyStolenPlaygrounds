@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE")
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER")
 
-package androidx.compose.ui.input.key
+package androidx.compose.ui.focus
 
-import androidx.compose.testutils.first
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.InspectableValue
 import androidx.compose.ui.platform.ValueElement
@@ -28,7 +27,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-class KeyInputModifierTest {
+class FocusChangedModifierTest {
     @Before
     fun before() {
         isDebugInspectorInfoEnabled = true
@@ -40,24 +39,13 @@ class KeyInputModifierTest {
     }
 
     @Test
-    fun testInspectorValueForKeyEvent() {
-        val onKeyEvent: (KeyEvent) -> Boolean = { true }
-        val modifier = Modifier.onKeyEvent(onKeyEvent).first() as InspectableValue
-        assertThat(modifier.nameFallback).isEqualTo("onKeyEvent")
+    fun testInspectorValue() {
+        val onFocusChange: (FocusState) -> Unit = {}
+        val modifier = Modifier.onFocusChanged(onFocusChange) as InspectableValue
+        assertThat(modifier.nameFallback).isEqualTo("onFocusChanged")
         assertThat(modifier.valueOverride).isNull()
         assertThat(modifier.inspectableElements.asIterable()).containsExactly(
-            ValueElement("onKeyEvent", onKeyEvent)
-        )
-    }
-
-    @Test
-    fun testInspectorValueForPreviewKeyEvent() {
-        val onPreviewKeyEvent: (KeyEvent) -> Boolean = { true }
-        val modifier = Modifier.onPreviewKeyEvent(onPreviewKeyEvent).first() as InspectableValue
-        assertThat(modifier.nameFallback).isEqualTo("onPreviewKeyEvent")
-        assertThat(modifier.valueOverride).isNull()
-        assertThat(modifier.inspectableElements.asIterable()).containsExactly(
-            ValueElement("onPreviewKeyEvent", onPreviewKeyEvent)
+            ValueElement("onFocusChanged", onFocusChange)
         )
     }
 }

@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package androidx.compose.ui.util
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER")
 
-import android.os.Trace
+package androidx.compose.ui.gesture
 
-/**
- * Wrap the specified [block] in calls to [Trace.beginSection] (with the supplied [sectionName])
- * and [Trace.endSection].
- */
-inline fun <T> trace(sectionName: String, block: () -> T): T {
-    Trace.beginSection(sectionName)
-    try {
-        return block()
-    } finally {
-        Trace.endSection()
-    }
-}
+import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.input.pointer.PointerInputChange
+
+internal fun pointerEventOf(vararg changes: PointerInputChange) = PointerEvent(changes.toList())

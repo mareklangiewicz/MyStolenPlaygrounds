@@ -19,8 +19,10 @@ defaultBuildTemplateForAndroidLib(
 )
 
 dependencies {
+    implementation(deps.androidxAutofill)
     defaultAndroTestDeps(configuration = "implementation", withCompose = true)
     // I use test stuff in main sources so I can add some tests sources to playgrounds app
+    testImplementation(deps.robolectric)
 }
 
 android {
