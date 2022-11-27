@@ -57,35 +57,34 @@ sourceFun {
 
     grp = "steal"
 
-    val stealComposeFoundationUnitTests by reg {
+    fun regSteal(src: Path, out: Path, transform: Path.(String) -> String? = { it }) = reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
-        src = androidxSupportPath / "compose/foundation/foundation/src/test/kotlin/androidx/compose/foundation"
-        out = stolenBasicUnitTestsPath / "foundation-tests"
-        setTransformFun { it.withInternalAccessIssuesSuppressed() }
+        this.src = src
+        this.out = out
+        setTransformFun(transform)
     }
+    val srcFoundation = androidxSupportPath / "compose/foundation/foundation/src"
+    val srcFoundationLayout = androidxSupportPath / "compose/foundation/foundation-layout/src"
+    val srcUiGraphics = androidxSupportPath / "compose/ui/ui-graphics/src"
+    val srcFoundationUT = srcFoundation / "test/kotlin/androidx/compose/foundation"
+    val srcFoundationAT = srcFoundation / "androidAndroidTest/kotlin/androidx/compose/foundation"
+    val srcFoundationLayoutAT = srcFoundationLayout / "androidAndroidTest/kotlin/androidx/compose/foundation/layout"
+    val srcUiGraphicsAT = srcUiGraphics / "androidAndroidTest/kotlin/androidx/compose/ui/graphics"
 
-    val stealComposeFoundationAndroTests by reg {
-        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
-        src = androidxSupportPath / "compose/foundation/foundation/src/androidAndroidTest/kotlin/androidx/compose/foundation"
-        out = stolenBasicAndroTestsPath / "foundation-tests"
-        setTransformFun { if (name.containsOneOf("CanvasTest", "Foundation", "TestActivity")) it else null }
+    val stealComposeFoundationUnitTests by regSteal(srcFoundationUT, stolenBasicUnitTestsPath / "foundation-tests") {
+        it.withInternalAccessIssuesSuppressed()
     }
-    val stealComposeFoundationLayoutAndroTests by reg {
-        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
-        src = androidxSupportPath / "compose/foundation/foundation-layout/src/androidAndroidTest/kotlin/androidx/compose/foundation/layout"
-        out = stolenBasicAndroTestsPath / "foundation-layout-tests"
-        setTransformFun {
-            val interesting = name.containsOneOf("BoxTest", "LayoutTest", "IntrinsicTest", "SizeTest", "PaddingTest", "OffsetTest")
-            if (interesting && "Window" !in name) it else null
-        }
+    val stealComposeFoundationAndroTests by regSteal(srcFoundationAT, stolenBasicAndroTestsPath / "foundation-tests") {
+        if (name.containsOneOf("CanvasTest", "Foundation", "TestActivity")) it else null
     }
-    val stealComposeUiGraphicsAndroTests by reg {
-        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
-        src = androidxSupportPath / "compose/ui/ui-graphics/src/androidAndroidTest/kotlin/androidx/compose/ui/graphics"
-        out = stolenBasicAndroTestsPath / "ui-graphics-tests"
-        setTransformFun { it }
+    val stealComposeFoundationLayoutAndroTests by regSteal(srcFoundationLayoutAT, stolenBasicAndroTestsPath / "foundation-layout-tests") {
+        val interesting = name.containsOneOf("BoxTest", "LayoutTest", "IntrinsicTest", "SizeTest", "PaddingTest", "OffsetTest")
+        if (interesting && "Window" !in name) it else null
     }
+    val stealComposeUiGraphicsAndroTests by regSteal(srcUiGraphicsAT, stolenBasicAndroTestsPath / "ui-graphics-tests")
 
+
+    // TODO NOW: use regSteal
 
     val stealComposeAnnotations by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
