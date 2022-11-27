@@ -63,17 +63,19 @@ sourceFun {
         this.out = out
         setTransformFun(transform)
     }
+    val srcUiUi = androidxSupportPath / "compose/ui/ui/src"
+    val srcUiGraphics = androidxSupportPath / "compose/ui/ui-graphics/src"
     val srcFoundation = androidxSupportPath / "compose/foundation/foundation/src"
     val srcFoundationLayout = androidxSupportPath / "compose/foundation/foundation-layout/src"
-    val srcUiGraphics = androidxSupportPath / "compose/ui/ui-graphics/src"
+
+    val srcUiInputUT = srcUiUi / "test/kotlin/androidx/compose/ui/input"
+    val srcUiGraphicsAT = srcUiGraphics / "androidAndroidTest/kotlin/androidx/compose/ui/graphics"
     val srcFoundationUT = srcFoundation / "test/kotlin/androidx/compose/foundation"
     val srcFoundationAT = srcFoundation / "androidAndroidTest/kotlin/androidx/compose/foundation"
     val srcFoundationLayoutAT = srcFoundationLayout / "androidAndroidTest/kotlin/androidx/compose/foundation/layout"
-    val srcUiGraphicsAT = srcUiGraphics / "androidAndroidTest/kotlin/androidx/compose/ui/graphics"
 
-    val stealComposeFoundationUnitTests by regSteal(srcFoundationUT, stolenBasicUnitTestsPath / "foundation-tests") {
-        it.withInternalAccessIssuesSuppressed()
-    }
+    val stealComposeUiInputUnitTests by regSteal(srcUiInputUT, stolenBasicUnitTestsPath / "ui-input-tests") { it.withInternalAccessIssuesSuppressed() }
+    val stealComposeFoundationUnitTests by regSteal(srcFoundationUT, stolenBasicUnitTestsPath / "foundation-tests") { it.withInternalAccessIssuesSuppressed() }
     val stealComposeFoundationAndroTests by regSteal(srcFoundationAT, stolenBasicAndroTestsPath / "foundation-tests") {
         if (name.containsOneOf("CanvasTest", "Foundation", "TestActivity")) it else null
     }
@@ -207,6 +209,7 @@ sourceFun {
         stealComposeCommonDemos,
     ) }
     val stealAll by reg { dependsOn(
+        stealComposeUiInputUnitTests,
         stealComposeFoundationUnitTests,
         stealComposeFoundationAndroTests,
         stealComposeFoundationLayoutAndroTests,
