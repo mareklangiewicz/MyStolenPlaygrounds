@@ -221,12 +221,12 @@ fun CommonExtension<*, *, *, *>.defaultCompileOptions(
     targetCompatibility(jvmVersion)
 }
 
-fun CommonExtension<*, *, *, *>.defaultComposeStuff() {
+fun CommonExtension<*, *, *, *>.defaultComposeStuff(withComposeCompilerVer: String? = null) {
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = vers.composeCompiler
+        kotlinCompilerExtensionVersion = withComposeCompilerVer
     }
 }
 
@@ -266,12 +266,13 @@ fun Project.defaultBuildTemplateForAndroidLib(
     sdkTarget: Int = vers.androidSdkTarget,
     sdkMin: Int = vers.androidSdkMin,
     withCompose: Boolean = false,
+    withComposeCompilerVer: String? = null,
     details: LibDetails = libs.Unknown,
     publishVariant: String? = null, // null means disable publishing to maven repo
 ) {
     repositories { defaultRepos(withComposeCompilerAndroidxDev = withCompose) }
     android {
-        defaultAndroLib(libNamespace, jvmVersion, sdkCompile, sdkTarget, sdkMin, withCompose)
+        defaultAndroLib(libNamespace, jvmVersion, sdkCompile, sdkTarget, sdkMin, withCompose, withComposeCompilerVer)
         publishVariant?.let { defaultAndroLibPublishVariant(it) }
     }
     dependencies {
@@ -293,12 +294,13 @@ fun LibraryExtension.defaultAndroLib(
     sdkTarget: Int = vers.androidSdkTarget,
     sdkMin: Int = vers.androidSdkMin,
     withCompose: Boolean = false,
+    withComposeCompilerVer: String? = null,
 ) {
     compileSdk = sdkCompile
     defaultCompileOptions(jvmVersion)
     defaultDefaultConfig(libNamespace, sdkTarget, sdkMin)
     defaultBuildTypes()
-    if (withCompose) defaultComposeStuff()
+    if (withCompose) defaultComposeStuff(withComposeCompilerVer)
     defaultPackagingOptions()
 }
 
