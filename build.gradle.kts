@@ -77,7 +77,7 @@ sourceFun {
     val stealComposeUiUnitTests by regSteal(srcUiUT, stolenBasicUnitTestsPath / "ui-tests") { it.withInternalAccessIssuesSuppressed() }
     val stealComposeFoundationUnitTests by regSteal(srcFoundationUT, stolenBasicUnitTestsPath / "foundation-tests") { it.withInternalAccessIssuesSuppressed() }
     val stealComposeFoundationAndroTests by regSteal(srcFoundationAT, stolenBasicAndroTestsPath / "foundation-tests") {
-        if (name.containsOneOf("CanvasTest", "Foundation", "TestActivity", "Gesture")) it.withInternalAccessIssuesSuppressed() else null
+        if (name.containsOneOf("CanvasTest", "Foundation", "TestActivity", "Gesture", "Touch", "Event")) it.withInternalAccessIssuesSuppressed() else null
     }
     val stealComposeFoundationLayoutAndroTests by regSteal(srcFoundationLayoutAT, stolenBasicAndroTestsPath / "foundation-layout-tests") {
         val interesting = name.containsOneOf("BoxTest", "LayoutTest", "IntrinsicTest", "SizeTest", "PaddingTest", "OffsetTest")
