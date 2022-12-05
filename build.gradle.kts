@@ -77,7 +77,7 @@ sourceFun {
     val stealComposeUiUnitTests by regSteal(srcUiUT, stolenBasicUnitTestsPath / "ui-tests") { it.withInternalAccessIssuesSuppressed() }
     val stealComposeFoundationUnitTests by regSteal(srcFoundationUT, stolenBasicUnitTestsPath / "foundation-tests") { it.withInternalAccessIssuesSuppressed() }
     val stealComposeFoundationAndroTests by regSteal(srcFoundationAT, stolenBasicAndroTestsPath / "foundation-tests") {
-        if (name.containsOneOf("CanvasTest", "Foundation", "TestActivity")) it else null
+        if (name.containsOneOf("CanvasTest", "Foundation", "TestActivity", "Gesture")) it.withInternalAccessIssuesSuppressed() else null
     }
     val stealComposeFoundationLayoutAndroTests by regSteal(srcFoundationLayoutAT, stolenBasicAndroTestsPath / "foundation-layout-tests") {
         val interesting = name.containsOneOf("BoxTest", "LayoutTest", "IntrinsicTest", "SizeTest", "PaddingTest", "OffsetTest")
@@ -155,11 +155,12 @@ sourceFun {
 fun String.withInternalAccessIssuesSuppressed(): String {
     val r = ureKtComposeTestOutline().compile().matchEntire(this) ?: error("Incorrect compose test file")
     val ktLicenceComment by r
+    val ktOtherStuffBeforePackageLine by r
     val ktPackageLine by r
     val ktRest by r
     val ktFileSuppress = """@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER")"""
 
-    return "$ktLicenceComment\n\n$ktFileSuppress\n\n$ktPackageLine\n$ktRest"
+    return "$ktLicenceComment\n\n$ktFileSuppress\n\n$ktOtherStuffBeforePackageLine$ktPackageLine\n$ktRest"
 }
 
 fun String.ktFindPackageName() = urePackageLine().compile().find(this)!!["ktPackageName"]
