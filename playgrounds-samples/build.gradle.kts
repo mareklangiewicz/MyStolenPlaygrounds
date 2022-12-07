@@ -14,6 +14,7 @@ plugins {
 defaultBuildTemplateForAndroidLib(
     libNamespace = "androidx.compose.ui.samples",
     withCompose = true,
+    withComposeCompilerVer = vers.composeCompilerEdge,
     details = libs.MyStolenPlaygrounds,
     publishVariant = "debug",
 )

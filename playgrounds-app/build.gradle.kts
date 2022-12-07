@@ -16,6 +16,7 @@ plugins {
 defaultBuildTemplateForAndroidApp(
     appId = "pl.mareklangiewicz.playgrounds",
     withCompose = true,
+    withComposeCompilerVer = vers.composeCompilerEdge,
     details = libs.MyStolenPlaygrounds,
     publishVariant = "debug",
 )

@@ -14,6 +14,7 @@ plugins {
 defaultBuildTemplateForAndroidLib(
     libNamespace = "androidx.compose.material3.catalog.library",
     withCompose = true,
+    withComposeCompilerVer = vers.composeCompilerEdge,
     details = libs.MyStolenPlaygrounds,
     publishVariant = "debug",
 )
