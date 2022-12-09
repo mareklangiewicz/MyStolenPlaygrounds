@@ -16,6 +16,7 @@
 
 package androidx.compose.foundation.demos
 
+import androidx.compose.foundation.demos.pager.PagerDemos
 import androidx.compose.foundation.demos.relocation.BringIntoViewAndroidInteropDemo
 import androidx.compose.foundation.demos.relocation.BringIntoViewDemo
 import androidx.compose.foundation.demos.relocation.BringIntoViewResponderDemo
@@ -25,6 +26,7 @@ import androidx.compose.foundation.demos.relocation.RequestRectangleOnScreenDemo
 import androidx.compose.foundation.demos.snapping.SnappingDemos
 import androidx.compose.foundation.samples.BringIntoViewResponderSample
 import androidx.compose.foundation.samples.BringPartOfComposableIntoViewSample
+import androidx.compose.foundation.samples.CanScrollSample
 import androidx.compose.foundation.samples.ControlledScrollableRowSample
 import androidx.compose.foundation.samples.CustomTouchSlopSample
 import androidx.compose.foundation.samples.InteractionSourceFlowSample
@@ -52,11 +54,13 @@ val FoundationDemos = DemoCategory(
     "Foundation",
     listOf(
         ComposableDemo("Draggable, Scrollable, Zoomable, Focusable") { HighLevelGesturesDemo() },
+        ComposableDemo("Can scroll forward / backward") { CanScrollSample() },
         ComposableDemo("Vertical scroll") { VerticalScrollExample() },
         ComposableDemo("Controlled Scrollable Row") { ControlledScrollableRowSample() },
         ComposableDemo("Draw Modifiers") { DrawModifiersDemo() },
         DemoCategory("Lazy lists", LazyListDemos),
         DemoCategory("Snapping", SnappingDemos),
+        DemoCategory("Pagers", PagerDemos),
         ComposableDemo("Simple InteractionSource") { SimpleInteractionSourceSample() },
         ComposableDemo("Flow InteractionSource") { InteractionSourceFlowSample() },
         DemoCategory("Suspending Gesture Detectors", CoroutineGestureDemos),

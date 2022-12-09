@@ -67,9 +67,6 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-
-// TODO NOW: analyze these demos and create own uspek tests/demos
-
 val CoroutineGestureDemos = listOf(
     ComposableDemo("Tap/Double-Tap/Long Press") { CoroutineTapDemo() },
     ComposableDemo("Drag Horizontal and Vertical") { TouchSlopDragGestures() },

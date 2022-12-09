@@ -83,7 +83,7 @@ sourceFun {
         val interesting = name.containsOneOf("BoxTest", "LayoutTest", "IntrinsicTest", "SizeTest", "PaddingTest", "OffsetTest")
         if (interesting && "Window" !in name) it else null
     }
-    val stealComposeUiGraphicsAndroTests by regSteal(srcUiGraphicsAT, stolenBasicAndroTestsPath / "ui-graphics-tests")
+    val stealComposeUiGraphicsAndroTests by regSteal(srcUiGraphicsAT, stolenBasicAndroTestsPath / "ui-graphics-tests") { it.withInternalAccessIssuesSuppressed() }
 
     val stealComposeAnnotations by regSteal(androidxSupportPath / "annotation/annotation-sampled/src/main/java/androidx/annotation", stolenSamplesKotlinPath / "androidx-annotation")
     val stealComposeSourcesJava by regSteal(androidxSupportPath / "compose/ui/ui-android-stubs/src/main/java/android/view", stolenBasicJavaPath / "android/view")
