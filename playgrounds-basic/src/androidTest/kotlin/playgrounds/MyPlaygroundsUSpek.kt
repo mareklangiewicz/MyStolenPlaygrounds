@@ -9,11 +9,8 @@ import pl.mareklangiewicz.udemo.*
 import pl.mareklangiewicz.ulog.*
 import pl.mareklangiewicz.uspek.*
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(USpekJUnit4Runner::class)
 class MyPlaygroundsUSpek {
     init { uspekLog = { ulogw("uspek ${it.status}") } }
-    @get:Rule val rule = createComposeRule()
-    private val scope = UComposeRuleScope(rule)
-    @USpekTestTree(33) fun melusf() = runTest { scope.MyExaminedLayoutUSpekFun() }
+    @USpekTestTree(33) fun melusf() = runUComposeTest { MyExaminedLayoutUSpekFun() }
 }
