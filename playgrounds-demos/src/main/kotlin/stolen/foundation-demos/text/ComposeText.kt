@@ -79,7 +79,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.rememberTextMeasurer
-/*
 import androidx.compose.ui.text.samples.BaselineShiftSample
 import androidx.compose.ui.text.samples.FontFamilyCursiveSample
 import androidx.compose.ui.text.samples.FontFamilyMonospaceSample
@@ -95,7 +94,6 @@ import androidx.compose.ui.text.samples.TextOverflowEllipsisSample
 import androidx.compose.ui.text.samples.TextOverflowVisibleFixedSizeSample
 import androidx.compose.ui.text.samples.TextOverflowVisibleMinHeightSample
 import androidx.compose.ui.text.samples.TextStyleSample
-*/
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -285,9 +283,7 @@ fun TextDemoBasic() {
 
 @Composable
 fun TextDemoComplexStyling() {
-    /*
     TextStyleSample()
-    */
 }
 
 @Composable
@@ -370,22 +366,18 @@ fun TextDemoFontFamily() {
 @Composable
 fun TextDemoFontFamilyDefaultValues() {
     // This group of text composables show the default font families in English.
-    /*
     FontFamilySerifSample()
     FontFamilySansSerifSample()
     FontFamilyMonospaceSample()
     FontFamilyCursiveSample()
-    */
 }
 
 @Composable
 fun TextDemoTextDecoration() {
     // This group of text composables show different decoration, decorationColor and decorationStyle.
-    /*
     TextDecorationLineThroughSample()
     TextDecorationUnderlineSample()
     TextDecorationCombinedSample()
-    */
 }
 
 @Composable
@@ -410,9 +402,7 @@ fun TextDemoLetterSpacing() {
 
 @Composable
 fun TextDemoBaselineShift() {
-    /*
     BaselineShiftSample()
-    */
 }
 
 @Composable
@@ -621,15 +611,12 @@ fun TextDemoFontSizeScale() {
 
 @Composable
 fun TextDemoParagraphStyling() {
-    /*
     ParagraphStyleSample()
     ParagraphStyleAnnotatedStringsSample()
-    */
 }
 
 @Composable
 fun TextDemoTextOverflow() {
-    /*
     SecondTagLine(tag = "overflow = TextOverflow.Clip")
     TextOverflowClipSample()
     SecondTagLine(tag = "overflow = TextOverflow.Ellipsis")
@@ -639,7 +626,6 @@ fun TextDemoTextOverflow() {
     Spacer(modifier = Modifier.size(30.dp))
     SecondTagLine(tag = "overflow = TextOverflow.Visible with fixed width and min height")
     TextOverflowVisibleMinHeightSample()
-    */
 }
 
 @Composable

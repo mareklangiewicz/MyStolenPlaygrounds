@@ -25,7 +25,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-// import androidx.testutils.fonts.R
+import androidx.testutils.fonts.R
 import androidx.compose.foundation.demos.text.FontVariationSettingsCompot.compatSetFontVariationSettings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -252,26 +252,26 @@ fun DeviceNamedFontFamilyFont(weight: Int, italic: Boolean) {
 @OptIn(ExperimentalTextApi::class)
 @Composable
 fun ResourceFont(weight: Int, italic: Boolean) {
-    // Column(Modifier.fillMaxWidth()) {
-    //     val resourceFonts = remember(weight, italic) {
-    //         FontFamily(
-    //             Font(
-    //                 R.font.variable_font,
-    //                 variationSettings = FontVariation.Settings(
-    //                     FontVariation.weight(weight.toInt()), /* Changes "A" glyph */
-    //                     /* italic not supported by font, ignored */
-    //                     FontVariation.italic(if (italic) 1f else 0f)
-    //                 )
-    //             )
-    //         )
-    //     }
-    //     Text(
-    //         "A",
-    //         fontSize = 48.sp,
-    //         fontFamily = resourceFonts,
-    //         modifier = Modifier.align(Alignment.CenterHorizontally)
-    //     )
-    // }
+    Column(Modifier.fillMaxWidth()) {
+        val resourceFonts = remember(weight, italic) {
+            FontFamily(
+                Font(
+                    R.font.variable_font,
+                    variationSettings = FontVariation.Settings(
+                        FontVariation.weight(weight.toInt()), /* Changes "A" glyph */
+                        /* italic not supported by font, ignored */
+                        FontVariation.italic(if (italic) 1f else 0f)
+                    )
+                )
+            )
+        }
+        Text(
+            "A",
+            fontSize = 48.sp,
+            fontFamily = resourceFonts,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+    }
 }
 
 private suspend fun mkTempFont(context: Context): File = withContext(Dispatchers.IO) {
