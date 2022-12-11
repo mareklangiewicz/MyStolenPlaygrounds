@@ -1,0 +1,271 @@
+Index: playgrounds-basic/src/test/kotlin/stolen/ui-tests/gesture/scrollorientationlocking/PolyFitLeastSquaresTest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/playgrounds-basic/src/test/kotlin/stolen/ui-tests/gesture/scrollorientationlocking/PolyFitLeastSquaresTest.kt b/playgrounds-basic/src/test/kotlin/stolen/ui-tests/gesture/scrollorientationlocking/PolyFitLeastSquaresTest.kt
+--- a/playgrounds-basic/src/test/kotlin/stolen/ui-tests/gesture/scrollorientationlocking/PolyFitLeastSquaresTest.kt	(revision 47af78db1b4a42324fb94ff77a6c99bdeca4b232)
++++ b/playgrounds-basic/src/test/kotlin/stolen/ui-tests/gesture/scrollorientationlocking/PolyFitLeastSquaresTest.kt	(revision 83c55abf5420b79cd974042528a77287c890b016)
+@@ -295,7 +295,7 @@
+         actual: PolynomialFit?,
+         expected: PolynomialFit?
+     ) {
+-        if (expected == null) {
++        if (expected === null) {
+             assertThat(actual).isNull()
+             return
+         }
+Index: playgrounds-basic/src/test/kotlin/stolen/ui-tests/node/LayoutNodeTest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/playgrounds-basic/src/test/kotlin/stolen/ui-tests/node/LayoutNodeTest.kt b/playgrounds-basic/src/test/kotlin/stolen/ui-tests/node/LayoutNodeTest.kt
+--- a/playgrounds-basic/src/test/kotlin/stolen/ui-tests/node/LayoutNodeTest.kt	(revision 47af78db1b4a42324fb94ff77a6c99bdeca4b232)
++++ b/playgrounds-basic/src/test/kotlin/stolen/ui-tests/node/LayoutNodeTest.kt	(revision 83c55abf5420b79cd974042528a77287c890b016)
+@@ -774,7 +774,7 @@
+         val newNodeCoordinator = layoutNode.outerCoordinator
+ 
+         // one can be reused, but we don't care which one
+-        val notReused = if (newNodeCoordinator == oldNodeCoordinator) {
++        val notReused = if (newNodeCoordinator === oldNodeCoordinator) {
+             oldInnerNodeCoordinator
+         } else {
+             oldNodeCoordinator
+@@ -2719,7 +2719,7 @@
+     markMeasurePending()
+     remeasure(Constraints())
+     var wrapper: NodeCoordinator? = outerCoordinator
+-    while (wrapper != null) {
++    while (wrapper !== null) {
+         wrapper.measureResult = innerCoordinator.measureResult
+         wrapper = (wrapper as? NodeCoordinator)?.wrapped
+     }
+Index: playgrounds-basic/src/test/kotlin/stolen/ui-tests/node/ModifierLocalConsumerEntityTest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/playgrounds-basic/src/test/kotlin/stolen/ui-tests/node/ModifierLocalConsumerEntityTest.kt b/playgrounds-basic/src/test/kotlin/stolen/ui-tests/node/ModifierLocalConsumerEntityTest.kt
+--- a/playgrounds-basic/src/test/kotlin/stolen/ui-tests/node/ModifierLocalConsumerEntityTest.kt	(revision 47af78db1b4a42324fb94ff77a6c99bdeca4b232)
++++ b/playgrounds-basic/src/test/kotlin/stolen/ui-tests/node/ModifierLocalConsumerEntityTest.kt	(revision 83c55abf5420b79cd974042528a77287c890b016)
+@@ -404,7 +404,7 @@
+ 
+ private fun LayoutNode.forEachNodeCoordinator(action: (NodeCoordinator) -> Unit) {
+     var coordinator: NodeCoordinator? = outerCoordinator
+-    while (coordinator != null) {
++    while (coordinator !== null) {
+         action.invoke(coordinator)
+         coordinator = coordinator.wrapped
+     }
+Index: playgrounds-demos/src/main/kotlin/stolen/foundation-demos/ListDemos.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/ListDemos.kt b/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/ListDemos.kt
+--- a/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/ListDemos.kt	(revision 47af78db1b4a42324fb94ff77a6c99bdeca4b232)
++++ b/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/ListDemos.kt	(revision 83c55abf5420b79cd974042528a77287c890b016)
+@@ -97,7 +97,7 @@
+ import androidx.compose.ui.unit.LayoutDirection
+ import androidx.compose.ui.unit.dp
+ import androidx.compose.ui.unit.sp
+-import androidx.paging.compose.demos.PagingDemos
++// import androidx.paging.compose.demos.PagingDemos
+ import kotlin.math.abs
+ import kotlin.math.max
+ import kotlin.math.min
+@@ -128,7 +128,7 @@
+     ComposableDemo("Grid drag and drop") { LazyGridDragAndDropDemo() },
+     ComposableDemo("Staggered grid") { LazyStaggeredGridDemo() },
+     ComposableDemo("Animate item placement") { AnimateItemPlacementDemo() },
+-    PagingDemos
++    // PagingDemos
+ )
+ 
+ @Preview
+Index: playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/BrushDemo.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/BrushDemo.kt b/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/BrushDemo.kt
+--- a/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/BrushDemo.kt	(revision 47af78db1b4a42324fb94ff77a6c99bdeca4b232)
++++ b/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/BrushDemo.kt	(revision 83c55abf5420b79cd974042528a77287c890b016)
+@@ -43,7 +43,7 @@
+ import androidx.compose.ui.text.SpanStyle
+ import androidx.compose.ui.text.TextStyle
+ import androidx.compose.ui.text.buildAnnotatedString
+-import androidx.compose.ui.text.samples.TextStyleBrushSample
++// import androidx.compose.ui.text.samples.TextStyleBrushSample
+ import androidx.compose.ui.text.style.TextAlign
+ import androidx.compose.ui.text.withStyle
+ import androidx.compose.ui.tooling.preview.Preview
+@@ -53,10 +53,12 @@
+ @Composable
+ fun TextBrushDemo() {
+     LazyColumn {
++        /*
+         item {
+             TagLine(tag = "Sample")
+             TextStyleBrushSample()
+         }
++        */
+         item {
+             TagLine(tag = "Brush")
+             BrushDemo()
+Index: playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/ComposeText.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/ComposeText.kt b/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/ComposeText.kt
+--- a/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/ComposeText.kt	(revision 47af78db1b4a42324fb94ff77a6c99bdeca4b232)
++++ b/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/ComposeText.kt	(revision 83c55abf5420b79cd974042528a77287c890b016)
+@@ -79,6 +79,7 @@
+ import androidx.compose.ui.text.font.FontWeight
+ import androidx.compose.ui.text.intl.LocaleList
+ import androidx.compose.ui.text.rememberTextMeasurer
++/*
+ import androidx.compose.ui.text.samples.BaselineShiftSample
+ import androidx.compose.ui.text.samples.FontFamilyCursiveSample
+ import androidx.compose.ui.text.samples.FontFamilyMonospaceSample
+@@ -94,6 +95,7 @@
+ import androidx.compose.ui.text.samples.TextOverflowVisibleFixedSizeSample
+ import androidx.compose.ui.text.samples.TextOverflowVisibleMinHeightSample
+ import androidx.compose.ui.text.samples.TextStyleSample
++*/
+ import androidx.compose.ui.text.style.Hyphens
+ import androidx.compose.ui.text.style.TextAlign
+ import androidx.compose.ui.text.style.TextOverflow
+@@ -283,7 +285,9 @@
+ 
+ @Composable
+ fun TextDemoComplexStyling() {
++    /*
+     TextStyleSample()
++    */
+ }
+ 
+ @Composable
+@@ -366,18 +370,22 @@
+ @Composable
+ fun TextDemoFontFamilyDefaultValues() {
+     // This group of text composables show the default font families in English.
++    /*
+     FontFamilySerifSample()
+     FontFamilySansSerifSample()
+     FontFamilyMonospaceSample()
+     FontFamilyCursiveSample()
++    */
+ }
+ 
+ @Composable
+ fun TextDemoTextDecoration() {
+     // This group of text composables show different decoration, decorationColor and decorationStyle.
++    /*
+     TextDecorationLineThroughSample()
+     TextDecorationUnderlineSample()
+     TextDecorationCombinedSample()
++    */
+ }
+ 
+ @Composable
+@@ -402,7 +410,9 @@
+ 
+ @Composable
+ fun TextDemoBaselineShift() {
++    /*
+     BaselineShiftSample()
++    */
+ }
+ 
+ @Composable
+@@ -611,12 +621,15 @@
+ 
+ @Composable
+ fun TextDemoParagraphStyling() {
++    /*
+     ParagraphStyleSample()
+     ParagraphStyleAnnotatedStringsSample()
++    */
+ }
+ 
+ @Composable
+ fun TextDemoTextOverflow() {
++    /*
+     SecondTagLine(tag = "overflow = TextOverflow.Clip")
+     TextOverflowClipSample()
+     SecondTagLine(tag = "overflow = TextOverflow.Ellipsis")
+@@ -626,6 +639,7 @@
+     Spacer(modifier = Modifier.size(30.dp))
+     SecondTagLine(tag = "overflow = TextOverflow.Visible with fixed width and min height")
+     TextOverflowVisibleMinHeightSample()
++    */
+ }
+ 
+ @Composable
+Index: playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/VariableFontsDemo.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/VariableFontsDemo.kt b/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/VariableFontsDemo.kt
+--- a/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/VariableFontsDemo.kt	(revision 47af78db1b4a42324fb94ff77a6c99bdeca4b232)
++++ b/playgrounds-demos/src/main/kotlin/stolen/foundation-demos/text/VariableFontsDemo.kt	(revision 83c55abf5420b79cd974042528a77287c890b016)
+@@ -25,7 +25,7 @@
+ import androidx.compose.foundation.Canvas
+ import androidx.compose.foundation.ExperimentalFoundationApi
+ import androidx.compose.foundation.background
+-import androidx.testutils.fonts.R
++// import androidx.testutils.fonts.R
+ import androidx.compose.foundation.demos.text.FontVariationSettingsCompot.compatSetFontVariationSettings
+ import androidx.compose.foundation.layout.Column
+ import androidx.compose.foundation.layout.Row
+@@ -252,26 +252,26 @@
+ @OptIn(ExperimentalTextApi::class)
+ @Composable
+ fun ResourceFont(weight: Int, italic: Boolean) {
+-    Column(Modifier.fillMaxWidth()) {
+-        val resourceFonts = remember(weight, italic) {
+-            FontFamily(
+-                Font(
+-                    R.font.variable_font,
+-                    variationSettings = FontVariation.Settings(
+-                        FontVariation.weight(weight.toInt()), /* Changes "A" glyph */
+-                        /* italic not supported by font, ignored */
+-                        FontVariation.italic(if (italic) 1f else 0f)
+-                    )
+-                )
+-            )
+-        }
+-        Text(
+-            "A",
+-            fontSize = 48.sp,
+-            fontFamily = resourceFonts,
+-            modifier = Modifier.align(Alignment.CenterHorizontally)
+-        )
+-    }
++    // Column(Modifier.fillMaxWidth()) {
++    //     val resourceFonts = remember(weight, italic) {
++    //         FontFamily(
++    //             Font(
++    //                 R.font.variable_font,
++    //                 variationSettings = FontVariation.Settings(
++    //                     FontVariation.weight(weight.toInt()), /* Changes "A" glyph */
++    //                     /* italic not supported by font, ignored */
++    //                     FontVariation.italic(if (italic) 1f else 0f)
++    //                 )
++    //             )
++    //         )
++    //     }
++    //     Text(
++    //         "A",
++    //         fontSize = 48.sp,
++    //         fontFamily = resourceFonts,
++    //         modifier = Modifier.align(Alignment.CenterHorizontally)
++    //     )
++    // }
+ }
+ 
+ private suspend fun mkTempFont(context: Context): File = withContext(Dispatchers.IO) {
