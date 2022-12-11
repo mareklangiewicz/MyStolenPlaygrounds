@@ -404,7 +404,7 @@ class ModifierLocalConsumerEntityTest {
 
 private fun LayoutNode.forEachNodeCoordinator(action: (NodeCoordinator) -> Unit) {
     var coordinator: NodeCoordinator? = outerCoordinator
-    while (coordinator != null) {
+    while (coordinator !== null) {
         action.invoke(coordinator)
         coordinator = coordinator.wrapped
     }

@@ -295,7 +295,7 @@ class PolyFitLeastSquaresTest {
         actual: PolynomialFit?,
         expected: PolynomialFit?
     ) {
-        if (expected == null) {
+        if (expected === null) {
             assertThat(actual).isNull()
             return
         }
