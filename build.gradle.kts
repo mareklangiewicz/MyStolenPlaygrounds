@@ -76,9 +76,7 @@ sourceFun {
 
     val stealComposeUiUnitTests by regSteal(srcUiUT, stolenBasicUnitTestsPath / "ui-tests") { it.withInternalAccessIssuesSuppressed() }
     val stealComposeFoundationUnitTests by regSteal(srcFoundationUT, stolenBasicUnitTestsPath / "foundation-tests") { it.withInternalAccessIssuesSuppressed() }
-    val stealComposeFoundationAndroTests by regSteal(srcFoundationAT, stolenBasicAndroTestsPath / "foundation-tests") {
-        if (name.containsOneOf("CanvasTest", "Foundation", "TestActivity", "Gesture", "Touch", "Event")) it.withInternalAccessIssuesSuppressed() else null
-    }
+    val stealComposeFoundationAndroTests by regSteal(srcFoundationAT, stolenBasicAndroTestsPath / "foundation-tests") { it.withInternalAccessIssuesSuppressed() }
     val stealComposeFoundationLayoutAndroTests by regSteal(srcFoundationLayoutAT, stolenBasicAndroTestsPath / "foundation-layout-tests") {
         val interesting = name.containsOneOf("BoxTest", "LayoutTest", "IntrinsicTest", "SizeTest", "PaddingTest", "OffsetTest")
         if (interesting && "Window" !in name) it else null
@@ -132,6 +130,15 @@ sourceFun {
         stealComposeSamplesAll,
         stealComposeMaterial3All,
     ) }
+
+    val patchStolenStuff by tasks.registering {
+        group = "steal"
+        doLast {
+            project.exec {
+                commandLine("git", "apply", "./patchStolenStuff.patch")
+            }
+        }
+    }
 
     val processStolenSamples by reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
