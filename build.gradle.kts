@@ -76,7 +76,18 @@ sourceFun {
 
     val stealComposeUiUnitTests by regSteal(srcUiUT, stolenBasicUnitTestsPath / "ui-tests") { it.withInternalAccessIssuesSuppressed() }
     val stealComposeFoundationUnitTests by regSteal(srcFoundationUT, stolenBasicUnitTestsPath / "foundation-tests") { it.withInternalAccessIssuesSuppressed() }
-    val stealComposeFoundationAndroTests by regSteal(srcFoundationAT, stolenBasicAndroTestsPath / "foundation-tests") { it.withInternalAccessIssuesSuppressed() }
+    val stealComposeFoundationAndroTests by regSteal(srcFoundationAT, stolenBasicAndroTestsPath / "foundation-tests") {
+        when {
+            "text" in segments -> null
+            name.containsOneOf("Lazy", "Pager") -> null
+            "nhaarman" in it -> null
+            "import androidx.compose.foundation.text" in it -> null
+            "import androidx.compose.foundation.test.R" in it -> null
+            "import androidx.testutils" in it -> null
+            "import androidx.compose.foundation.lazy" in it -> null
+            else -> it.withInternalAccessIssuesSuppressed()
+        }
+    }
     val stealComposeFoundationLayoutAndroTests by regSteal(srcFoundationLayoutAT, stolenBasicAndroTestsPath / "foundation-layout-tests") {
         val interesting = name.containsOneOf("BoxTest", "LayoutTest", "IntrinsicTest", "SizeTest", "PaddingTest", "OffsetTest")
         if (interesting && "Window" !in name) it else null
