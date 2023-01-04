@@ -16,7 +16,7 @@ plugins {
 defaultBuildTemplateForAndroidLib(
     libNamespace = "pl.mareklangiewicz.playgrounds.basic",
     withCompose = true,
-    withComposeCompilerVer = vers.composeCompilerEdge,
+    withComposeCompilerVer = vers.composeCompiler,
     details = libs.MyStolenPlaygrounds,
     publishVariant = "debug",
 )
