@@ -1,22 +1,59 @@
 @file:Suppress("UnstableApiUsage")
 
+// TODO NOW:
+// 1. make it all compile (all modules)
+// 2. try hard to auto include demo mpp from compose-multiplatform-core
+// 3. analyze web runtime, analyze native targets config?, tests? learn using this demo and repeat the similar solutions.
+
+rootProject.name = "MyStolenPlaygrounds"
+
+
+// Careful with auto publishing fails/stack traces
+val buildScanPublishingAllowed =
+  System.getenv("GITHUB_ACTIONS") == "true"
+  // true
+  // false
+
+// region [[My Settings Stuff <~~]]
+// ~~>".*/Deps\.kt"~~>"../DepsKt"<~~
+// endregion [[My Settings Stuff <~~]]
+// region [[My Settings Stuff]]
 
 pluginManagement {
-    includeBuild("../deps.kt")
-    repositories {
-        google()
-        gradlePluginPortal()
-        mavenCentral()
-    }
+  repositories {
+    gradlePluginPortal()
+    google()
+    mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+  }
+
+  val depsDir = File(rootDir, "../DepsKt").normalize()
+  val depsInclude =
+    // depsDir.exists()
+    false
+  if (depsInclude) {
+    logger.warn("Including local build $depsDir")
+    includeBuild(depsDir)
+  }
 }
 
 plugins {
-    id("pl.mareklangiewicz.deps.settings")
+  id("pl.mareklangiewicz.deps.settings") version "0.3.31" // https://plugins.gradle.org/search?term=mareklangiewicz
+  id("com.gradle.develocity") version "3.17.5" // https://docs.gradle.com/develocity/gradle-plugin/
 }
 
-rootProject.name = "MyStolenPlaygrounds"
-include(":playgrounds-app")
+develocity {
+  buildScan {
+    termsOfUseUrl = "https://gradle.com/terms-of-service"
+    termsOfUseAgree = "yes"
+    publishing.onlyIf { buildScanPublishingAllowed && it.buildResult.failures.isNotEmpty() }
+  }
+}
+
+// endregion [[My Settings Stuff]]
+
+// include(":playgrounds-app")
 include(":playgrounds-basic")
-include(":playgrounds-samples")
-include(":playgrounds-demos")
+// include(":playgrounds-samples")
+// include(":playgrounds-demos")
 

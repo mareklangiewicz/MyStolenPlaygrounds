@@ -26,7 +26,7 @@ import kotlin.text.RegexOption.DOT_MATCHES_ALL
  * [expectedMessage] is a regex with just the option [DOT_MATCHES_ALL] enabled.
  */
 fun expectAssertionError(
-    expectError: Boolean,
+    expectError: Boolean = true,
     expectedMessage: String = ".*",
     block: () -> Unit
 ) {
@@ -48,7 +48,7 @@ inline fun <reified T : Throwable> expectError(
     expectedMessage: String = ".*",
     block: () -> Unit
 ) {
-    val expectedClassName = T::class.java.simpleName
+    val expectedClassName = T::class.simpleName
     try {
         block()
     } catch (thrown: Throwable) {
@@ -88,7 +88,7 @@ internal fun throwExpectError(
     }
 
     val expected = expectedClassName?.let { "a $it".plusMessage(expectedMessage) } ?: "nothing"
-    val actual = thrown?.run { "a ${javaClass.simpleName}".plusMessage(message) } ?: "nothing"
+    val actual = thrown?.run { "a ${this::class.simpleName}".plusMessage(message) } ?: "nothing"
     throw AssertionError(
         "Expected that $expected would be thrown, but $actual was thrown$stackTrace"
     )

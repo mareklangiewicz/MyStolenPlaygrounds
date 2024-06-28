@@ -774,7 +774,7 @@ class LayoutNodeTest {
         val newNodeCoordinator = layoutNode.outerCoordinator
 
         // one can be reused, but we don't care which one
-        val notReused = if (newNodeCoordinator === oldNodeCoordinator) {
+        val notReused = if (newNodeCoordinator == oldNodeCoordinator) {
             oldInnerNodeCoordinator
         } else {
             oldNodeCoordinator
@@ -2719,7 +2719,7 @@ internal fun LayoutNode(
     markMeasurePending()
     remeasure(Constraints())
     var wrapper: NodeCoordinator? = outerCoordinator
-    while (wrapper !== null) {
+    while (wrapper != null) {
         wrapper.measureResult = innerCoordinator.measureResult
         wrapper = (wrapper as? NodeCoordinator)?.wrapped
     }

@@ -1,34 +1,53 @@
 @file:Suppress("UNUSED_VARIABLE")
+@file:OptIn(NotPortableApi::class,DelicateApi::class)
 
+import okio.Path
 import okio.FileSystem.Companion.SYSTEM
 import okio.Path.Companion.toPath
-import okio.Path
 import okio.Path.Companion.toOkioPath
+import pl.mareklangiewicz.annotations.*
 import pl.mareklangiewicz.defaults.*
+import pl.mareklangiewicz.deps.*
 import pl.mareklangiewicz.ure.*
 import pl.mareklangiewicz.utils.*
 import pl.mareklangiewicz.sourcefun.*
 import pl.mareklangiewicz.io.*
+import kotlinx.coroutines.runBlocking
 
 plugins {
-    kotlin("android") apply false
-    id("io.github.gradle-nexus.publish-plugin") version vers.nexusPublishGradlePlugin
-    id("pl.mareklangiewicz.sourcefun")
+    plug(plugs.KotlinMulti) apply false
+    plug(plugs.KotlinMultiCompose) apply false
+    plug(plugs.ComposeJb) apply false
+    plug(plugs.AndroLib) apply false
+    plug(plugs.AndroApp) apply false
+    plug(plugs.NexusPublish)
+    // plug(plugs.SourceFun)
+    id("pl.mareklangiewicz.sourcefun") version "0.4.12"
 }
 
-defaultGroupAndVerAndDescription(libs.MyStolenPlaygrounds)
+val MyStolenPlaygrounds = myLibDetails(
+    name = "MyStolenPlaygrounds",
+    description = "Collection of Compose related samples, ui tests etc.",
+    githubUrl = "https://github.com/langara/MyStolenPlaygrounds",
+    version = Ver(0, 0, 3),
+    settings = LibSettings(
+        andro = LibAndroSettings(sdkCompilePreview = Vers.AndroSdkPreview, publishVariant = "debug")
+    )
+)
 
-defaultSonatypeOssStuffFromSystemEnvs()
+defaultBuildTemplateForRootProject(MyStolenPlaygrounds)
 
 val playgroundsAppPath = rootProjectPath / "playgrounds-app"
 val playgroundsBasicPath = rootProjectPath / "playgrounds-basic"
 val playgroundsSamplesPath = rootProjectPath / "playgrounds-samples"
 val playgroundsDemosPath = rootProjectPath / "playgrounds-demos"
 
-val rootAndroidxPath = "/home/marek/code/android/androidx-main".toPath()
-// val rootAndroidxPath = "/home/marek/code/kotlin/compose-jb/compose".toPath()
+val myCodeRootPath = "/home/marek/code".toPath()
 
-val androidxSupportPath = rootAndroidxPath / "frameworks/support"
+// val androidxPath = myCodeRootPath / "android/androidx-main/frameworks/support"
+val androidxPath = myCodeRootPath / "kotlin/compose-multiplatform-core"
+
+val composePath = androidxPath / "compose"
 
 val srcAppKotlinPath = playgroundsAppPath / "src/main/kotlin"
 val srcBasicKotlinPath = playgroundsBasicPath / "src/main/kotlin"
@@ -44,12 +63,6 @@ val stolenBasicUnitTestsPath = playgroundsBasicPath / "src/test/kotlin/stolen"
 val stolenBasicAndroTestsPath = playgroundsBasicPath / "src/androidTest/kotlin/stolen"
 val templatesAppSrcKotlinPath = srcAppKotlinPath / "templates"
 
-tasks.registerAllThatGroupFun("inject", ::checkBuildTemplates, ::injectBuildTemplates)
-
-fun checkBuildTemplates() = checkAllKnownRegionsInProject()
-
-fun injectBuildTemplates() = injectAllKnownRegionsInProject()
-
 fun String.containsOneOf(vararg substrings: String) = substrings.any { it in this }
 
 // TODO NOW: test sourceFun DSL
@@ -57,16 +70,17 @@ sourceFun {
 
     grp = "steal"
 
-    fun regSteal(src: Path, out: Path, transform: Path.(String) -> String? = { it }) = reg {
+    fun regSteal(src: Path, out: Path, transform: Pair<Path, Path>.(String) -> String? = { it }) = reg {
         doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
         this.src = src
         this.out = out
         setTransformFun(transform)
     }
-    val srcUiUi = androidxSupportPath / "compose/ui/ui"
-    val srcUiGraphics = androidxSupportPath / "compose/ui/ui-graphics"
-    val srcFoundation = androidxSupportPath / "compose/foundation/foundation"
-    val srcFoundationLayout = androidxSupportPath / "compose/foundation/foundation-layout"
+
+    val srcUiUi = composePath / "ui/ui"
+    val srcUiGraphics = composePath / "ui/ui-graphics"
+    val srcFoundation = composePath / "foundation/foundation"
+    val srcFoundationLayout = composePath / "foundation/foundation-layout"
 
     val srcUiUT = srcUiUi / "src/test/kotlin/androidx/compose/ui"
     val srcUiGraphicsAT = srcUiGraphics / "src/androidAndroidTest/kotlin/androidx/compose/ui/graphics"
@@ -78,8 +92,8 @@ sourceFun {
     val stealComposeFoundationUnitTests by regSteal(srcFoundationUT, stolenBasicUnitTestsPath / "foundation-tests") { it.withInternalAccessIssuesSuppressed() }
     val stealComposeFoundationAndroTests by regSteal(srcFoundationAT, stolenBasicAndroTestsPath / "foundation-tests") {
         when {
-            "text" in segments -> null
-            name.containsOneOf("Lazy", "Pager") -> null
+            "text" in first.segments -> null
+            first.name.containsOneOf("Lazy", "Pager") -> null
             "nhaarman" in it -> null
             "import androidx.compose.foundation.text" in it -> null
             "import androidx.compose.foundation.test.R" in it -> null
@@ -94,23 +108,23 @@ sourceFun {
     }
     val stealComposeUiGraphicsAndroTests by regSteal(srcUiGraphicsAT, stolenBasicAndroTestsPath / "ui-graphics-tests") { it.withInternalAccessIssuesSuppressed() }
 
-    val stealComposeAnnotations by regSteal(androidxSupportPath / "annotation/annotation-sampled/src/main/java/androidx/annotation", stolenSamplesKotlinPath / "androidx-annotation")
-    val stealComposeSourcesJava by regSteal(androidxSupportPath / "compose/ui/ui-android-stubs/src/main/java/android/view", stolenBasicJavaPath / "android/view")
-    val stealComposeSourcesTestUtilsCommon by regSteal(androidxSupportPath / "compose/test-utils/src/commonMain/kotlin/androidx/compose/testutils", stolenBasicKotlinPath / "compose-testutils")
-    val stealComposeSourcesTestUtilsAndro by regSteal(androidxSupportPath / "compose/test-utils/src/androidMain/kotlin/androidx/compose/testutils", stolenBasicKotlinPath / "compose-testutils") {
+    val stealComposeAnnotations by regSteal(androidxPath / "annotation/annotation-sampled/src/main/java/androidx/annotation", stolenSamplesKotlinPath / "androidx-annotation")
+    val stealComposeSourcesJava by regSteal(composePath / "ui/ui-android-stubs/src/main/java/android/view", stolenBasicJavaPath / "android/view")
+    val stealComposeSourcesTestUtilsCommon by regSteal(composePath / "test-utils/src/commonMain/kotlin/androidx/compose/testutils", stolenBasicKotlinPath / "compose-testutils")
+    val stealComposeSourcesTestUtilsAndro by regSteal(composePath / "test-utils/src/androidMain/kotlin/androidx/compose/testutils", stolenBasicKotlinPath / "compose-testutils") {
         if ("Screenshot" in name) null else it
     }
-    val stealComposeSamplesUi by regSteal(androidxSupportPath / "compose/ui/ui/samples/src/main/java/androidx/compose/ui/samples", stolenSamplesKotlinPath / "samples-ui")
-    val stealComposeSamplesUiGraphics by regSteal(androidxSupportPath / "compose/ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples", stolenSamplesKotlinPath / "samples-ui-graphics")
+    val stealComposeSamplesUi by regSteal(composePath / "ui/ui/samples/src/main/java/androidx/compose/ui/samples", stolenSamplesKotlinPath / "samples-ui")
+    val stealComposeSamplesUiGraphics by regSteal(composePath / "ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples", stolenSamplesKotlinPath / "samples-ui-graphics")
     val stealComposeSamplesFoundation by regSteal(srcFoundation / "samples/src/main/java/androidx/compose/foundation/samples", stolenSamplesKotlinPath / "samples-foundation")
-    val stealComposeSamplesAnimationCore by regSteal(androidxSupportPath / "compose/animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples", stolenSamplesKotlinPath / "samples-animation-core")
-    val stealComposeSamplesAnimation by regSteal(androidxSupportPath / "compose/animation/animation/samples/src/main/java/androidx/compose/animation/samples", stolenSamplesKotlinPath / "samples-animation")
-    val m3 = androidxSupportPath / "compose/material3/material3"
+    val stealComposeSamplesAnimationCore by regSteal(composePath / "animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples", stolenSamplesKotlinPath / "samples-animation-core")
+    val stealComposeSamplesAnimation by regSteal(composePath / "animation/animation/samples/src/main/java/androidx/compose/animation/samples", stolenSamplesKotlinPath / "samples-animation")
+    val m3 = composePath / "material3/material3"
     val stealComposeMaterial3Samples by regSteal(m3 / "samples/src/main/java/androidx/compose/material3/samples", stolenDemosKotlinPath / "material3-samples")
     val stealComposeMaterial3Catalog by regSteal(m3 / "integration-tests/material3-catalog/src/main/java/androidx/compose/material3/catalog", stolenDemosKotlinPath / "material3-catalog")
     val stealComposeMaterial3Demos by regSteal(m3 / "integration-tests/material3-demos/src/main/java/androidx/compose/material3/demos", stolenDemosKotlinPath / "material3-demos")
     val stealComposeFoundationDemos by regSteal(srcFoundation / "integration-tests/foundation-demos/src/main/java/androidx/compose/foundation/demos", stolenDemosKotlinPath / "foundation-demos")
-    val stealComposeCommonDemos by regSteal(androidxSupportPath / "compose/integration-tests/demos/common/src/main/java/androidx/compose/integration/demos/common", stolenDemosKotlinPath / "common-demos")
+    val stealComposeCommonDemos by regSteal(composePath / "integration-tests/demos/common/src/main/java/androidx/compose/integration/demos/common", stolenDemosKotlinPath / "common-demos")
     val stealComposeSourcesAll by reg { dependsOn(
         stealComposeSourcesJava,
         stealComposeSourcesTestUtilsCommon,
@@ -165,7 +179,9 @@ sourceFun {
                 val pkg = sampleContent.ktFindPackageName()
                 samples += sampleContent.findSampledComposableFunNames().map { "$pkg.$it" to samplePath }
             }
-            processComposeTemplates(outDir, samples)
+            runWithUCtxForTask {
+                processComposeTemplates(outDir, samples)
+            }
         }
     }
 }
@@ -176,14 +192,15 @@ fun String.withInternalAccessIssuesSuppressed(): String {
     val ktOtherStuffBeforePackageLine by r
     val ktPackageLine by r
     val ktRest by r
-    val ktFileSuppress = """@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER")"""
+    val ktFileSuppress =
+        """@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER")"""
 
     return "$ktLicenceComment\n\n$ktFileSuppress\n\n$ktOtherStuffBeforePackageLine$ktPackageLine\n$ktRest"
 }
 
 fun String.ktFindPackageName() = urePackageLine().compile().find(this)!!["ktPackageName"]
 
-fun processComposeTemplates(
+suspend fun processComposeTemplates(
     templatesDir: Directory,
     samples: Collection<Pair<String, Path?>>,
 ) = processTemplates(
@@ -192,14 +209,15 @@ fun processComposeTemplates(
     interpolations = mapOf(
 //            stolenSrcKotlinDir.toString() to "stolenSrcKotlinDir",
 //            templatesSrcKotlinDir.toString() to "templatesSrcKotlinDir",
-    srcSamplesKotlinPath.toString() to "samplesDir",
-))
+        srcSamplesKotlinPath.toString() to "samplesDir",
+    )
+)
 
-fun processTemplates(
+suspend fun processTemplates(
     templatesPath: Path,
     samples: Collection<Pair<String, Path?>>,
     interpolations: Map<String, String>
-) = SYSTEM.processEachFile(templatesPath, templatesPath) { _, _, templateFileContent ->
+) = processEachFile(templatesPath, templatesPath) { _, _, templateFileContent ->
 
     val r = ureContentWithTemplate.compile().matchEntire(templateFileContent) ?: error("No template")
     val partBeforeTemplate by r
@@ -229,8 +247,8 @@ fun processFunTemplate(
 ) =
     template
         .replace(templateFunName + "Template", templateFunName)
-        .replace(ureLineWithEndingComment(ir("REMOVE")).compile(), "")
-        .replace(ureLineWithEndingComment(ir("REPLACE")).compile(),
+        .replace(ureLineWithEndingComment(ureText("REMOVE")).compile(), "")
+        .replace(ureLineWithEndingComment(ureText("REPLACE")).compile(),
             samples
                 .joinToString(
                     prefix = " ".repeat(8),
@@ -250,125 +268,139 @@ fun String.interpolate(interpolations: Map<String, String>) =
 fun Path.toShortStr(interpolations: Map<String, String>) = toString().interpolate(interpolations)
 
 val ureSampledFunHeader = ure {
-    1 of BOL
+    1 of atBOLine
     // FIXME_later: sth like ureInAnyOrder...
-    1 of (ir("@Sampled") or ir("@Composable"))
-    1..MAX of space
-    1 of (ir("@Sampled") or ir("@Composable"))
-    1..MAX of space
-    1 of ir("fun")
-    1..MAX of space
+    1 of (ureText("@Sampled") or ureText("@Composable"))
+    1..MAX of chSpace
+    1 of (ureText("@Sampled") or ureText("@Composable"))
+    1..MAX of chSpace
+    1 of ureText("fun")
+    1..MAX of chSpace
     1 of ure("funName") {
-        1 of posixUpper
-        0..MAX of (word or digit)
+        1 of chUpper
+        0..MAX of (chWord or chDigit)
     }
-    1 of ir("\\(\\)")
+    1 of ureText("()")
 }
 
 
 val ureParamsNotNested = ure { // I assume no internal expressions with parenthesis
-    1 of ch("\\(")
-    0..MAX of oneCharNotOf("(")
-    1 of ch("\\)")
+    1 of ch('(')
+    0..MAX of !ch('(')
+    1 of ch(')')
 }
 
 val ureAnnotations = ure {
     1..MAX of { // single annotation
-        1 of ch("@")
-        1 of ureIdent(AZ)
+        1 of ch('@')
+        1 of ureIdent(chUpper)
         0..1 of ureParamsNotNested
-        1..MAX of space
+        1..MAX of chSpace
     }
 }
 
 val ureAnnotationsWithComposable = ure {
     1 of ureAnnotations
-    1 of lookBehind {
-        1 of ir("@Composable")
-        1..100 of space
-    }
+    1 of ure {
+        1 of ureText("@Composable")
+        1..100 of chSpace
+    }.lookBehind()
 }
 
-val ureMaybeSomeSpaces = ure { 0..MAX of ch(" ") }
+val ureMaybeSomeSpaces = ure { 0..MAX of ch(' ') }
 
 val ureIndentedNotEmptyLineContent = ure {
-    1 of ch(" ")
+    1 of ch(' ')
     1 of ureMaybeSomeSpaces
-    1 of oneCharNotOf(" ", "\\n")
-    0..MAX of oneCharNotOf("\\n")
+    1 of !chOfAnyExact(' ', '\n')
+    0..MAX of !ch('\n')
 }
 
 val ureIndentedLine = ure {
-    1 of BOL
+    1 of atBOLine
     1 of (ureIndentedNotEmptyLineContent or ureMaybeSomeSpaces)
-    1 of lf
+    1 of chLF
 }
 
 val ureComposableFunTemplate = ure {
     1 of ureAnnotationsWithComposable
-    0..MAX of space // annotations can contain ending spaces too
-    1 of BOL // we have to start from new line to easier find ending brace }
-    1 of ir("fun")
-    1 of space
-    1 of ure { 1 of ureIdent(AZ) }.withName("funName")
-    1 of ir("Template")
+    0..MAX of chSpace // annotations can contain ending spaces too
+    1 of atBOLine // we have to start from new line to easier find ending brace }
+    1 of ureText("fun")
+    1 of chSpace
+    1 of ure { 1 of ureIdent(chUpper) }.withName("funName")
+    1 of ureText("Template")
     1 of ureParamsNotNested
-    1 of space
-    1 of ch("\\{")
-    1 of lf
+    1 of chSpace
+    1 of ch('{')
+    1 of chLF
     1..MAX of ureIndentedLine
-    1 of BOL
-    1 of ch("\\}")
-    1 of lf
+    1 of atBOLine
+    1 of ch('}')
+    1 of chLF
 }
 
 val ureContentWithTemplate = ure {
     val regionName = ure {
-        1 of ir("Generated ")
-        1 of ref(name = "funName") // backreference to actual template function name (inside ureComposableFunTemplate)
-        1 of ir(" from ")
-        1 of ref(name = "funName") // backreference to actual template function name again
-        1 of ir("Template")
+        1 of ureText("Generated ")
+        1 of ureRef(name = "funName") // backreference to actual template function name (inside ureComposableFunTemplate)
+        1 of ureText(" from ")
+        1 of ureRef(name = "funName") // backreference to actual template function name again
+        1 of ureText("Template")
     }
     1 of ureWhateva().withName("partBeforeTemplate")
     1 of ure { 1 of ureComposableFunTemplate }.withName("partTemplate")
     1 of ureWhateva().withName("partBeforeGenerationRegion")
-    1 of ureRegion(ureWhateva(), regionName = regionName)
+    1 of ureRegion(ureWhateva(), regionLabel = regionName)
     1 of ureWhateva(reluctant = false).withName("partAfterGenerationRegion")
 }
 
-// region [Root Build Template]
+// region [[Root Build Template]]
+
+/** Publishing to Sonatype OSSRH has to be explicitly allowed here, by setting withSonatypeOssPublishing to true. */
+fun Project.defaultBuildTemplateForRootProject(details: LibDetails? = null) {
+    ext.addDefaultStuffFromSystemEnvs()
+    details?.let {
+        rootExtLibDetails = it
+        defaultGroupAndVerAndDescription(it)
+        if (it.settings.withSonatypeOssPublishing) defaultSonatypeOssNexusPublishing()
+    }
+
+    // kinda workaround for kinda issue with kotlin native
+    // https://youtrack.jetbrains.com/issue/KT-48410/Sync-failed.-Could-not-determine-the-dependencies-of-task-commonizeNativeDistribution.#focus=Comments-27-5144160.0-0
+    repositories { mavenCentral() }
+}
 
 /**
  * System.getenv() should contain six env variables with given prefix, like:
  * * MYKOTLIBS_signing_keyId
  * * MYKOTLIBS_signing_password
- * * MYKOTLIBS_signing_keyFile
+ * * MYKOTLIBS_signing_keyFile (or MYKOTLIBS_signing_key with whole signing key)
  * * MYKOTLIBS_ossrhUsername
  * * MYKOTLIBS_ossrhPassword
  * * MYKOTLIBS_sonatypeStagingProfileId
  * * First three of these used in fun pl.mareklangiewicz.defaults.defaultSigning
- * * See deps.kt/template-mpp/template-mpp-lib/build.gradle.kts
+ * * See KGround/template-full/template-full-lib/build.gradle.kts
  */
-fun Project.defaultSonatypeOssStuffFromSystemEnvs(envKeyMatchPrefix: String = "MYKOTLIBS_") {
-    ext.addAllFromSystemEnvs(envKeyMatchPrefix)
-    defaultSonatypeOssNexusPublishing()
-}
+fun ExtraPropertiesExtension.addDefaultStuffFromSystemEnvs(envKeyMatchPrefix: String = "MYKOTLIBS_") =
+    addAllFromSystemEnvs(envKeyMatchPrefix)
 
 fun Project.defaultSonatypeOssNexusPublishing(
-    sonatypeStagingProfileId: String = rootExt("sonatypeStagingProfileId"),
-    ossrhUsername: String = rootExt("ossrhUsername"),
-    ossrhPassword: String = rootExt("ossrhPassword"),
-) = nexusPublishing {
-    repositories {
-        sonatype {  // only for users registered in Sonatype after 24 Feb 2021
-            stagingProfileId put sonatypeStagingProfileId
-            username put ossrhUsername
-            password put ossrhPassword
-            nexusUrl put uri(repos.sonatypeOssNexus)
-            snapshotRepositoryUrl put uri(repos.sonatypeOssSnapshots)
+    sonatypeStagingProfileId: String = rootExtString["sonatypeStagingProfileId"],
+    ossrhUsername: String = rootExtString["ossrhUsername"],
+    ossrhPassword: String = rootExtString["ossrhPassword"],
+) {
+    nexusPublishing {
+        this.repositories {
+            sonatype {  // only for users registered in Sonatype after 24 Feb 2021
+                stagingProfileId put sonatypeStagingProfileId
+                username put ossrhUsername
+                password put ossrhPassword
+                nexusUrl put repos.sonatypeOssNexus
+                snapshotRepositoryUrl put repos.sonatypeOssSnapshots
+            }
         }
     }
 }
 
-// endregion [Root Build Template]
+// endregion [[Root Build Template]]

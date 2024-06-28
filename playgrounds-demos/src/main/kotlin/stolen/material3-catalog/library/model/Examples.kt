@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.catalog.library.util.SampleSourceUrl
 import androidx.compose.material3.samples.AlertDialogSample
+import androidx.compose.material3.samples.AlertDialogWithCustomContentSample
 import androidx.compose.material3.samples.AlertDialogWithIconSample
 import androidx.compose.material3.samples.AnimatedExtendedFloatingActionButtonSample
 import androidx.compose.material3.samples.AssistChipSample
@@ -38,6 +39,7 @@ import androidx.compose.material3.samples.ClickableCardSample
 import androidx.compose.material3.samples.ClickableElevatedCardSample
 import androidx.compose.material3.samples.ClickableOutlinedCardSample
 import androidx.compose.material3.samples.DismissibleNavigationDrawerSample
+import androidx.compose.material3.samples.DockedSearchBarSample
 import androidx.compose.material3.samples.EditableExposedDropdownMenuSample
 import androidx.compose.material3.samples.ElevatedAssistChipSample
 import androidx.compose.material3.samples.ElevatedButtonSample
@@ -61,6 +63,7 @@ import androidx.compose.material3.samples.FilledTonalIconToggleButtonSample
 import androidx.compose.material3.samples.FilterChipSample
 import androidx.compose.material3.samples.FilterChipWithLeadingIconSample
 import androidx.compose.material3.samples.FloatingActionButtonSample
+import androidx.compose.material3.samples.SearchBarSample
 import androidx.compose.material3.samples.IconButtonSample
 import androidx.compose.material3.samples.IconTabs
 import androidx.compose.material3.samples.IconToggleButtonSample
@@ -88,6 +91,8 @@ import androidx.compose.material3.samples.OutlinedTextFieldSample
 import androidx.compose.material3.samples.PasswordTextField
 import androidx.compose.material3.samples.PermanentNavigationDrawerSample
 import androidx.compose.material3.samples.PinnedTopAppBar
+import androidx.compose.material3.samples.PlainTooltipSample
+import androidx.compose.material3.samples.PlainTooltipWithManualInvocationSample
 import androidx.compose.material3.samples.RadioButtonSample
 import androidx.compose.material3.samples.RadioGroupSample
 import androidx.compose.material3.samples.RangeSliderSample
@@ -344,6 +349,11 @@ val DialogExamples =
             description = DialogExampleDescription,
             sourceUrl = DialogExampleSourceUrl,
         ) { AlertDialogWithIconSample() },
+        Example(
+            name = ::AlertDialogWithCustomContentSample.name,
+            description = DialogExampleDescription,
+            sourceUrl = DialogExampleSourceUrl,
+        ) { AlertDialogWithCustomContentSample() },
     )
 
 private const val BottomAppBarsExampleDescription = "Bottom app bar examples"
@@ -654,8 +664,27 @@ val RadioButtonsExamples = listOf(
     },
 )
 
+private const val SearchBarExampleDescription = "Search bar examples"
+private const val SearchBarExampleSourceUrl = "$SampleSourceUrl/SearchBarSamples.kt"
+val SearchBarExamples = listOf(
+    Example(
+        name = ::SearchBarSample.name,
+        description = SearchBarExampleDescription,
+        sourceUrl = SearchBarExampleSourceUrl
+    ) {
+        SearchBarSample()
+    },
+    Example(
+        name = ::DockedSearchBarSample.name,
+        description = SearchBarExampleDescription,
+        sourceUrl = SearchBarExampleSourceUrl
+    ) {
+        DockedSearchBarSample()
+    },
+)
+
 private const val SlidersExampleDescription = "Sliders examples"
-private const val SlidersExampleSourceUrl = "$SampleSourceUrl/SliderSample.kt"
+private const val SlidersExampleSourceUrl = "$SampleSourceUrl/SliderSamples.kt"
 val SlidersExamples = listOf(
     Example(
         name = ::SliderSample.name,
@@ -735,7 +764,7 @@ val SnackbarsExamples = listOf(
 )
 
 private const val SwitchExampleDescription = "Switch examples"
-private const val SwitchExampleSourceUrl = "$SampleSourceUrl/Switch.kt"
+private const val SwitchExampleSourceUrl = "$SampleSourceUrl/SwitchSamples.kt"
 val SwitchExamples = listOf(
     Example(
         name = ::SwitchSample.name,
@@ -914,3 +943,22 @@ val TextFieldsExamples = listOf(
         ) { it.content() }
     })
 }
+
+private const val TooltipsExampleDescription = "Tooltips examples"
+private const val TooltipsExampleSourceUrl = "$SampleSourceUrl/TooltipSamples.kt"
+val TooltipsExamples = listOf(
+    Example(
+        name = ::PlainTooltipSample.name,
+        description = TooltipsExampleDescription,
+        sourceUrl = TooltipsExampleSourceUrl
+    ) {
+        PlainTooltipSample()
+    },
+    Example(
+        name = ::PlainTooltipWithManualInvocationSample.name,
+        description = TooltipsExampleDescription,
+        sourceUrl = TooltipsExampleSourceUrl
+    ) {
+        PlainTooltipWithManualInvocationSample()
+    }
+)
