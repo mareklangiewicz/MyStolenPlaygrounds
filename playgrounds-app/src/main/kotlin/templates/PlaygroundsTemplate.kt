@@ -40,7 +40,7 @@ fun PlaygroundsTemplate() {
     val samplesDir = "/home/marek/code/kotlin/MyStolenPlaygrounds/lib-ui-samples/src/main/kotlin"
 
     val samples = listOf(
-        MySampleData("Version details", null) { MySimpleAssets("version-details") },
+        MySampleData("Build details", null) { MySimpleAssets("generated-assets/build-details") },
         MySampleData("Some Sample 1", "${samplesDir}/blabla.kt") { Text("Some Sample 1") }, // REPLACE
         MySampleData("Some Sample 2", "${samplesDir}/blabla.kt") { Text("Some Sample 2") }, // REMOVE
         MySampleData("Some Sample 3", "${samplesDir}/blabla.kt") { Text("Some Sample 3") }, // REMOVE
@@ -86,7 +86,9 @@ fun Playgrounds() {
     val samplesDir = "/home/marek/code/kotlin/MyStolenPlaygrounds/lib-ui-samples/src/main/kotlin"
 
     val samples = listOf(
-        MySampleData("Version details", null) { MySimpleAssets("version-details") },
+        MySampleData("Version details", null) { MySimpleAssets("build-details") },
+        // TODO NOW: reenable
+        /*
         MySampleData("androidx.compose.animation.core.samples.GestureAnimationSample", "${samplesDir}/stolen/samples-animation-core/TransitionSamples.kt") { androidx.compose.animation.core.samples.GestureAnimationSample() },
         MySampleData("androidx.compose.animation.core.samples.AnimateFloatSample", "${samplesDir}/stolen/samples-animation-core/TransitionSamples.kt") { androidx.compose.animation.core.samples.AnimateFloatSample() },
         MySampleData("androidx.compose.animation.core.samples.DoubleTapToLikeSample", "${samplesDir}/stolen/samples-animation-core/TransitionSamples.kt") { androidx.compose.animation.core.samples.DoubleTapToLikeSample() },
@@ -282,6 +284,7 @@ fun Playgrounds() {
         MySampleData("androidx.compose.ui.graphics.samples.DrawScopeOvalBrushSample", "${samplesDir}/stolen/samples-ui-graphics/DrawScopeSample.kt") { androidx.compose.ui.graphics.samples.DrawScopeOvalBrushSample() },
         MySampleData("androidx.compose.ui.graphics.samples.DrawScopeOvalColorSample", "${samplesDir}/stolen/samples-ui-graphics/DrawScopeSample.kt") { androidx.compose.ui.graphics.samples.DrawScopeOvalColorSample() },
         MySampleData("androidx.compose.ui.graphics.samples.StampedPathEffectSample", "${samplesDir}/stolen/samples-ui-graphics/PathEffectSample.kt") { androidx.compose.ui.graphics.samples.StampedPathEffectSample() },
+        */
     )
 
     var selectedSample by remember { mutableStateOf(samples[0]) }

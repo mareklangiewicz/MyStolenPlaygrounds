@@ -16,12 +16,10 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:banner="@drawable/circus"
             android:supportsRtl="true"
-            android:theme="@style/Theme.MyStolenPlaygrounds"
             tools:ignore="DataExtractionRules">
         <activity
                 android:name=".MainActivity"
-                android:exported="true"
-                android:theme="@style/Theme.MyStolenPlaygrounds.NoActionBar">
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,8 +28,7 @@
         </activity>
         <activity
                 android:name=".TvActivity"
-                android:exported="true"
-                android:theme="@style/Theme.MyStolenPlaygrounds.NoActionBar">
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

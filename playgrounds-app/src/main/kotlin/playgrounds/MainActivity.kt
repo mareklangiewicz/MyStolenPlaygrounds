@@ -5,13 +5,13 @@ import android.net.*
 import android.os.*
 import androidx.activity.*
 import androidx.activity.compose.*
-import androidx.browser.customtabs.*
-import androidx.compose.foundation.demos.*
+// import androidx.browser.customtabs.*
+// import androidx.compose.foundation.demos.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.integration.demos.common.*
+// import androidx.compose.integration.demos.common.*
 import androidx.compose.material3.*
-import androidx.compose.material3.catalog.library.*
-import androidx.compose.material3.demos.*
+// import androidx.compose.material3.catalog.library.*
+// import androidx.compose.material3.demos.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.*
@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainContent() {
+fun MainContent() = UWidgetsSki {
     val density = LocalDensity.current
     // val newdd = 1f
     val newdd = 2f
@@ -58,38 +58,39 @@ fun MainContent() {
                     "School" to { School() },
                 )
             },
-            "AX Demos" to {
-                UTabs(
-                    "Material 3 Catalog" to { Material3CatalogApp() },
-                    "Material 3 Demos" to { MyDemosSelector(Material3Demos) },
-                    "Foundation Demos" to { MyDemosSelector(FoundationDemos) },
-                )
-            },
-            "Browser" to {
-                Row {
-                    Button({ context.launchBrowser("https://google.com") }) { Text("Google") }
-                    Button({ context.launchBrowser("https://github.com") }) { Text("Github") }
-                    Button({ context.launchBrowser("https://mareklangiewicz.pl") }) { Text("Marek") }
-                }
-            }
+            // TODO NOW: reenable
+            // "AX Demos" to {
+            //     UTabs(
+            //         "Material 3 Catalog" to { Material3CatalogApp() },
+            //         "Material 3 Demos" to { MyDemosSelector(Material3Demos) },
+            //         "Foundation Demos" to { MyDemosSelector(FoundationDemos) },
+            //     )
+            // },
+            // "Browser" to {
+            //     Row {
+            //         Button({ context.launchBrowser("https://google.com") }) { Text("Google") }
+            //         Button({ context.launchBrowser("https://github.com") }) { Text("Github") }
+            //         Button({ context.launchBrowser("https://mareklangiewicz.pl") }) { Text("Marek") }
+            //     }
+            // }
         )
     }
 }
 
-private fun Context.launchBrowser(url: String) {
-    val intent = CustomTabsIntent.Builder().build()
-    intent.launchUrl(this, Uri.parse(url))
-}
+// private fun Context.launchBrowser(url: String) {
+//     val intent = CustomTabsIntent.Builder().build()
+//     intent.launchUrl(this, Uri.parse(url))
+// }
 
-@Composable
-private fun MyDemosSelector(demos: DemoCategory) {
-    val contents = demos.demos.map { demo ->
-        val content: @Composable () -> Unit = when (demo) {
-            is ComposableDemo -> { { demo.content {} } }
-            is DemoCategory -> { { MyDemosSelector(demo) } }
-            else -> { { UText(text = "$demo not supported") } }
-        }
-        demo.title to content
-    }
-    UTabs(*contents.toTypedArray())
-}
+// @Composable
+// private fun MyDemosSelector(demos: DemoCategory) {
+//     val contents = demos.demos.map { demo ->
+//         val content: @Composable () -> Unit = when (demo) {
+//             is ComposableDemo -> { { demo.content {} } }
+//             is DemoCategory -> { { MyDemosSelector(demo) } }
+//             else -> { { UText(text = "$demo not supported") } }
+//         }
+//         demo.title to content
+//     }
+//     UTabs(*contents.toTypedArray())
+// }

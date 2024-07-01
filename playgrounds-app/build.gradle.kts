@@ -1,43 +1,66 @@
-import com.android.build.api.dsl.ApplicationExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
-import com.android.build.api.dsl.CommonExtension
+// FIXME NOW:this import is needed or not?
+import org.gradle.configurationcache.extensions.*
+
+import pl.mareklangiewicz.sourcefun.*
+
+// region [Custom Andro App Build Imports and Plugs]
+
+import com.android.build.api.dsl.*
+import org.jetbrains.kotlin.gradle.dsl.*
+import org.jetbrains.kotlin.gradle.plugin.*
 import pl.mareklangiewicz.defaults.*
 import pl.mareklangiewicz.deps.*
-import org.gradle.configurationcache.extensions.*
-import pl.mareklangiewicz.sourcefun.*
 import pl.mareklangiewicz.utils.*
 
 plugins {
-    plugAll(plugs.AndroApp, plugs.KotlinAndro, plugs.MavenPublish, plugs.Signing)
+  plugAll(
+    plugs.KotlinMulti,
+    plugs.KotlinMultiCompose,
+    plugs.ComposeJbNoVer,
+    plugs.AndroAppNoVer,
+    plugs.MavenPublish,
+    plugs.Signing,
+  )
+  // TODO NOW: try to move generateBuildDetails to root project, so I can have standard imports and plugs here
+  id("pl.mareklangiewicz.sourcefun")
 }
 
-defaultBuildTemplateForAndroApp()
+// endregion [Custom Andro App Build Imports and Plugs]
 
-val generateVersionDetails by tasks.registering(VersionDetailsTask::class) {
-    generatedAssetsDir provides layout.buildDirectory.dir("generated/assets")
+repositories { maven(repos.composeJbDev) }
+
+val newNamespace = "pl.mareklangiewicz.playgrounds"
+val newAppId = "$newNamespace.app"
+val newDetails = rootExtLibDetails.copy(namespace = newNamespace, appId = newAppId)
+
+defaultBuildTemplateForAndroApp(newDetails) {
+  implementation(Langiewicz.uwidgets)
+  implementation(Langiewicz.uwidgets_udemo)
+  // implementation("androidx.browser:browser:1.8.0")
+  implementation(project(":playgrounds-basic"))
+  // implementation(project(":playgrounds-samples"))
+  // implementation(project(":playgrounds-demos"))
+  defaultAndroTestDeps(newDetails.settings, configuration = "implementation")
+  // I use test stuff in main sources so I can add some tests sources to playgrounds app
+}
+
+val generateBuildDetails by tasks.registering(BuildDetailsTask::class) {
+  outputDir provides layout.buildDirectory.dir("generated-assets/build-details")
 }
 
 android {
-    sourceSets["main"].assets.srcDir(generateVersionDetails)
-}
-
-dependencies {
-    implementation("androidx.browser:browser:1.4.0")
-    implementation(project(":playgrounds-basic"))
-    implementation(project(":playgrounds-samples"))
-    implementation(project(":playgrounds-demos"))
-    defaultAndroTestDeps(configuration = "implementation", withCompose = true)
-    // I use test stuff in main sources so I can add some tests sources to playgrounds app
+  // sourceSets["main"].assets.srcDir(generateBuildDetails)
+  sourceSets["main"].assets.srcDir(layout.buildDirectory.dir("generated-assets"))
 }
 
 androidComponents {
-    onVariants {
-        val capitalizedVariantName = it.name.capitalized()
-        afterEvaluate {
-            // FIXME_someday: watch: https://issuetracker.google.com/issues/191774971
-            tasks.named("generate${capitalizedVariantName}Assets") { dependsOn("generateVersionDetails") }
-        }
+  onVariants {
+    val capitalizedVariantName = it.name.capitalized()
+    afterEvaluate {
+      // FIXME_someday: watch: https://issuetracker.google.com/issues/191774971
+      tasks.named("generate${capitalizedVariantName}Assets") { dependsOn(generateBuildDetails) }
     }
+  }
 }
 
 // region [[Kotlin Module Build Template]]

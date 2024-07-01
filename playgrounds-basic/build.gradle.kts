@@ -3,10 +3,10 @@
 
 import com.android.build.api.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.*
+import org.jetbrains.kotlin.gradle.plugin.*
 import pl.mareklangiewicz.defaults.*
 import pl.mareklangiewicz.deps.*
 import pl.mareklangiewicz.utils.*
-import pl.mareklangiewicz.utils.rootExtLibDetails
 
 plugins {
   plugAll(
@@ -23,7 +23,8 @@ plugins {
 
 repositories { maven(repos.composeJbDev) }
 
-val newDetails = rootExtLibDetails.copy(namespace = "pl.mareklangiewicz.playgrounds.basic")
+val newNamespace = "pl.mareklangiewicz.playgrounds.basic"
+val newDetails = rootExtLibDetails.copy(namespace = newNamespace)
 
 defaultBuildTemplateForAndroLib(newDetails)
 
@@ -210,7 +211,6 @@ fun TaskContainer.withPublishingPrintln() = withType<AbstractPublishToMaven>().c
     is PublishToMavenRepository -> doFirst {
       println("Publishing $coordinates to ${repository.url}")
     }
-
     is PublishToMavenLocal -> doFirst {
       val localRepo = System.getenv("HOME")!! + "/.m2/repository"
       val localPath = localRepo + publication.run { "/$groupId/$artifactId".replace('.', '/') }

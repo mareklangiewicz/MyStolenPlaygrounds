@@ -38,7 +38,7 @@ pluginManagement {
 }
 
 plugins {
-  id("pl.mareklangiewicz.deps.settings") version "0.3.31" // https://plugins.gradle.org/search?term=mareklangiewicz
+  id("pl.mareklangiewicz.deps.settings") version "0.3.32" // https://plugins.gradle.org/search?term=mareklangiewicz
   id("com.gradle.develocity") version "3.17.5" // https://docs.gradle.com/develocity/gradle-plugin/
 }
 
@@ -52,7 +52,7 @@ develocity {
 
 // endregion [[My Settings Stuff]]
 
-// include(":playgrounds-app")
+include(":playgrounds-app")
 include(":playgrounds-basic")
 // include(":playgrounds-samples")
 // include(":playgrounds-demos")

@@ -22,14 +22,14 @@ plugins {
     plug(plugs.AndroApp) apply false
     plug(plugs.NexusPublish)
     // plug(plugs.SourceFun)
-    id("pl.mareklangiewicz.sourcefun") version "0.4.12"
+    id("pl.mareklangiewicz.sourcefun") version "0.4.14"
 }
 
 val MyStolenPlaygrounds = myLibDetails(
     name = "MyStolenPlaygrounds",
     description = "Collection of Compose related samples, ui tests etc.",
     githubUrl = "https://github.com/langara/MyStolenPlaygrounds",
-    version = Ver(0, 0, 3),
+    version = Ver(0, 0, 4),
     settings = LibSettings(
         andro = LibAndroSettings(sdkCompilePreview = Vers.AndroSdkPreview, publishVariant = "debug")
     )
@@ -359,16 +359,16 @@ val ureContentWithTemplate = ure {
 
 /** Publishing to Sonatype OSSRH has to be explicitly allowed here, by setting withSonatypeOssPublishing to true. */
 fun Project.defaultBuildTemplateForRootProject(details: LibDetails? = null) {
-    ext.addDefaultStuffFromSystemEnvs()
-    details?.let {
-        rootExtLibDetails = it
-        defaultGroupAndVerAndDescription(it)
-        if (it.settings.withSonatypeOssPublishing) defaultSonatypeOssNexusPublishing()
-    }
+  ext.addDefaultStuffFromSystemEnvs()
+  details?.let {
+    rootExtLibDetails = it
+    defaultGroupAndVerAndDescription(it)
+    if (it.settings.withSonatypeOssPublishing) defaultSonatypeOssNexusPublishing()
+  }
 
-    // kinda workaround for kinda issue with kotlin native
-    // https://youtrack.jetbrains.com/issue/KT-48410/Sync-failed.-Could-not-determine-the-dependencies-of-task-commonizeNativeDistribution.#focus=Comments-27-5144160.0-0
-    repositories { mavenCentral() }
+  // kinda workaround for kinda issue with kotlin native
+  // https://youtrack.jetbrains.com/issue/KT-48410/Sync-failed.-Could-not-determine-the-dependencies-of-task-commonizeNativeDistribution.#focus=Comments-27-5144160.0-0
+  repositories { mavenCentral() }
 }
 
 /**
@@ -383,24 +383,24 @@ fun Project.defaultBuildTemplateForRootProject(details: LibDetails? = null) {
  * * See KGround/template-full/template-full-lib/build.gradle.kts
  */
 fun ExtraPropertiesExtension.addDefaultStuffFromSystemEnvs(envKeyMatchPrefix: String = "MYKOTLIBS_") =
-    addAllFromSystemEnvs(envKeyMatchPrefix)
+  addAllFromSystemEnvs(envKeyMatchPrefix)
 
 fun Project.defaultSonatypeOssNexusPublishing(
-    sonatypeStagingProfileId: String = rootExtString["sonatypeStagingProfileId"],
-    ossrhUsername: String = rootExtString["ossrhUsername"],
-    ossrhPassword: String = rootExtString["ossrhPassword"],
+  sonatypeStagingProfileId: String = rootExtString["sonatypeStagingProfileId"],
+  ossrhUsername: String = rootExtString["ossrhUsername"],
+  ossrhPassword: String = rootExtString["ossrhPassword"],
 ) {
-    nexusPublishing {
-        this.repositories {
-            sonatype {  // only for users registered in Sonatype after 24 Feb 2021
-                stagingProfileId put sonatypeStagingProfileId
-                username put ossrhUsername
-                password put ossrhPassword
-                nexusUrl put repos.sonatypeOssNexus
-                snapshotRepositoryUrl put repos.sonatypeOssSnapshots
-            }
-        }
+  nexusPublishing {
+    this.repositories {
+      sonatype {  // only for users registered in Sonatype after 24 Feb 2021
+        stagingProfileId put sonatypeStagingProfileId
+        username put ossrhUsername
+        password put ossrhPassword
+        nexusUrl put repos.sonatypeOssNexus
+        snapshotRepositoryUrl put repos.sonatypeOssSnapshots
+      }
     }
+  }
 }
 
 // endregion [[Root Build Template]]
