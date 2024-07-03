@@ -36,7 +36,7 @@ val newDetails = rootExtLibDetails.copy(namespace = newNamespace, appId = newApp
 defaultBuildTemplateForAndroApp(newDetails) {
   implementation(Langiewicz.uwidgets)
   implementation(Langiewicz.uwidgets_udemo)
-  // implementation("androidx.browser:browser:1.8.0")
+  implementation("androidx.browser:browser:1.8.0")
   implementation(project(":playgrounds-basic"))
   // implementation(project(":playgrounds-samples"))
   // implementation(project(":playgrounds-demos"))

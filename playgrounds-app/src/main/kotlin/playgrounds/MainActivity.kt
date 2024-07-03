@@ -5,7 +5,7 @@ import android.net.*
 import android.os.*
 import androidx.activity.*
 import androidx.activity.compose.*
-// import androidx.browser.customtabs.*
+import androidx.browser.customtabs.*
 // import androidx.compose.foundation.demos.*
 import androidx.compose.foundation.layout.*
 // import androidx.compose.integration.demos.common.*
@@ -66,21 +66,21 @@ fun MainContent() = UWidgetsSki {
             //         "Foundation Demos" to { MyDemosSelector(FoundationDemos) },
             //     )
             // },
-            // "Browser" to {
-            //     Row {
-            //         Button({ context.launchBrowser("https://google.com") }) { Text("Google") }
-            //         Button({ context.launchBrowser("https://github.com") }) { Text("Github") }
-            //         Button({ context.launchBrowser("https://mareklangiewicz.pl") }) { Text("Marek") }
-            //     }
-            // }
+            "Browser" to {
+                Row {
+                    Button({ context.launchBrowser("https://google.com") }) { Text("Google") }
+                    Button({ context.launchBrowser("https://github.com") }) { Text("Github") }
+                    Button({ context.launchBrowser("https://mareklangiewicz.pl") }) { Text("Marek") }
+                }
+            }
         )
     }
 }
 
-// private fun Context.launchBrowser(url: String) {
-//     val intent = CustomTabsIntent.Builder().build()
-//     intent.launchUrl(this, Uri.parse(url))
-// }
+private fun Context.launchBrowser(url: String) {
+    val intent = CustomTabsIntent.Builder().build()
+    intent.launchUrl(this, Uri.parse(url))
+}
 
 // @Composable
 // private fun MyDemosSelector(demos: DemoCategory) {

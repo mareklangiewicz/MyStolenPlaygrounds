@@ -31,7 +31,12 @@ val MyStolenPlaygrounds = myLibDetails(
     githubUrl = "https://github.com/langara/MyStolenPlaygrounds",
     version = Ver(0, 0, 4),
     settings = LibSettings(
-        andro = LibAndroSettings(sdkCompilePreview = Vers.AndroSdkPreview, publishVariant = "debug")
+        withTestJUnit4 = true,
+        withTestJUnit5 = false,
+        withTestUSpekX = true,
+        withTestGoogleTruth = true,
+        withTestMockitoKotlin = true,
+        andro = LibAndroSettings(sdkCompilePreview = Vers.AndroSdkPreview, publishVariant = "debug"),
     )
 )
 
