@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import pl.mareklangiewicz.uwidgets.UWidgetsSki
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,8 +60,8 @@ private fun MyFancySurface(content: @Composable () -> Unit) = Surface(
 
 @Preview
 @Composable
-fun MyFancyFramePreview() {
-    PlaygroundsTheme(darkTheme = false) {
+fun MyFancyFramePreview() = UWidgetsSki {
+    PlaygroundsTheme {
         CompositionLocalProvider(LocalDensity provides Density(4f)) {
             Box(Modifier.padding(20.dp)) {
                 MyFancyFrame(title = "Some box", grayed = false, onClick = { println("click") }) {

@@ -1,4 +1,4 @@
-package playgrounds
+package pl.mareklangiewicz.playgrounds
 
 import android.os.*
 import androidx.activity.*

@@ -17,11 +17,7 @@ data class MySampleData(val title: String, val path: String?, val code: @Composa
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
-fun PlaygroundsTemplatePreview() {
-    PlaygroundsTheme(darkTheme = false) {
-        PlaygroundsTemplate()
-    }
-}
+fun PlaygroundsTemplatePreview() = PlaygroundsTheme { PlaygroundsTemplate() }
 
 @Composable
 private fun HelloColumn() {

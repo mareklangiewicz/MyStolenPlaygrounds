@@ -43,7 +43,8 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun PlaygroundsTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    // darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = false, // FIXME_later: Do I even support dark themes in UWidgets somehow?
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
