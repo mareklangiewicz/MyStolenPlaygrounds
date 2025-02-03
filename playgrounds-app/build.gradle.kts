@@ -34,8 +34,9 @@ val newAppId = "$newNamespace.app"
 val newDetails = rootExtLibDetails.copy(namespace = newNamespace, appId = newAppId)
 
 defaultBuildTemplateForAndroApp(newDetails) {
+  implementation(Langiewicz.kgroundx_io)
   implementation(Langiewicz.uwidgets)
-  implementation(Langiewicz.uwidgets_udemo)
+  implementation(Langiewicz.uwidgets_demo)
   implementation("androidx.browser:browser:1.8.0")
   implementation(project(":playgrounds-basic"))
   // implementation(project(":playgrounds-samples"))
@@ -43,6 +44,12 @@ defaultBuildTemplateForAndroApp(newDetails) {
   defaultAndroTestDeps(newDetails.settings, configuration = "implementation")
   // I use test stuff in main sources so I can add some tests sources to playgrounds app
 }
+
+setMyWeirdSubstitutions(
+  "kgroundx-io" to rootExtString["verKGround"],
+  "uwidgets" to rootExtString["verUWidgets"],
+  "uwidgets-demo" to rootExtString["verUWidgets"],
+)
 
 val generateBuildDetails by tasks.registering(BuildDetailsTask::class) {
   outputDir provides layout.buildDirectory.dir("generated-assets/build-details")
@@ -90,6 +97,7 @@ fun Project.setMyWeirdSubstitutions(
 }
 
 fun RepositoryHandler.addRepos(settings: LibReposSettings) = with(settings) {
+  @Suppress("DEPRECATION")
   if (withMavenLocal) mavenLocal()
   if (withMavenCentral) mavenCentral()
   if (withGradle) gradlePluginPortal()
@@ -105,11 +113,12 @@ fun RepositoryHandler.addRepos(settings: LibReposSettings) = with(settings) {
 //   But it's only for jvm+andro, so probably this is better:
 //   https://kotlinlang.org/docs/gradle-compiler-options.html#for-all-kotlin-compilation-tasks
 fun TaskCollection<Task>.defaultKotlinCompileOptions(
+  apiVer: KotlinVersion = KotlinVersion.KOTLIN_2_1,
   jvmTargetVer: String? = null, // it's better to use jvmToolchain (normally done in fun allDefault)
   renderInternalDiagnosticNames: Boolean = false,
 ) = withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
   compilerOptions {
-    apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0) // FIXME_later: add param.
+    apiVersion.set(apiVer)
     jvmTargetVer?.let { jvmTarget = JvmTarget.fromTarget(it) }
     if (renderInternalDiagnosticNames) freeCompilerArgs.add("-Xrender-internal-diagnostic-names")
     // useful, for example, to suppress some errors when accessing internal code from some library, like:
@@ -401,7 +410,7 @@ fun Project.defaultBuildTemplateForAndroApp(
     add("debugImplementation", AndroidX.Tracing.ktx) // https://github.com/android/android-test/issues/1755
     addAndroDependencies()
   }
-  configurations.checkVerSync()
+  configurations.checkVerSync(warnOnly = true)
   tasks.defaultKotlinCompileOptions(
     jvmTargetVer = null, // jvmVer is set jvmToolchain in fun allDefault
   )

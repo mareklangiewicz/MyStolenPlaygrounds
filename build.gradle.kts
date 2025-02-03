@@ -22,14 +22,18 @@ plugins {
     plug(plugs.AndroApp) apply false
     plug(plugs.NexusPublish)
     // plug(plugs.SourceFun)
-    id("pl.mareklangiewicz.sourcefun") version "0.4.14"
+    id("pl.mareklangiewicz.sourcefun") version "0.4.24"
+    // https://plugins.gradle.org/search?term=pl.mareklangiewicz
 }
+
+rootExtString["verKGround"] = "0.1.05" // https://s01.oss.sonatype.org/content/repositories/releases/pl/mareklangiewicz/kground/
+rootExtString["verUWidgets"] = "0.0.39" // https://s01.oss.sonatype.org/content/repositories/releases/pl/mareklangiewicz/uwidgets/
 
 val MyStolenPlaygrounds = myLibDetails(
     name = "MyStolenPlaygrounds",
     description = "Collection of Compose related samples, ui tests etc.",
     githubUrl = "https://github.com/langara/MyStolenPlaygrounds",
-    version = Ver(0, 0, 4),
+    version = Ver(0, 0, 5),
     settings = LibSettings(
         withTestJUnit4 = true,
         withTestJUnit5 = false,
