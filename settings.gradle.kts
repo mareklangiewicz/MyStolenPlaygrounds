@@ -82,8 +82,9 @@ gradle.extLib = lib(
   andro = LibAndro(sdkCompilePreview = Vers.AndroSdkPreview),
 )
 
-include(":playgrounds-app")
-include(":playgrounds-basic")
+include(":playgrounds-app")      // android application (plain AGP -- AGP 9 gives an app no KMP shape)
+include(":playgrounds-desktop")  // jvm Compose MPP application
+include(":playgrounds-basic")    // the shared library both apps render
 // include(":playgrounds-samples")
 // include(":playgrounds-demos")
 

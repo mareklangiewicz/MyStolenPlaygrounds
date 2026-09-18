@@ -8,7 +8,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.*
-import androidx.compose.ui.tooling.preview.*
+import org.jetbrains.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import pl.mareklangiewicz.uwidgets.UWidgetsSki
 

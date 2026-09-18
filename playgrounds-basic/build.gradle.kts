@@ -60,6 +60,12 @@ defaultBuildTemplateForFullMppLib(lib, publish = LibPublish(androVariant = "debu
   // which have that artifact. It did not surface from compileAndroidMain -- only `assemble`, which
   // reaches the jvm compilation, sees commonMain compiled on its own.
   implementation(Org.JetBrains.Compose.Ui.test_junit4.jb())
+
+  // The shared Compose surface moved here from playgrounds-app (MyFancyFrame, Themes,
+  // school/Examples), so commonMain now needs the MULTIPLATFORM @Preview. androidx's
+  // androidx.compose.ui.tooling.preview is android-only; compose-multiplatform publishes its own
+  // under org.jetbrains.compose.ui.tooling.preview for exactly this.
+  implementation(Org.JetBrains.Compose.Components.ui_tooling_preview.jb())
 }
 
 // Workaround needed for preview in android studio e.g. in MyExaminedLayoutPreview.kt

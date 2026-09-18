@@ -1,11 +1,9 @@
 package pl.mareklangiewicz.playgrounds
 
-import android.os.*
 import androidx.compose.foundation.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.unit.*
@@ -41,6 +39,16 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Pink40
 )
 
+/**
+ * The wallpaper-derived color scheme, or null where the platform has no such concept.
+ *
+ * This is the ONLY part of this theme that was ever android-specific -- the rest is plain
+ * material3 -- so it is the only thing that becomes expect/actual. Android 12+ answers with
+ * dynamicLight/DarkColorScheme; desktop has no system accent to read and answers null, which the
+ * `when` below already handles by falling through to the static schemes.
+ */
+@Composable expect fun dynamicColorSchemeOrNull(darkTheme: Boolean): ColorScheme?
+
 @Composable
 fun PlaygroundsTheme(
     // darkTheme: Boolean = isSystemInDarkTheme(),
@@ -49,11 +57,9 @@ fun PlaygroundsTheme(
     dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
 ) {
+    val dynamic = if (dynamicColor) dynamicColorSchemeOrNull(darkTheme) else null
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+        dynamic != null -> dynamic
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

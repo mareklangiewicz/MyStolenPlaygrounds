@@ -9,7 +9,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
-import androidx.compose.ui.tooling.preview.*
+import org.jetbrains.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
 import kotlinx.coroutines.*
 
