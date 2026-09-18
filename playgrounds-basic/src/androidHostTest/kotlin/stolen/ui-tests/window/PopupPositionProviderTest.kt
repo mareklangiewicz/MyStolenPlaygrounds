@@ -19,8 +19,8 @@
 package androidx.compose.ui.window
 
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import com.google.common.truth.Truth.assertThat
@@ -254,11 +254,6 @@ class PopupPositionProviderTest {
         val popupSize = IntSize(40, 20)
 
         return AlignmentOffsetPositionProvider(alignment, offset)
-            .calculatePosition(
-                anchorBounds,
-                windowSize,
-                layoutDir,
-                popupSize
-            )
+            .calculatePosition(anchorBounds, windowSize, layoutDir, popupSize)
     }
 }

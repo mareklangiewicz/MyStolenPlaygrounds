@@ -65,6 +65,11 @@ gradle.extLib = lib(
   ),
   flags = LibFlags(
     withTestJUnit4 = true,
+    // Separate flag on purpose: android DEVICE tests cannot take JUnit5 at all, so templatefun
+    // asks for this one when configuring androidDeviceTestImplementation. Without it the device
+    // configuration silently misses uspekx-junit4 and @RunWith(USpekJUnit4Runner) stops resolving
+    // -- which is exactly what playgrounds-basic's MyPlaygroundsUSpek.kt hit.
+    withTestJUnit4OnAndroidDevice = true,
     withTestJUnit5 = false,
     withTestUSpekX = true,
     withTestGoogleTruth = true,

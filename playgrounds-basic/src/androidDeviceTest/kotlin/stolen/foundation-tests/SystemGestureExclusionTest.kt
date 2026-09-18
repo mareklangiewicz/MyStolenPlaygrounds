@@ -18,6 +18,7 @@
 
 package androidx.compose.foundation
 
+import android.graphics.Rect as AndroidRect
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
@@ -33,7 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.platform.ViewRootForTest
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
 import androidx.core.view.forEach
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -43,27 +44,21 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import android.graphics.Rect as AndroidRect
 
-/**
- * Testing the support for Android Views in Compose UI.
- */
+/** Testing the support for Android Views in Compose UI. */
 @MediumTest
 @RunWith(AndroidJUnit4::class)
 class SystemGestureExclusionTest {
-    @get:Rule
-    val rule = createAndroidComposeRule<TestActivity>()
+    @get:Rule val rule = createAndroidComposeRule<TestActivity>()
 
     /**
-     * Make sure that when an exclusion rect using the bounds of a layout is used, the
-     * gesture should not be consumed by the system.
+     * Make sure that when an exclusion rect using the bounds of a layout is used, the gesture
+     * should not be consumed by the system.
      */
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
     @Test
     fun excludeBounds() {
-        val composeView = setComposeContent {
-            Box(Modifier.size(50.dp).systemGestureExclusion())
-        }
+        val composeView = setComposeContent { Box(Modifier.size(50.dp).systemGestureExclusion()) }
         rule.runOnIdle {
             assertThat(composeView.systemGestureExclusionRects).isNotNull()
             assertThat(composeView.systemGestureExclusionRects).hasSize(1)
@@ -74,16 +69,14 @@ class SystemGestureExclusionTest {
     }
 
     /**
-     * Make sure that when an exclusion rect using a supplied rect, the
-     * gesture should not be consumed by the system.
+     * Make sure that when an exclusion rect using a supplied rect, the gesture should not be
+     * consumed by the system.
      */
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
     @Test
     fun excludeRect() {
         val composeView = setComposeContent {
-            Box(Modifier.size(50.dp).systemGestureExclusion {
-                Rect(0f, 0f, 10f, 20f)
-            })
+            Box(Modifier.size(50.dp).systemGestureExclusion { Rect(0f, 0f, 10f, 20f) })
         }
         rule.runOnIdle {
             assertThat(composeView.systemGestureExclusionRects).isNotNull()
@@ -110,9 +103,7 @@ class SystemGestureExclusionTest {
             assertThat(composeView.systemGestureExclusionRects[0]).isEqualTo(expectedRect)
         }
         setExclusion = false
-        rule.runOnIdle {
-            assertThat(composeView.systemGestureExclusionRects).isEmpty()
-        }
+        rule.runOnIdle { assertThat(composeView.systemGestureExclusionRects).isEmpty() }
     }
 
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
@@ -120,9 +111,9 @@ class SystemGestureExclusionTest {
     fun removeWhenModifierRemovedRect() {
         var setExclusion by mutableStateOf(true)
         val composeView = setComposeContent {
-            val modifier = if (setExclusion) Modifier.systemGestureExclusion {
-                Rect(0f, 0f, 10f, 20f)
-            } else Modifier
+            val modifier =
+                if (setExclusion) Modifier.systemGestureExclusion { Rect(0f, 0f, 10f, 20f) }
+                else Modifier
             Box(Modifier.size(50.dp).then(modifier))
         }
         rule.runOnUiThread {
@@ -133,9 +124,7 @@ class SystemGestureExclusionTest {
             assertThat(composeView.systemGestureExclusionRects[0]).isEqualTo(expectedRect)
         }
         setExclusion = false
-        rule.runOnIdle {
-            assertThat(composeView.systemGestureExclusionRects).isEmpty()
-        }
+        rule.runOnIdle { assertThat(composeView.systemGestureExclusionRects).isEmpty() }
     }
 
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
@@ -183,9 +172,7 @@ class SystemGestureExclusionTest {
                 Box(Modifier.size(50.dp).systemGestureExclusion())
             }
         }
-        rule.runOnIdle {
-            setExclusion = false
-        }
+        rule.runOnIdle { setExclusion = false }
         rule.runOnIdle {
             assertThat(composeView.systemGestureExclusionRects).hasSize(1)
             val rect = composeView.systemGestureExclusionRects[0]
@@ -199,18 +186,13 @@ class SystemGestureExclusionTest {
         var useEmpty by mutableStateOf(false)
         val composeView = setComposeContent {
             Column(Modifier.wrapContentSize()) {
-                val lambda: (LayoutCoordinates) -> Rect = if (useEmpty) { _ ->
-                    Rect.Zero
-                } else { _ ->
-                    Rect(0f, 0f, 10f, 10f)
-                }
+                val lambda: (LayoutCoordinates) -> Rect =
+                    if (useEmpty) { _ -> Rect.Zero } else { _ -> Rect(0f, 0f, 10f, 10f) }
                 Box(Modifier.size(50.dp).systemGestureExclusion(lambda))
                 Box(Modifier.size(50.dp).systemGestureExclusion())
             }
         }
-        rule.runOnIdle {
-            useEmpty = true
-        }
+        rule.runOnIdle { useEmpty = true }
         rule.runOnIdle {
             assertThat(composeView.systemGestureExclusionRects).hasSize(1)
             val rect = composeView.systemGestureExclusionRects[0]

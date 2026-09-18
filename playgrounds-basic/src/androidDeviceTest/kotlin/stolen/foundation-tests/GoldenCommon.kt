@@ -18,4 +18,4 @@
 
 package androidx.compose.foundation
 
-internal const val GOLDEN_UI = "compose/foundation/foundation"
+internal const val GOLDEN_FOUNDATION = "compose/foundation/foundation"

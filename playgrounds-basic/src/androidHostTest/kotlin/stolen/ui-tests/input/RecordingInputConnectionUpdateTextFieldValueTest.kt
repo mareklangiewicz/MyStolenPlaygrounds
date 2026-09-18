@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER")
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER", "DEPRECATION")
 
 package androidx.compose.ui.input
 
@@ -47,11 +47,12 @@ class RecordingInputConnectionUpdateTextFieldValueTest {
     @Before
     fun setup() {
         mCallback = mock()
-        ic = RecordingInputConnection(
-            initState = TextFieldValue("", TextRange.Zero),
-            eventCallback = mCallback,
-            autoCorrect = true
-        )
+        ic =
+            RecordingInputConnection(
+                initState = TextFieldValue("", TextRange.Zero),
+                eventCallback = mCallback,
+                autoCorrect = true,
+            )
     }
 
     @Test

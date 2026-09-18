@@ -1,4 +1,8 @@
-import pl.mareklangiewicz.sourcefun.*
+import java.io.ByteArrayOutputStream
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import javax.inject.Inject
+import org.gradle.process.ExecOperations
 
 // region [[Andro App Build Imports and Plugs]]
 
@@ -19,7 +23,6 @@ plugins {
     plugs.ComposeJbNoVer,
     plugs.AndroAppNoVer,
   )
-  id("pl.mareklangiewicz.sourcefun")
 }
 
 // endregion [[Andro App Build Imports and Plugs]]
@@ -77,8 +80,45 @@ defaultBuildTemplateForAndroApp(lib) {
   )
 }
 
-val generateBuildDetails = tasks.register<BuildDetailsTask>("generateBuildDetails") {
-  outputDir provides layout.buildDirectory.dir("generated-assets/build-details")
+/**
+ * Writes the build time and the git commit this APK was built from, for the app to show in its
+ * "Build details" / "Version details" screens (see MySimpleAssets + PlaygroundsTemplate).
+ *
+ * This replaces sourcefun's BuildDetailsTask, for two reasons. It is deprecated -- its own message
+ * says "Better to just use sourceFun and generate needed details manually using kommandline" --
+ * and, more concretely, it shells out to git WITHOUT saying where: it inherits the Gradle daemon's
+ * working directory, which is not this repo, so `git rev-parse HEAD` came back 128 and failed the
+ * build. Naming the working directory is the whole fix, and it cannot be expressed through that
+ * task's API.
+ */
+abstract class BuildDetailsGenTask : DefaultTask() {
+  @get:OutputDirectory abstract val outputDir: DirectoryProperty
+  @get:Internal abstract val repoDir: DirectoryProperty
+  @get:Inject abstract val execOps: ExecOperations
+
+  private fun git(vararg args: String): String {
+    val out = ByteArrayOutputStream()
+    execOps.exec {
+      commandLine("git", *args)
+      workingDir = repoDir.get().asFile
+      standardOutput = out
+    }
+    return out.toString().trim()
+  }
+
+  @TaskAction fun generate() = outputDir.get().run {
+    asFile.mkdirs()
+    file("build.time").asFile.writeText(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
+    file("build.git.commit.hash").asFile.writeText(git("rev-parse", "HEAD"))
+    file("build.git.commit.tags").asFile.writeText(git("tag", "--points-at", "HEAD"))
+  }
+}
+
+val generateBuildDetails = tasks.register<BuildDetailsGenTask>("generateBuildDetails") {
+  // UntrackedTask in spirit: build time and git state are external, so this must not go UP-TO-DATE.
+  outputs.upToDateWhen { false }
+  outputDir.set(layout.buildDirectory.dir("generated-assets/build-details"))
+  repoDir.set(rootProject.layout.projectDirectory)
 }
 
 // Wiring the generated assets through the VARIANT API, not the source-set API. AGP 9 rejects
@@ -88,6 +128,6 @@ val generateBuildDetails = tasks.register<BuildDetailsTask>("generateBuildDetail
 // dependsOn dance -- and the issuetracker.google.com/issues/191774971 FIXME it carried -- are gone.
 androidComponents {
   onVariants { variant ->
-    variant.sources.assets?.addGeneratedSourceDirectory(generateBuildDetails, BuildDetailsTask::outputDir)
+    variant.sources.assets?.addGeneratedSourceDirectory(generateBuildDetails, BuildDetailsGenTask::outputDir)
   }
 }

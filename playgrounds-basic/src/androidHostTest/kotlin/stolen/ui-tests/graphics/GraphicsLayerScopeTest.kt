@@ -22,7 +22,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
 import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -51,27 +50,20 @@ class GraphicsLayerScopeTest {
         scope.rotationZ = 5f
         scope.cameraDistance = 5f
         scope.transformOrigin = TransformOrigin(0.7f, 0.1f)
-        scope.shape = object : Shape {
-            override fun createOutline(
-                size: Size,
-                layoutDirection: LayoutDirection,
-                density: Density
-            ) = Outline.Rectangle(size.toRect())
-        }
+        scope.shape =
+            object : Shape {
+                override fun createOutline(
+                    size: Size,
+                    layoutDirection: LayoutDirection,
+                    density: Density,
+                ) = Outline.Rectangle(size.toRect())
+            }
         scope.clip = true
         scope.size = Size(100f, 200f)
+        scope.blendMode = BlendMode.Xor
+        scope.colorFilter = LightingColorFilter(Color.LightGray, Color.Red)
         scope.reset()
         scope.assertCorrectDefaultValuesAreCorrect()
-    }
-
-    @Test
-    fun testDpPixelConversions() {
-        val scope = GraphicsLayerScope() as ReusableGraphicsLayerScope
-        scope.graphicsDensity = Density(2.0f, 3.0f)
-        with(scope) {
-            assertEquals(4.0f, 2f.dp.toPx())
-            assertEquals(6.0f, 3f.dp.toSp().toPx())
-        }
     }
 
     @Test
@@ -99,5 +91,7 @@ class GraphicsLayerScopeTest {
         assertThat(shape).isEqualTo(RectangleShape)
         assertThat(clip).isEqualTo(false)
         assertThat(size).isEqualTo(Size.Unspecified)
+        assertThat(blendMode).isEqualTo(BlendMode.SrcOver)
+        assertThat(colorFilter).isNull()
     }
 }

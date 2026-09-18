@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER")
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "EXPOSED_PARAMETER_TYPE", "EXPOSED_PROPERTY_TYPE", "CANNOT_OVERRIDE_INVISIBLE_MEMBER", "DEPRECATION")
 
 package androidx.compose.ui.input
 
@@ -23,11 +23,11 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.RecordingInputConnection
 import androidx.compose.ui.text.input.TextFieldValue
 import com.google.common.truth.Truth.assertThat
-import org.mockito.kotlin.mock
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import org.mockito.kotlin.mock
 
 @RunWith(JUnit4::class)
 class RecordingInputConnectionInactiveTest {
@@ -137,39 +137,40 @@ class RecordingInputConnectionInactiveTest {
         assertThat(ic.commitContent(mock(), 0, mock())).isFalse()
     }
 
-    private fun defaultInputConnection() = RecordingInputConnection(
-        initState = TextFieldValue("", TextRange.Zero),
-        eventCallback = mock(),
-        autoCorrect = true
-    )
+    private fun defaultInputConnection() =
+        RecordingInputConnection(
+            initState = TextFieldValue("", TextRange.Zero),
+            eventCallback = mock(),
+            autoCorrect = true,
+        )
 
-// The following InputConnection functions does not have well defined inactive input
-// connection behavior, keeping them commented as a reference.
-//    @Test
-//    fun getTextBeforeCursor(){
-//        assertThat(ic.getTextBeforeCursor(mock(), mock())).isEqualTo("")
-//    }
-//
-//    @Test
-//    fun getTextAfterCursor() {
-//        assertThat(ic.getTextAfterCursor(mock(), mock())).isEqualTo("")
-//    }
-//
-//    @Test
-//    fun getSelectedText() {
-//        assertThat(ic.getSelectedText(mock(), mock())).isEqualTo("")
-//    }
-//
-//    @Test
-//    fun getCursorCapsMode() {
-//        assertThat(ic.getCursorCapsMode(mock())).isEqualTo(0)
-//    }
-//    @Test
-//    fun getExtractedText() {
-//        assertThat(ic.getExtractedText(mock(), mock())).isEqualTo(0)
-//    }
-//    @Test
-//    fun getHandler() {
-//        assertThat(ic.handler).isFalse()
-//    }
+    // The following InputConnection functions does not have well defined inactive input
+    // connection behavior, keeping them commented as a reference.
+    //    @Test
+    //    fun getTextBeforeCursor(){
+    //        assertThat(ic.getTextBeforeCursor(mock(), mock())).isEqualTo("")
+    //    }
+    //
+    //    @Test
+    //    fun getTextAfterCursor() {
+    //        assertThat(ic.getTextAfterCursor(mock(), mock())).isEqualTo("")
+    //    }
+    //
+    //    @Test
+    //    fun getSelectedText() {
+    //        assertThat(ic.getSelectedText(mock(), mock())).isEqualTo("")
+    //    }
+    //
+    //    @Test
+    //    fun getCursorCapsMode() {
+    //        assertThat(ic.getCursorCapsMode(mock())).isEqualTo(0)
+    //    }
+    //    @Test
+    //    fun getExtractedText() {
+    //        assertThat(ic.getExtractedText(mock(), mock())).isEqualTo(0)
+    //    }
+    //    @Test
+    //    fun getHandler() {
+    //        assertThat(ic.handler).isFalse()
+    //    }
 }

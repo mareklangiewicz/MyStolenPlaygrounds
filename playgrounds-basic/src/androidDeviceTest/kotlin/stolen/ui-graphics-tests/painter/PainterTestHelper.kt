@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 
 /**
- * Helper method that draws a Painter into the given canvas, automatically creating a DrawScope
- * to do so with
+ * Helper method that draws a Painter into the given canvas, automatically creating a DrawScope to
+ * do so with
  */
 fun drawPainter(
     painter: Painter,
@@ -35,11 +35,9 @@ fun drawPainter(
     size: Size,
     alpha: Float = 1.0f,
     colorFilter: ColorFilter? = null,
-    layoutDirection: LayoutDirection = LayoutDirection.Ltr
+    layoutDirection: LayoutDirection = LayoutDirection.Ltr,
 ) {
     CanvasDrawScope().draw(Density(1.0f, 1.0f), layoutDirection, canvas, size) {
-        with(painter) {
-            draw(size, alpha = alpha, colorFilter = colorFilter)
-        }
+        with(painter) { draw(size, alpha = alpha, colorFilter = colorFilter) }
     }
 }

@@ -30,7 +30,7 @@ import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertRangeInfoEquals
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -43,8 +43,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ProgressSemanticsTest {
 
-    @get:Rule
-    val rule = createComposeRule()
+    @get:Rule val rule = createComposeRule()
 
     @Test
     fun determinateProgress_testSemantics() {
@@ -53,30 +52,22 @@ class ProgressSemanticsTest {
 
         rule.setContent {
             Box(
-                Modifier
-                    .testTag(tag)
+                Modifier.testTag(tag)
                     .progressSemantics(progress.value)
                     .size(50.dp)
                     .background(color = Color.Cyan)
             )
         }
 
-        rule.onNodeWithTag(tag)
-            .assertRangeInfoEquals(ProgressBarRangeInfo(0f, 0f..1f))
+        rule.onNodeWithTag(tag).assertRangeInfoEquals(ProgressBarRangeInfo(0f, 0f..1f))
 
-        rule.runOnUiThread {
-            progress.value = 0.005f
-        }
+        rule.runOnUiThread { progress.value = 0.005f }
 
-        rule.onNodeWithTag(tag)
-            .assertRangeInfoEquals(ProgressBarRangeInfo(0.005f, 0f..1f))
+        rule.onNodeWithTag(tag).assertRangeInfoEquals(ProgressBarRangeInfo(0.005f, 0f..1f))
 
-        rule.runOnUiThread {
-            progress.value = 0.5f
-        }
+        rule.runOnUiThread { progress.value = 0.5f }
 
-        rule.onNodeWithTag(tag)
-            .assertRangeInfoEquals(ProgressBarRangeInfo(0.5f, 0f..1f))
+        rule.onNodeWithTag(tag).assertRangeInfoEquals(ProgressBarRangeInfo(0.5f, 0f..1f))
     }
 
     @Test
@@ -85,15 +76,12 @@ class ProgressSemanticsTest {
 
         rule.setContent {
             Box(
-                Modifier
-                    .testTag(tag)
-                    .progressSemantics()
-                    .size(50.dp)
-                    .background(color = Color.Cyan)
+                Modifier.testTag(tag).progressSemantics().size(50.dp).background(color = Color.Cyan)
             )
         }
 
-        rule.onNodeWithTag(tag)
+        rule
+            .onNodeWithTag(tag)
             .assert(
                 SemanticsMatcher("progress is ProgressBarRangeInfo.Indeterminate") {
                     val progress = it.config.getOrNull(SemanticsProperties.ProgressBarRangeInfo)

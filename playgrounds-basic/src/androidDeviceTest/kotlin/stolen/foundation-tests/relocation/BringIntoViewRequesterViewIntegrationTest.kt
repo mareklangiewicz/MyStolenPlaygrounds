@@ -18,11 +18,10 @@
 
 package androidx.compose.foundation.relocation
 
-import android.graphics.Rect as AndroidRect
 import android.content.Context
+import android.graphics.Rect as AndroidRect
 import android.view.View
 import android.widget.FrameLayout
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -31,8 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.toComposeRect
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -42,18 +42,15 @@ import androidx.test.filters.MediumTest
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@OptIn(ExperimentalFoundationApi::class)
 @MediumTest
 @RunWith(AndroidJUnit4::class)
 class BringIntoViewRequesterViewIntegrationTest {
 
-    @get:Rule
-    val rule = createComposeRule()
+    @get:Rule val rule = createComposeRule()
 
     @Test
     fun bringIntoView_callsViewRequestRectangleOnScreen_whenNoResponder() {
@@ -83,9 +80,7 @@ class BringIntoViewRequesterViewIntegrationTest {
         }
 
         rule.waitForIdle()
-        scope.launch {
-            bringIntoViewRequester.bringIntoView(rectangleToRequest)
-        }
+        scope.launch { bringIntoViewRequester.bringIntoView(rectangleToRequest) }
 
         rule.runOnIdle {
             val request = parent.requests.single()
@@ -110,11 +105,7 @@ class BringIntoViewRequesterViewIntegrationTest {
                 val child = ComposeView(context)
                 parent += child
                 child.setContent {
-                    Box(
-                        Modifier
-                            .size(10.dp)
-                            .fakeScrollable(scrollOffset) {}
-                    ) {
+                    Box(Modifier.size(10.dp).fakeScrollable(scrollOffset) {}) {
                         Box(
                             Modifier
                                 // Make it bigger than the scrollable so it can actually scroll.
@@ -131,9 +122,7 @@ class BringIntoViewRequesterViewIntegrationTest {
         }
 
         rule.waitForIdle()
-        scope.launch {
-            bringIntoViewRequester.bringIntoView(rectangleToRequest)
-        }
+        scope.launch { bringIntoViewRequester.bringIntoView(rectangleToRequest) }
 
         rule.runOnIdle {
             val request = parent.requests.single()
@@ -142,7 +131,6 @@ class BringIntoViewRequesterViewIntegrationTest {
         }
     }
 
-    @Ignore("This use case can't be supported until BringIntoView is in ui: b/216652644")
     @Test
     fun bringIntoView_propagatesThroughIntermediateView() {
         val requesterOffset = IntOffset(1, 2)
@@ -154,9 +142,10 @@ class BringIntoViewRequesterViewIntegrationTest {
         rule.setContent {
             scope = rememberCoroutineScope()
             AndroidView(
-                modifier = Modifier
-                    // This offset needs to be non-zero or it won't see the request at all.
-                    .fakeScrollable { requests += it() },
+                modifier =
+                    Modifier
+                        // This offset needs to be non-zero or it won't see the request at all.
+                        .fakeScrollable { requests += it() },
                 factory = { context ->
                     val parent = FakeScrollable(context)
                     val child = ComposeView(context)
@@ -171,33 +160,44 @@ class BringIntoViewRequesterViewIntegrationTest {
                         )
                     }
                     return@AndroidView parent
-                }
+                },
             )
         }
 
         rule.waitForIdle()
-        scope.launch {
-            bringIntoViewRequester.bringIntoView(rectangleToRequest)
-        }
+        scope.launch { bringIntoViewRequester.bringIntoView(rectangleToRequest) }
 
         rule.runOnIdle {
-            assertThat(requests.single()).isEqualTo(expectedRectangle)
+            assertThat(requests.single()).isEqualTo(expectedRectangle.toComposeRect())
         }
+    }
+
+    @Test
+    fun requestRectangleOnScreen_propagatesToBringIntoView() {
+        val rectangleToRequest = AndroidRect(11, 22, 41, 62)
+        lateinit var view: View
+        var requestedRect: Rect? = null
+        rule.setContent {
+            Box(Modifier.fakeScrollable { requestedRect = it() }) {
+                AndroidView({ View(it).also { view = it } })
+            }
+        }
+
+        rule.runOnIdle { view.requestRectangleOnScreen(rectangleToRequest, false) }
+
+        rule.runOnIdle { assertThat(requestedRect).isEqualTo(rectangleToRequest.toComposeRect()) }
     }
 
     /** A view that records calls to [requestChildRectangleOnScreen] for testing. */
     private class FakeScrollable(context: Context) : FrameLayout(context) {
         val requests = mutableListOf<RectangleRequest>()
 
-        data class RectangleRequest(
-            val rectangle: AndroidRect,
-            val immediate: Boolean
-        )
+        data class RectangleRequest(val rectangle: AndroidRect, val immediate: Boolean)
 
         override fun requestChildRectangleOnScreen(
             child: View,
             rectangle: AndroidRect,
-            immediate: Boolean
+            immediate: Boolean,
         ): Boolean {
             requests += RectangleRequest(rectangle, immediate)
             return false

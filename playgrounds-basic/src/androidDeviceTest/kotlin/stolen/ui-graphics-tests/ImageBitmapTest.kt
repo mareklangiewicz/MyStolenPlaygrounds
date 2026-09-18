@@ -19,12 +19,12 @@
 package androidx.compose.ui.graphics
 
 import androidx.compose.ui.graphics.colorspace.ColorSpaces
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Test
 import org.junit.runner.RunWith
-import androidx.test.ext.junit.runners.AndroidJUnit4
 
 @SmallTest
 @RunWith(AndroidJUnit4::class)
@@ -33,13 +33,14 @@ class ImageBitmapTest {
     @Test
     fun testCreatedImage() {
         val cs = ColorSpaces.Srgb
-        val image = ImageBitmap(
-            width = 10,
-            height = 20,
-            config = ImageBitmapConfig.Argb8888,
-            hasAlpha = false,
-            colorSpace = cs
-        )
+        val image =
+            ImageBitmap(
+                width = 10,
+                height = 20,
+                config = ImageBitmapConfig.Argb8888,
+                hasAlpha = false,
+                colorSpace = cs,
+            )
 
         assertEquals(10, image.width)
         assertEquals(20, image.height)

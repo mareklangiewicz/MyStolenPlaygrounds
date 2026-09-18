@@ -29,7 +29,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.google.common.truth.Truth.assertThat
@@ -42,16 +42,16 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@ExperimentalFoundationApi
 @MediumTest
 @RunWith(AndroidJUnit4::class)
 class InteractionSourceTest {
 
-    @get:Rule
-    val rule = createComposeRule()
+    @get:Rule val rule = createComposeRule()
 
     private object TestInteraction1 : Interaction
+
     private object TestInteraction2 : Interaction
+
     private object TestInteraction3 : Interaction
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -63,11 +63,7 @@ class InteractionSourceTest {
 
         val scope = TestScope(UnconfinedTestDispatcher())
 
-        scope.launch {
-            interactionSource.interactions.collect {
-                interactions.add(it)
-            }
-        }
+        scope.launch { interactionSource.interactions.collect { interactions.add(it) } }
 
         scope.launch {
             interactionSource.emit(TestInteraction1)
@@ -76,15 +72,11 @@ class InteractionSourceTest {
 
         rule.runOnIdle {
             assertThat(interactions)
-                .containsExactlyElementsIn(
-                    listOf(TestInteraction1, TestInteraction2)
-                )
+                .containsExactlyElementsIn(listOf(TestInteraction1, TestInteraction2))
                 .inOrder()
         }
 
-        scope.launch {
-            interactionSource.emit(TestInteraction3)
-        }
+        scope.launch { interactionSource.emit(TestInteraction3) }
 
         rule.runOnIdle {
             assertThat(interactions)
@@ -107,9 +99,7 @@ class InteractionSourceTest {
             isDragged = interactionSource.collectIsDraggedAsState()
         }
 
-        rule.runOnIdle {
-            assertThat(isDragged!!.value).isFalse()
-        }
+        rule.runOnIdle { assertThat(isDragged!!.value).isFalse() }
 
         var dragStart: DragInteraction.Start? = null
 
@@ -118,17 +108,11 @@ class InteractionSourceTest {
             interactionSource.emit(dragStart!!)
         }
 
-        rule.runOnIdle {
-            assertThat(isDragged!!.value).isTrue()
-        }
+        rule.runOnIdle { assertThat(isDragged!!.value).isTrue() }
 
-        scope!!.launch {
-            interactionSource.emit(DragInteraction.Stop(dragStart!!))
-        }
+        scope!!.launch { interactionSource.emit(DragInteraction.Stop(dragStart!!)) }
 
-        rule.runOnIdle {
-            assertThat(isDragged!!.value).isFalse()
-        }
+        rule.runOnIdle { assertThat(isDragged!!.value).isFalse() }
     }
 
     @Test
@@ -143,9 +127,7 @@ class InteractionSourceTest {
             isDragged = interactionSource.collectIsDraggedAsState()
         }
 
-        rule.runOnIdle {
-            assertThat(isDragged!!.value).isFalse()
-        }
+        rule.runOnIdle { assertThat(isDragged!!.value).isFalse() }
 
         var dragStart: DragInteraction.Start? = null
 
@@ -154,9 +136,7 @@ class InteractionSourceTest {
             interactionSource.emit(dragStart!!)
         }
 
-        rule.runOnIdle {
-            assertThat(isDragged!!.value).isTrue()
-        }
+        rule.runOnIdle { assertThat(isDragged!!.value).isTrue() }
 
         var dragStart2: DragInteraction.Start? = null
 
@@ -165,25 +145,15 @@ class InteractionSourceTest {
             interactionSource.emit(dragStart2!!)
         }
 
-        rule.runOnIdle {
-            assertThat(isDragged!!.value).isTrue()
-        }
+        rule.runOnIdle { assertThat(isDragged!!.value).isTrue() }
 
-        scope!!.launch {
-            interactionSource.emit(DragInteraction.Stop(dragStart!!))
-        }
+        scope!!.launch { interactionSource.emit(DragInteraction.Stop(dragStart!!)) }
 
-        rule.runOnIdle {
-            assertThat(isDragged!!.value).isTrue()
-        }
+        rule.runOnIdle { assertThat(isDragged!!.value).isTrue() }
 
-        scope!!.launch {
-            interactionSource.emit(DragInteraction.Cancel(dragStart2!!))
-        }
+        scope!!.launch { interactionSource.emit(DragInteraction.Cancel(dragStart2!!)) }
 
-        rule.runOnIdle {
-            assertThat(isDragged!!.value).isFalse()
-        }
+        rule.runOnIdle { assertThat(isDragged!!.value).isFalse() }
     }
 
     @Test
@@ -198,9 +168,7 @@ class InteractionSourceTest {
             isFocused = interactionSource.collectIsFocusedAsState()
         }
 
-        rule.runOnIdle {
-            assertThat(isFocused!!.value).isFalse()
-        }
+        rule.runOnIdle { assertThat(isFocused!!.value).isFalse() }
 
         var focus: FocusInteraction.Focus? = null
 
@@ -209,17 +177,11 @@ class InteractionSourceTest {
             interactionSource.emit(focus!!)
         }
 
-        rule.runOnIdle {
-            assertThat(isFocused!!.value).isTrue()
-        }
+        rule.runOnIdle { assertThat(isFocused!!.value).isTrue() }
 
-        scope!!.launch {
-            interactionSource.emit(FocusInteraction.Unfocus(focus!!))
-        }
+        scope!!.launch { interactionSource.emit(FocusInteraction.Unfocus(focus!!)) }
 
-        rule.runOnIdle {
-            assertThat(isFocused!!.value).isFalse()
-        }
+        rule.runOnIdle { assertThat(isFocused!!.value).isFalse() }
     }
 
     @Test
@@ -234,9 +196,7 @@ class InteractionSourceTest {
             isFocused = interactionSource.collectIsFocusedAsState()
         }
 
-        rule.runOnIdle {
-            assertThat(isFocused!!.value).isFalse()
-        }
+        rule.runOnIdle { assertThat(isFocused!!.value).isFalse() }
 
         var focus: FocusInteraction.Focus? = null
 
@@ -245,9 +205,7 @@ class InteractionSourceTest {
             interactionSource.emit(focus!!)
         }
 
-        rule.runOnIdle {
-            assertThat(isFocused!!.value).isTrue()
-        }
+        rule.runOnIdle { assertThat(isFocused!!.value).isTrue() }
 
         var focus2: FocusInteraction.Focus? = null
 
@@ -256,25 +214,15 @@ class InteractionSourceTest {
             interactionSource.emit(focus2!!)
         }
 
-        rule.runOnIdle {
-            assertThat(isFocused!!.value).isTrue()
-        }
+        rule.runOnIdle { assertThat(isFocused!!.value).isTrue() }
 
-        scope!!.launch {
-            interactionSource.emit(FocusInteraction.Unfocus(focus!!))
-        }
+        scope!!.launch { interactionSource.emit(FocusInteraction.Unfocus(focus!!)) }
 
-        rule.runOnIdle {
-            assertThat(isFocused!!.value).isTrue()
-        }
+        rule.runOnIdle { assertThat(isFocused!!.value).isTrue() }
 
-        scope!!.launch {
-            interactionSource.emit(FocusInteraction.Unfocus(focus2!!))
-        }
+        scope!!.launch { interactionSource.emit(FocusInteraction.Unfocus(focus2!!)) }
 
-        rule.runOnIdle {
-            assertThat(isFocused!!.value).isFalse()
-        }
+        rule.runOnIdle { assertThat(isFocused!!.value).isFalse() }
     }
 
     @Test
@@ -289,9 +237,7 @@ class InteractionSourceTest {
             isPressed = interactionSource.collectIsPressedAsState()
         }
 
-        rule.runOnIdle {
-            assertThat(isPressed!!.value).isFalse()
-        }
+        rule.runOnIdle { assertThat(isPressed!!.value).isFalse() }
 
         var press: PressInteraction.Press? = null
 
@@ -300,17 +246,11 @@ class InteractionSourceTest {
             interactionSource.emit(press!!)
         }
 
-        rule.runOnIdle {
-            assertThat(isPressed!!.value).isTrue()
-        }
+        rule.runOnIdle { assertThat(isPressed!!.value).isTrue() }
 
-        scope!!.launch {
-            interactionSource.emit(PressInteraction.Release(press!!))
-        }
+        scope!!.launch { interactionSource.emit(PressInteraction.Release(press!!)) }
 
-        rule.runOnIdle {
-            assertThat(isPressed!!.value).isFalse()
-        }
+        rule.runOnIdle { assertThat(isPressed!!.value).isFalse() }
     }
 
     @Test
@@ -325,9 +265,7 @@ class InteractionSourceTest {
             isPressed = interactionSource.collectIsPressedAsState()
         }
 
-        rule.runOnIdle {
-            assertThat(isPressed!!.value).isFalse()
-        }
+        rule.runOnIdle { assertThat(isPressed!!.value).isFalse() }
 
         var press: PressInteraction.Press? = null
 
@@ -336,9 +274,7 @@ class InteractionSourceTest {
             interactionSource.emit(press!!)
         }
 
-        rule.runOnIdle {
-            assertThat(isPressed!!.value).isTrue()
-        }
+        rule.runOnIdle { assertThat(isPressed!!.value).isTrue() }
 
         var press2: PressInteraction.Press? = null
 
@@ -347,24 +283,14 @@ class InteractionSourceTest {
             interactionSource.emit(press2!!)
         }
 
-        rule.runOnIdle {
-            assertThat(isPressed!!.value).isTrue()
-        }
+        rule.runOnIdle { assertThat(isPressed!!.value).isTrue() }
 
-        scope!!.launch {
-            interactionSource.emit(PressInteraction.Release(press!!))
-        }
+        scope!!.launch { interactionSource.emit(PressInteraction.Release(press!!)) }
 
-        rule.runOnIdle {
-            assertThat(isPressed!!.value).isTrue()
-        }
+        rule.runOnIdle { assertThat(isPressed!!.value).isTrue() }
 
-        scope!!.launch {
-            interactionSource.emit(PressInteraction.Cancel(press2!!))
-        }
+        scope!!.launch { interactionSource.emit(PressInteraction.Cancel(press2!!)) }
 
-        rule.runOnIdle {
-            assertThat(isPressed!!.value).isFalse()
-        }
+        rule.runOnIdle { assertThat(isPressed!!.value).isFalse() }
     }
 }

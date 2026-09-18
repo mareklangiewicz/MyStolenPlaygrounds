@@ -21,8 +21,8 @@ package androidx.compose.ui.layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.constrain
-import androidx.compose.ui.unit.offset
 import androidx.compose.ui.unit.isSatisfiedBy
+import androidx.compose.ui.unit.offset
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -130,18 +130,10 @@ class ConstraintsTest {
     @Test
     fun constrain_constraints() {
         val constraints = Constraints(5, 10, 5, 10)
-        Constraints(4, 11, 4, 11).constrain(constraints).assertEquals(
-            5, 10, 5, 10
-        )
-        Constraints(7, 9, 7, 9).constrain(constraints).assertEquals(
-            7, 9, 7, 9
-        )
-        Constraints(2, 3, 2, 3).constrain(constraints).assertEquals(
-            3, 3, 3, 3
-        )
-        Constraints(10, 11, 10, 11).constrain(constraints).assertEquals(
-            10, 10, 10, 10
-        )
+        Constraints(4, 11, 4, 11).constrain(constraints).assertEquals(5, 10, 5, 10)
+        Constraints(7, 9, 7, 9).constrain(constraints).assertEquals(7, 9, 7, 9)
+        Constraints(2, 3, 2, 3).constrain(constraints).assertEquals(3, 3, 3, 3)
+        Constraints(10, 11, 10, 11).constrain(constraints).assertEquals(10, 10, 10, 10)
     }
 
     @Test
@@ -167,12 +159,8 @@ class ConstraintsTest {
     @Test
     fun offset() {
         val constraints = Constraints(2, 2, 5, 5)
-        constraints.offset(horizontal = 2, vertical = 3).assertEquals(
-            4, 4, 8, 8
-        )
-        constraints.offset(horizontal = -7, vertical = -7).assertEquals(
-            0, 0, 0, 0
-        )
+        constraints.offset(horizontal = 2, vertical = 3).assertEquals(4, 4, 8, 8)
+        constraints.offset(horizontal = -7, vertical = -7).assertEquals(0, 0, 0, 0)
     }
 
     @Test
@@ -182,6 +170,61 @@ class ConstraintsTest {
         assertEquals(constraints, sameCopy)
         assertEquals(Constraints(0, 0, 0, 0), constraints.copy(maxWidth = 0, maxHeight = 0))
         assertEquals(Constraints(1, 2, 3, 4), constraints.copy(1, 2, 3, 4))
+    }
+
+    @Test
+    fun errorMessage() {
+        try {
+            Constraints(minWidth = 5, maxWidth = 3)
+            fail("Expected IllegalArgumentException")
+        } catch (e: IllegalArgumentException) {
+            assertEquals(
+                """
+                maxWidth(3) must be >= than minWidth(5),
+                maxHeight(2147483647) must be >= than minHeight(0),
+                minWidth(5) and minHeight(0) must be >= 0
+                """
+                    .trimIndent(),
+                e.message,
+            )
+        }
+
+        try {
+            val constraints = Constraints(minWidth = 5, maxWidth = 10)
+            constraints.copy(maxWidth = 3)
+            fail("Expected IllegalArgumentException")
+        } catch (e: IllegalArgumentException) {
+            assertEquals(
+                """
+                maxWidth(3) must be >= than minWidth(5),
+                maxHeight(2147483647) must be >= than minHeight(0),
+                minWidth(5) and minHeight(0) must be >= 0
+                """
+                    .trimIndent(),
+                e.message,
+            )
+        }
+
+        try {
+            Constraints.fixed(-1, 5)
+            fail("Expected IllegalArgumentException")
+        } catch (e: IllegalArgumentException) {
+            assertEquals("width(-1) and height(5) must be >= 0", e.message)
+        }
+
+        try {
+            Constraints.fixedWidth(-1)
+            fail("Expected IllegalArgumentException")
+        } catch (e: IllegalArgumentException) {
+            assertEquals("width(-1) must be >= 0", e.message)
+        }
+
+        try {
+            Constraints.fixedHeight(-1)
+            fail("Expected IllegalArgumentException")
+        } catch (e: IllegalArgumentException) {
+            assertEquals("height(-1) must be >= 0", e.message)
+        }
     }
 
     @Test
@@ -208,18 +251,258 @@ class ConstraintsTest {
         assertInvalid(minWidth = 0xFFFF, minHeight = 0x7FFE)
     }
 
+    @Test
+    fun restrictedConstraints_noRestriction() {
+        val constraints1 =
+            Constraints.fitPrioritizingWidth(0, Constraints.Infinity, 0, Constraints.Infinity)
+        assertEquals(0, constraints1.minWidth)
+        assertEquals(0, constraints1.minHeight)
+        assertEquals(Constraints.Infinity, constraints1.maxWidth)
+        assertEquals(Constraints.Infinity, constraints1.maxHeight)
+
+        val constraints2 =
+            Constraints.fitPrioritizingWidth(0, Constraints.Infinity, 250_000, 250_001)
+        assertEquals(0, constraints2.minWidth)
+        assertEquals(250_000, constraints2.minHeight)
+        assertEquals(Constraints.Infinity, constraints2.maxWidth)
+        assertEquals(250_001, constraints2.maxHeight)
+
+        val constraints3 =
+            Constraints.fitPrioritizingWidth(250_000, 250_001, 0, Constraints.Infinity)
+        assertEquals(0, constraints3.minHeight)
+        assertEquals(250_000, constraints3.minWidth)
+        assertEquals(Constraints.Infinity, constraints3.maxHeight)
+        assertEquals(250_001, constraints3.maxWidth)
+
+        val constraints4 = Constraints.fitPrioritizingWidth(30_000, 30_001, 60_000, 60_001)
+        assertEquals(30_000, constraints4.minWidth)
+        assertEquals(30_001, constraints4.maxWidth)
+        assertEquals(60_000, constraints4.minHeight)
+        assertEquals(60_001, constraints4.maxHeight)
+
+        val constraints5 = Constraints.fitPrioritizingWidth(60_000, 60_001, 30_000, 30_001)
+        assertEquals(60_000, constraints5.minWidth)
+        assertEquals(60_001, constraints5.maxWidth)
+        assertEquals(30_000, constraints5.minHeight)
+        assertEquals(30_001, constraints5.maxHeight)
+
+        val constraints6 =
+            Constraints.fitPrioritizingWidth(
+                30_000,
+                Constraints.Infinity,
+                60_000,
+                Constraints.Infinity,
+            )
+        assertEquals(30_000, constraints6.minWidth)
+        assertEquals(Constraints.Infinity, constraints6.maxWidth)
+        assertEquals(60_000, constraints6.minHeight)
+        assertEquals(Constraints.Infinity, constraints6.maxHeight)
+
+        val constraints7 =
+            Constraints.fitPrioritizingWidth(
+                60_000,
+                Constraints.Infinity,
+                30_000,
+                Constraints.Infinity,
+            )
+        assertEquals(60_000, constraints7.minWidth)
+        assertEquals(Constraints.Infinity, constraints7.maxWidth)
+        assertEquals(30_000, constraints7.minHeight)
+        assertEquals(Constraints.Infinity, constraints7.maxHeight)
+    }
+
+    @Test
+    fun restrictedConstraints_bounds() {
+        val maxFocus = (1 shl 18) - 2
+        val maxNonFocus = (1 shl 13) - 2
+        val minFocus = (1 shl 16) - 2
+        val minNonFocus = (1 shl 15) - 2
+        val constraints1 =
+            Constraints.fitPrioritizingWidth(maxFocus, maxFocus, maxNonFocus, maxNonFocus)
+        assertEquals(maxFocus, constraints1.minWidth)
+        assertEquals(maxNonFocus, constraints1.minHeight)
+        assertEquals(maxFocus, constraints1.maxWidth)
+        assertEquals(maxNonFocus, constraints1.maxHeight)
+
+        val constraints2 =
+            Constraints.fitPrioritizingWidth(
+                maxFocus,
+                Constraints.Infinity,
+                maxNonFocus,
+                Constraints.Infinity,
+            )
+        assertEquals(maxFocus, constraints2.minWidth)
+        assertEquals(Constraints.Infinity, constraints2.maxWidth)
+        assertEquals(maxNonFocus, constraints2.minHeight)
+        assertEquals(Constraints.Infinity, constraints2.maxHeight)
+
+        val constraints3 =
+            Constraints.fitPrioritizingWidth(maxNonFocus, maxNonFocus, maxFocus, maxFocus)
+        assertEquals(maxNonFocus, constraints3.minWidth)
+        assertEquals(maxNonFocus, constraints3.maxWidth)
+        assertEquals(maxFocus, constraints3.minHeight)
+        assertEquals(maxFocus, constraints3.maxHeight)
+
+        val constraints4 =
+            Constraints.fitPrioritizingWidth(
+                maxNonFocus,
+                Constraints.Infinity,
+                maxFocus,
+                Constraints.Infinity,
+            )
+        assertEquals(maxNonFocus, constraints4.minWidth)
+        assertEquals(Constraints.Infinity, constraints4.maxWidth)
+        assertEquals(maxFocus, constraints4.minHeight)
+        assertEquals(Constraints.Infinity, constraints4.maxHeight)
+
+        val constraints5 =
+            Constraints.fitPrioritizingWidth(minFocus, minFocus, minNonFocus, minNonFocus)
+        assertEquals(minFocus, constraints5.minWidth)
+        assertEquals(minNonFocus, constraints5.minHeight)
+        assertEquals(minFocus, constraints5.maxWidth)
+        assertEquals(minNonFocus, constraints5.maxHeight)
+
+        val constraints6 =
+            Constraints.fitPrioritizingWidth(
+                minFocus,
+                Constraints.Infinity,
+                minNonFocus,
+                Constraints.Infinity,
+            )
+        assertEquals(minFocus, constraints6.minWidth)
+        assertEquals(Constraints.Infinity, constraints6.maxWidth)
+        assertEquals(minNonFocus, constraints6.minHeight)
+        assertEquals(Constraints.Infinity, constraints6.maxHeight)
+
+        val constraints7 =
+            Constraints.fitPrioritizingWidth(minNonFocus, minNonFocus, minFocus, minFocus)
+        assertEquals(minNonFocus, constraints7.minWidth)
+        assertEquals(minNonFocus, constraints7.maxWidth)
+        assertEquals(minFocus, constraints7.minHeight)
+        assertEquals(minFocus, constraints7.maxHeight)
+
+        val constraints8 =
+            Constraints.fitPrioritizingWidth(
+                minNonFocus,
+                Constraints.Infinity,
+                minFocus,
+                Constraints.Infinity,
+            )
+        assertEquals(minNonFocus, constraints8.minWidth)
+        assertEquals(Constraints.Infinity, constraints8.maxWidth)
+        assertEquals(minFocus, constraints8.minHeight)
+        assertEquals(Constraints.Infinity, constraints8.maxHeight)
+    }
+
+    @Test
+    fun restrictedConstraints_widthPriority() {
+        val maxFocus = (1 shl 18) - 2
+        val maxNonFocus = (1 shl 13) - 2
+        val minFocus = (1 shl 16) - 2
+        val minNonFocus = (1 shl 15) - 2
+        val constraints1 =
+            Constraints.fitPrioritizingWidth(1_000_000, 1_000_000, 1_000_000, 1_000_000)
+        assertEquals(maxFocus, constraints1.minWidth)
+        assertEquals(maxNonFocus, constraints1.minHeight)
+        assertEquals(maxFocus, constraints1.maxWidth)
+        assertEquals(maxNonFocus, constraints1.maxHeight)
+
+        val constraints2 =
+            Constraints.fitPrioritizingWidth(
+                1_000_000,
+                Constraints.Infinity,
+                1_000_000,
+                Constraints.Infinity,
+            )
+        assertEquals(maxFocus, constraints2.minWidth)
+        assertEquals(Constraints.Infinity, constraints2.maxWidth)
+        assertEquals(maxNonFocus, constraints2.minHeight)
+        assertEquals(Constraints.Infinity, constraints2.maxHeight)
+
+        val constraints3 =
+            Constraints.fitPrioritizingWidth(0, Constraints.Infinity, 1_000_000, 1_000_000)
+        assertEquals(0, constraints3.minWidth)
+        assertEquals(Constraints.Infinity, constraints3.maxWidth)
+        assertEquals(maxFocus, constraints3.minHeight)
+        assertEquals(maxFocus, constraints3.maxHeight)
+
+        val constraints4 =
+            Constraints.fitPrioritizingWidth(
+                minNonFocus,
+                Constraints.Infinity,
+                1_000_000,
+                Constraints.Infinity,
+            )
+        assertEquals(minNonFocus, constraints4.minWidth)
+        assertEquals(Constraints.Infinity, constraints4.maxWidth)
+        assertEquals(minFocus, constraints4.minHeight)
+        assertEquals(Constraints.Infinity, constraints4.maxHeight)
+    }
+
+    @Test
+    fun restrictedConstraints_heightPriority() {
+        val maxFocus = (1 shl 18) - 2
+        val maxNonFocus = (1 shl 13) - 2
+        val minFocus = (1 shl 16) - 2
+        val minNonFocus = (1 shl 15) - 2
+        val constraints1 =
+            Constraints.fitPrioritizingHeight(1_000_000, 1_000_000, 1_000_000, 1_000_000)
+        assertEquals(maxNonFocus, constraints1.minWidth)
+        assertEquals(maxNonFocus, constraints1.maxWidth)
+        assertEquals(maxFocus, constraints1.minHeight)
+        assertEquals(maxFocus, constraints1.maxHeight)
+
+        val constraints2 =
+            Constraints.fitPrioritizingHeight(
+                1_000_000,
+                Constraints.Infinity,
+                1_000_000,
+                Constraints.Infinity,
+            )
+        assertEquals(maxNonFocus, constraints2.minWidth)
+        assertEquals(Constraints.Infinity, constraints2.maxWidth)
+        assertEquals(maxFocus, constraints2.minHeight)
+        assertEquals(Constraints.Infinity, constraints2.maxHeight)
+
+        val constraints3 =
+            Constraints.fitPrioritizingHeight(1_000_000, 1_000_000, 0, Constraints.Infinity)
+        assertEquals(maxFocus, constraints3.minWidth)
+        assertEquals(maxFocus, constraints3.maxWidth)
+        assertEquals(0, constraints3.minHeight)
+        assertEquals(Constraints.Infinity, constraints3.maxHeight)
+
+        val constraints4 =
+            Constraints.fitPrioritizingHeight(
+                1_000_000,
+                Constraints.Infinity,
+                minNonFocus,
+                Constraints.Infinity,
+            )
+        assertEquals(minNonFocus, constraints4.minHeight)
+        assertEquals(Constraints.Infinity, constraints4.maxHeight)
+        assertEquals(minFocus, constraints4.minWidth)
+        assertEquals(Constraints.Infinity, constraints4.maxWidth)
+    }
+
+    @Test
+    fun testCopyMaxDimensions() {
+        val constraints = Constraints(0x283A7620506CEC0L)
+        assertEquals(constraints.copy(minWidth = 0, minHeight = 0), constraints.copyMaxDimensions())
+    }
+
     private fun testConstraints(
         minWidth: Int = 0,
         maxWidth: Int = Constraints.Infinity,
         minHeight: Int = 0,
-        maxHeight: Int = Constraints.Infinity
+        maxHeight: Int = Constraints.Infinity,
     ) {
-        val constraints = Constraints(
-            minWidth = minWidth,
-            minHeight = minHeight,
-            maxWidth = maxWidth,
-            maxHeight = maxHeight
-        )
+        val constraints =
+            Constraints(
+                minWidth = minWidth,
+                minHeight = minHeight,
+                maxWidth = maxWidth,
+                maxHeight = maxHeight,
+            )
         assertEquals(minWidth, constraints.minWidth)
         assertEquals(minHeight, constraints.minHeight)
         assertEquals(maxWidth, constraints.maxWidth)
@@ -230,11 +513,13 @@ class ConstraintsTest {
         minWidth: Int,
         maxWidth: Int,
         minHeight: Int,
-        maxHeight: Int
+        maxHeight: Int,
     ) {
         assertTrue(
-            this.minWidth == minWidth && this.maxWidth == maxWidth &&
-                this.minHeight == minHeight && this.maxHeight == maxHeight
+            this.minWidth == minWidth &&
+                this.maxWidth == maxWidth &&
+                this.minHeight == minHeight &&
+                this.maxHeight == maxHeight
         )
     }
 
@@ -242,7 +527,7 @@ class ConstraintsTest {
         minWidth: Int = 0,
         maxWidth: Int = Constraints.Infinity,
         minHeight: Int = 0,
-        maxHeight: Int = Constraints.Infinity
+        maxHeight: Int = Constraints.Infinity,
     ) {
         val constraints: Constraints
         try {
