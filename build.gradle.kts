@@ -11,8 +11,24 @@ import pl.mareklangiewicz.deps.*
 import pl.mareklangiewicz.ure.*
 import pl.mareklangiewicz.utils.*
 import pl.mareklangiewicz.sourcefun.*
+import pl.mareklangiewicz.templatefun.*
 import pl.mareklangiewicz.io.*
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
+import org.gradle.process.ExecOperations
+
+/** See [patchStolenStuff]. Exists only because Gradle 9 removed Project.exec. */
+abstract class GitApplyPatchTask : DefaultTask() {
+    @get:Input abstract val patch: Property<String>
+    @get:Internal abstract val workDir: DirectoryProperty
+    @get:Inject abstract val execOps: ExecOperations
+    @TaskAction fun apply() {
+        execOps.exec {
+            commandLine("git", "apply", patch.get())
+            workingDir = workDir.get().asFile
+        }
+    }
+}
 
 plugins {
     plug(plugs.KotlinMulti) apply false
@@ -20,7 +36,17 @@ plugins {
     plug(plugs.ComposeJb) apply false
     plug(plugs.AndroLib) apply false
     plug(plugs.AndroApp) apply false
-    plug(plugs.NexusPublish)
+    // Since AGP 9 an android library is a KMP module with this plugin, and like VannikPublish it
+    // must be resolved ONCE here with its version -- templatefun carries it on its own classpath
+    // at "unknown version", so a versioned request in a subproject cannot be checked against it.
+    plug(plugs.AndroKmp) apply false
+    plug(plugs.TemplateFun) apply false
+
+    // Resolve the publish plugin ONCE here, with its version. Without this the only source of
+    // it is the templatefun plugin's own classpath (templatefun depends on it), which Gradle sees
+    // as "unknown version" -- and then a versioned request in a subproject cannot be checked
+    // against it.
+    plug(plugs.VannikPublish) apply false
     // plug(plugs.SourceFun)
     id("pl.mareklangiewicz.sourcefun") version "0.4.46"
     // https://plugins.gradle.org/search?term=pl.mareklangiewicz
@@ -29,22 +55,10 @@ plugins {
 rootExtString["verKGround"] = "0.1.22" // https://central.sonatype.com/artifact/pl.mareklangiewicz/kground/versions
 rootExtString["verUWidgets"] = "0.0.45" // https://central.sonatype.com/artifact/pl.mareklangiewicz/uwidgets/versions 
 
-val MyStolenPlaygrounds = myLibDetails(
-    name = "MyStolenPlaygrounds",
-    description = "Collection of Compose related samples, ui tests etc.",
-    githubUrl = "https://github.com/langara/MyStolenPlaygrounds",
-    version = Ver(0, 0, 6),
-    settings = LibSettings(
-        withTestJUnit4 = true,
-        withTestJUnit5 = false,
-        withTestUSpekX = true,
-        withTestGoogleTruth = true,
-        withTestMockitoKotlin = true,
-        andro = LibAndroSettings(sdkCompilePreview = Vers.AndroSdkPreview, publishVariant = "debug"),
-    )
-)
-
-defaultBuildTemplateForRootProject(MyStolenPlaygrounds)
+// The lib definition (name/version/flags/compose/andro) moved to settings.gradle.kts as
+// gradle.extLib, and the local defaultBuildTemplateForRootProject that used to set
+// rootExtLibDetails is gone -- it is plugs.TemplateFun's job now.
+defaultGroupAndVerAndDescription(gradle.extLib)
 
 val playgroundsAppPath = rootProjectPath / "playgrounds-app"
 val playgroundsBasicPath = rootProjectPath / "playgrounds-basic"
@@ -165,13 +179,14 @@ sourceFun {
         stealComposeMaterial3All,
     ) }
 
-    val patchStolenStuff by tasks.registering {
+    // Was `project.exec { commandLine(..) }` in doLast. Project.exec is GONE in Gradle 9 -- it was
+    // one of the APIs that made a task's action reach back into the Project object at execution
+    // time. The supported replacement is an injected ExecOperations service, which a script cannot
+    // inject into an ad-hoc task, so the task gets a real type.
+    val patchStolenStuff by tasks.registering(GitApplyPatchTask::class) {
         group = "steal"
-        doLast {
-            project.exec {
-                commandLine("git", "apply", "./patchStolenStuff.patch")
-            }
-        }
+        patch.set("./patchStolenStuff.patch")
+        workDir.set(layout.projectDirectory)
     }
 
     val processStolenSamples by reg {
@@ -364,13 +379,4 @@ val ureContentWithTemplate = ure {
     1 of ureWhateva(reluctant = false).withName("partAfterGenerationRegion")
 }
 
-// region [[Root Build Template]]
 
-fun Project.defaultBuildTemplateForRootProject(details: LibDetails? = null) {
-  details?.let {
-    rootExtLibDetails = it
-    defaultGroupAndVerAndDescription(it)
-  }
-}
-
-// endregion [[Root Build Template]]

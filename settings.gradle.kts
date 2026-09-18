@@ -4,6 +4,8 @@
 // 1. make it all compile (all modules)
 // 2. try hard to auto include demo mpp from compose-multiplatform-core
 // 3. analyze web runtime, analyze native targets config?, tests? learn using this demo and repeat the similar solutions.
+import pl.mareklangiewicz.deps.*
+import pl.mareklangiewicz.utils.extLib
 
 rootProject.name = "MyStolenPlaygrounds"
 
@@ -38,7 +40,7 @@ pluginManagement {
 }
 
 plugins {
-  id("pl.mareklangiewicz.deps.settings") version "0.4.25" // https://plugins.gradle.org/search?term=mareklangiewicz
+  id("pl.mareklangiewicz.deps.settings") version "0.4.63" // https://plugins.gradle.org/search?term=mareklangiewicz
   id("com.gradle.develocity") version "4.5.1" // https://docs.gradle.com/develocity/gradle-plugin/
 }
 
@@ -51,6 +53,29 @@ develocity {
 }
 
 // endregion [[My Settings Stuff]]
+
+// Moved here from build.gradle.kts: the lib definition lives in settings now (gradle.extLib),
+// instead of rootExtLibDetails in the root build.
+gradle.extLib = lib(
+  info = myLibInfo(
+    name = "MyStolenPlaygrounds",
+    description = "Collection of Compose related samples, ui tests etc.",
+    githubUrl = "https://github.com/langara/MyStolenPlaygrounds",
+    version = Ver(0, 0, 6),
+  ),
+  flags = LibFlags(
+    withTestJUnit4 = true,
+    withTestJUnit5 = false,
+    withTestUSpekX = true,
+    withTestGoogleTruth = true,
+    withTestMockitoKotlin = true,
+  ),
+  withCompose = true,
+  withAndro = true,
+  // publishVariant = "debug" is NOT here any more: the variant is a publishing decision, so as of
+  // DepsKt 0.4.63 it is LibPublish.androVariant, stated per module by the modules that publish.
+  andro = LibAndro(sdkCompilePreview = Vers.AndroSdkPreview),
+)
 
 include(":playgrounds-app")
 include(":playgrounds-basic")
