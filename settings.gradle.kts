@@ -1,9 +1,14 @@
 @file:Suppress("UnstableApiUsage")
 
 // TODO NOW:
-// 1. make it all compile (all modules)
+// 1. DONE: all five modules compile, and `./gradlew build` is green.
 // 2. try hard to auto include demo mpp from compose-multiplatform-core
 // 3. analyze web runtime, analyze native targets config?, tests? learn using this demo and repeat the similar solutions.
+// 4. re-enable the generated samples region in playgrounds-app's PlaygroundsTemplate.kt -- it is
+//    still commented out with its own "TODO NOW: reenable", and its samplesDir points at a
+//    lib-ui-samples path that no longer exists. :playgrounds-samples is back in the build now, so
+//    `processStolenSamples` can regenerate it.
+// 5. playgrounds-desktop is jvm only. Web (js/wasm) is deliberately not wired: see its build file.
 import pl.mareklangiewicz.deps.*
 import pl.mareklangiewicz.utils.extLib
 
