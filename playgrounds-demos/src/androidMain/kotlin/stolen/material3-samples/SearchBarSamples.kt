@@ -14,162 +14,372 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package androidx.compose.material3.samples
 
 import androidx.annotation.Sampled
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DockedSearchBar
+import androidx.compose.material3.AppBarWithSearch
+import androidx.compose.material3.ExpandedDockedSearchBarWithGap
+import androidx.compose.material3.ExpandedFullScreenContainedSearchBar
+import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme.motionScheme
+import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarState
+import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberContainedSearchBarState
+import androidx.compose.material3.rememberSearchBarState
+import androidx.compose.material3.rememberSearchBarWithGapState
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.paneTitle
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Sampled
 @Composable
-fun SearchBarSample() {
-    var text by rememberSaveable { mutableStateOf("") }
-    var active by rememberSaveable { mutableStateOf(false) }
-    val focusManager = LocalFocusManager.current
-
-    fun closeSearchBar() {
-        focusManager.clearFocus()
-        active = false
-    }
-
-    Box(Modifier.fillMaxSize()) {
-        // This is okay to put first because search bars by default have zIndex = 1f.
-        SearchBar(
-            modifier = Modifier.align(Alignment.TopCenter),
-            query = text,
-            onQueryChange = { text = it },
-            onSearch = { closeSearchBar() },
-            active = active,
-            onActiveChange = {
-                active = it
-                if (!active) focusManager.clearFocus()
-            },
-            placeholder = { Text("Hinted search text") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            trailingIcon = { Icon(Icons.Default.MoreVert, contentDescription = null) },
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                repeat(4) { idx ->
-                    val resultText = "Suggestion $idx"
-                    @OptIn(ExperimentalMaterial3Api::class)
-                    ListItem(
-                        headlineText = { Text(resultText) },
-                        supportingText = { Text("Additional info") },
-                        leadingContent = { Icon(Icons.Filled.Star, contentDescription = null) },
-                        modifier = Modifier.clickable {
-                            text = resultText
-                            closeSearchBar()
-                        }
-                    )
-                    if (idx != 3) { Divider() }
-                }
-            }
+fun SimpleSearchBarSample() {
+    val searchBarState = rememberSearchBarState()
+    val textFieldState = rememberTextFieldState()
+    val scope = rememberCoroutineScope()
+    val inputField =
+        @Composable {
+            SearchBarDefaults.InputField(
+                textFieldState = textFieldState,
+                searchBarState = searchBarState,
+                onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
+                placeholder = {
+                    Text(modifier = Modifier.clearAndSetSemantics {}, text = "Search")
+                },
+                leadingIcon = { SampleLeadingIcon(searchBarState, scope) },
+                trailingIcon = { SampleTrailingIcon() },
+            )
         }
 
-        LazyColumn(
-            contentPadding = PaddingValues(start = 16.dp, top = 72.dp, end = 16.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+    SearchBar(state = searchBarState, inputField = inputField)
+    ExpandedFullScreenSearchBar(state = searchBarState, inputField = inputField) {
+        SampleSearchResults(
+            onResultClick = { result ->
+                textFieldState.setTextAndPlaceCursorAtEnd(result)
+                scope.launch { searchBarState.animateToCollapsed() }
+            }
+        )
+    }
+}
+
+@Preview
+@Sampled
+@Composable
+fun FullScreenSearchBarScaffoldSample() {
+    val textFieldState = rememberTextFieldState()
+    val searchBarState = rememberContainedSearchBarState()
+    val scope = rememberCoroutineScope()
+    val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
+    val appBarWithSearchColors =
+        SearchBarDefaults.appBarWithSearchColors(
+            searchBarColors = SearchBarDefaults.containedColors(state = searchBarState)
+        )
+    val inputField =
+        @Composable {
+            SearchBarDefaults.InputField(
+                textFieldState = textFieldState,
+                searchBarState = searchBarState,
+                colors = appBarWithSearchColors.searchBarColors.inputFieldColors,
+                onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
+                placeholder = {
+                    Text(modifier = Modifier.clearAndSetSemantics {}, text = "Search")
+                },
+                leadingIcon = { SampleLeadingIcon(searchBarState, scope) },
+                trailingIcon = { SampleTrailingIcon() },
+            )
+        }
+
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            AppBarWithSearch(
+                scrollBehavior = scrollBehavior,
+                state = searchBarState,
+                colors = appBarWithSearchColors,
+                inputField = inputField,
+                navigationIcon = { SampleNavigationIcon(searchBarState, isAnimated = true) },
+                actions = { SampleActions(searchBarState, isAnimated = true) },
+            )
+            ExpandedFullScreenContainedSearchBar(
+                state = searchBarState,
+                inputField = inputField,
+                colors = appBarWithSearchColors.searchBarColors,
+            ) {
+                SampleSearchResults(
+                    onResultClick = { result ->
+                        textFieldState.setTextAndPlaceCursorAtEnd(result)
+                        scope.launch { searchBarState.animateToCollapsed() }
+                    }
+                )
+            }
+        },
+    ) { padding ->
+        LazyColumn(contentPadding = padding, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val list = List(100) { "Text $it" }
             items(count = list.size) {
-                Text(list[it], Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+                Text(
+                    text = list[it],
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                )
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Sampled
 @Composable
-fun DockedSearchBarSample() {
-    var text by rememberSaveable { mutableStateOf("") }
-    var active by rememberSaveable { mutableStateOf(false) }
-    val focusManager = LocalFocusManager.current
-
-    fun closeSearchBar() {
-        focusManager.clearFocus()
-        active = false
-    }
-
-    Box(Modifier.fillMaxSize()) {
-        // This is okay to put first because search bars by default have zIndex = 1f.
-        DockedSearchBar(
-            modifier = Modifier.align(Alignment.TopCenter).padding(top = 8.dp),
-            query = text,
-            onQueryChange = { text = it },
-            onSearch = { closeSearchBar() },
-            active = active,
-            onActiveChange = {
-                active = it
-                if (!active) focusManager.clearFocus()
-            },
-            placeholder = { Text("Hinted search text") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            trailingIcon = { Icon(Icons.Default.MoreVert, contentDescription = null) },
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                repeat(4) { idx ->
-                    val resultText = "Suggestion $idx"
-                    @OptIn(ExperimentalMaterial3Api::class)
-                    ListItem(
-                        headlineText = { Text(resultText) },
-                        supportingText = { Text("Additional info") },
-                        leadingContent = { Icon(Icons.Filled.Star, contentDescription = null) },
-                        modifier = Modifier.clickable {
-                            text = resultText
-                            closeSearchBar()
-                        }
-                    )
-                    if (idx != 3) { Divider() }
-                }
-            }
+fun DockedSearchBarScaffoldSample() {
+    val textFieldState = rememberTextFieldState()
+    val searchBarState = rememberSearchBarWithGapState()
+    val scope = rememberCoroutineScope()
+    val scrollBehavior = SearchBarDefaults.enterAlwaysSearchBarScrollBehavior()
+    val appBarWithSearchColors = SearchBarDefaults.appBarWithSearchColors()
+    val inputField =
+        @Composable {
+            SearchBarDefaults.InputField(
+                textFieldState = textFieldState,
+                searchBarState = searchBarState,
+                colors = appBarWithSearchColors.searchBarColors.inputFieldColors,
+                onSearch = { scope.launch { searchBarState.animateToCollapsed() } },
+                placeholder = {
+                    Text(modifier = Modifier.clearAndSetSemantics {}, text = "Search")
+                },
+                leadingIcon = { SampleLeadingIcon(searchBarState, scope) },
+                trailingIcon = { SampleTrailingIcon() },
+            )
         }
 
-        LazyColumn(
-            contentPadding = PaddingValues(start = 16.dp, top = 72.dp, end = 16.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            AppBarWithSearch(
+                scrollBehavior = scrollBehavior,
+                state = searchBarState,
+                colors = appBarWithSearchColors,
+                inputField = inputField,
+                navigationIcon = { SampleNavigationIcon(searchBarState) },
+                actions = { SampleActions(searchBarState) },
+            )
+            ExpandedDockedSearchBarWithGap(state = searchBarState, inputField = inputField) {
+                SampleSearchResults(
+                    onResultClick = { result ->
+                        textFieldState.setTextAndPlaceCursorAtEnd(result)
+                        scope.launch { searchBarState.animateToCollapsed() }
+                    }
+                )
+            }
+        },
+    ) { padding ->
+        LazyColumn(contentPadding = padding, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val list = List(100) { "Text $it" }
             items(count = list.size) {
-                Text(list[it], Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+                Text(
+                    text = list[it],
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                )
             }
         }
     }
 }
+
+@Composable
+private fun SampleSearchResults(onResultClick: (String) -> Unit, modifier: Modifier = Modifier) {
+    Column(modifier.verticalScroll(rememberScrollState())) {
+        repeat(10) { idx ->
+            val resultText = "Suggestion $idx"
+            ListItem(
+                content = { Text(resultText) },
+                supportingContent = { Text("Additional info") },
+                leadingContent = { Icon(Icons.Filled.Star, contentDescription = null) },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                modifier =
+                    Modifier.clickable { onResultClick(resultText) }
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun SampleLeadingIcon(searchBarState: SearchBarState, scope: CoroutineScope) =
+    if (searchBarState.currentValue == SearchBarValue.Expanded) {
+        TooltipBox(
+            positionProvider =
+                TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+            tooltip = {
+                PlainTooltip(
+                    modifier =
+                        Modifier.semantics {
+                            // TODO(b/496338253): Remove this modifier once bug where tooltip text
+                            //  is not announced by a11y screen readers is resolved.
+                            liveRegion = LiveRegionMode.Assertive
+                            paneTitle = "Back"
+                        }
+                ) {
+                    Text("Back")
+                }
+            },
+            state = rememberTooltipState(),
+        ) {
+            IconButton(onClick = { scope.launch { searchBarState.animateToCollapsed() } }) {
+                Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+            }
+        }
+    } else {
+        Icon(Icons.Default.Search, contentDescription = null)
+    }
+
+@Composable
+private fun SampleTrailingIcon() =
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip(
+                modifier =
+                    Modifier.semantics {
+                        // TODO(b/496338253): Remove this modifier once bug where tooltip text is
+                        //  not announced by a11y screen readers is resolved.
+                        liveRegion = LiveRegionMode.Assertive
+                        paneTitle = "Mic"
+                    }
+            ) {
+                Text("Mic")
+            }
+        },
+        state = rememberTooltipState(),
+    ) {
+        IconButton(onClick = { /* doSomething() */ }) {
+            Icon(imageVector = Icons.Default.Mic, contentDescription = "Mic")
+        }
+    }
+
+@Composable
+private fun SampleNavigationIcon(state: SearchBarState, isAnimated: Boolean = false) =
+    AnimatedVisibility(
+        visible = !isAnimated || state.targetValue == SearchBarValue.Collapsed,
+        enter =
+            slideIn(
+                animationSpec = motionScheme.fastSpatialSpec(),
+                initialOffset = { IntOffset(-it.width, 0) },
+            ),
+        exit =
+            slideOut(
+                animationSpec = tween(durationMillis = 150, delayMillis = 0),
+                targetOffset = { IntOffset(-it.width, 0) },
+            ),
+    ) {
+        TooltipBox(
+            positionProvider =
+                TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+            tooltip = {
+                PlainTooltip(
+                    modifier =
+                        Modifier.semantics {
+                            // TODO(b/496338253): Remove this modifier once bug where tooltip text
+                            //  is not announced by a11y screen readers is resolved.
+                            liveRegion = LiveRegionMode.Assertive
+                            paneTitle = "Menu"
+                        }
+                ) {
+                    Text("Menu")
+                }
+            },
+            state = rememberTooltipState(),
+        ) {
+            IconButton(onClick = { /* doSomething() */ }) {
+                Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
+            }
+        }
+    }
+
+@Composable
+private fun SampleActions(state: SearchBarState, isAnimated: Boolean = false) =
+    AnimatedVisibility(
+        visible = !isAnimated || state.targetValue == SearchBarValue.Collapsed,
+        enter =
+            slideIn(
+                animationSpec = motionScheme.fastSpatialSpec(),
+                initialOffset = { IntOffset(it.width, 0) },
+            ),
+        exit =
+            slideOut(
+                animationSpec = tween(durationMillis = 150, delayMillis = 0),
+                targetOffset = { IntOffset(it.width, 0) },
+            ),
+    ) {
+        TooltipBox(
+            positionProvider =
+                TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+            tooltip = {
+                PlainTooltip(
+                    modifier =
+                        Modifier.semantics {
+                            // TODO(b/496338253): Remove this modifier once bug where tooltip text
+                            //  is not announced by a11y screen readers is resolved.
+                            liveRegion = LiveRegionMode.Assertive
+                            paneTitle = "Account"
+                        }
+                ) {
+                    Text("Account")
+                }
+            },
+            state = rememberTooltipState(),
+        ) {
+            IconButton(onClick = { /* doSomething() */ }) {
+                Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Account")
+            }
+        }
+    }

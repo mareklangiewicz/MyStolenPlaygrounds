@@ -23,7 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,13 +45,9 @@ fun SelectableSample() {
             listOf(option1, option2).forEach { color ->
                 val selected = selectedOption == color
                 Box(
-                    Modifier
-                        .size(100.dp)
+                    Modifier.size(100.dp)
                         .background(color = color)
-                        .selectable(
-                            selected = selected,
-                            onClick = { selectedOption = color }
-                        )
+                        .selectable(selected = selected, onClick = { selectedOption = color })
                 )
             }
         }

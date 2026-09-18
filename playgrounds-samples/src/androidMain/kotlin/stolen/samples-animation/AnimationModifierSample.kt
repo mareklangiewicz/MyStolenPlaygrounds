@@ -42,15 +42,12 @@ fun AnimateContent() {
     val longText = "Very long text\nthat spans across\nmultiple lines"
     var short by remember { mutableStateOf(true) }
     Box(
-        modifier = Modifier
-            .background(
-                Color.Blue,
-                RoundedCornerShape(15.dp)
-            )
-            .clickable { short = !short }
-            .padding(20.dp)
-            .wrapContentSize()
-            .animateContentSize()
+        modifier =
+            Modifier.background(Color.Blue, RoundedCornerShape(15.dp))
+                .clickable { short = !short }
+                .padding(20.dp)
+                .wrapContentSize()
+                .animateContentSize()
     ) {
         Text(
             if (short) {
@@ -58,7 +55,7 @@ fun AnimateContent() {
             } else {
                 longText
             },
-            style = LocalTextStyle.current.copy(color = Color.White)
+            style = LocalTextStyle.current.copy(color = Color.White),
         )
     }
 }

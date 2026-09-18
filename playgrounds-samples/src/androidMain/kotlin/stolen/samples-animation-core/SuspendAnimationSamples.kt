@@ -43,9 +43,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 @Sampled
 fun animateToOnAnimationState() {
     @Composable
-    fun simpleAnimate(
-        target: Float,
-    ): Float {
+    fun simpleAnimate(target: Float): Float {
         // Create an AnimationState to be updated by the animation.
         val animationState = remember { AnimationState(target) }
 
@@ -61,7 +59,7 @@ fun animateToOnAnimationState() {
                 // If the previous animation was interrupted (i.e. not finished), configure the
                 // animation as a sequential animation to continue from the time the animation was
                 // interrupted.
-                sequentialAnimation = !animationState.isFinished
+                sequentialAnimation = !animationState.isFinished,
             )
             // When the function above returns, the animation has finished.
         }
@@ -81,10 +79,8 @@ fun suspendAnimateFloatVariant() {
             animate(
                 initialValue = 1f,
                 targetValue = 0f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(1000),
-                    repeatMode = RepeatMode.Reverse
-                )
+                animationSpec =
+                    infiniteRepeatable(animation = tween(1000), repeatMode = RepeatMode.Reverse),
             ) { value, /* velocity */ _ ->
                 // Update alpha mutable state with the current animation value
                 alpha.value = value
@@ -94,13 +90,10 @@ fun suspendAnimateFloatVariant() {
             Icon(
                 Icons.Filled.Favorite,
                 contentDescription = null,
-                modifier = Modifier.align(Alignment.Center)
-                    .graphicsLayer(
-                        scaleX = 3.0f,
-                        scaleY = 3.0f,
-                        alpha = alpha.value
-                    ),
-                tint = Color.Red
+                modifier =
+                    Modifier.align(Alignment.Center)
+                        .graphicsLayer(scaleX = 3.0f, scaleY = 3.0f, alpha = alpha.value),
+                tint = Color.Red,
             )
         }
     }

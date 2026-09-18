@@ -30,7 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun RadioButtonSample() {
     // We have two radio buttons and only one can be selected
-    var state by remember { mutableStateOf(true) }
+    var state by rememberSaveable { mutableStateOf(true) }
     // Note that Modifier.selectableGroup() is essential to ensure correct accessibility behavior.
     // We also set a content description for this sample, but note that a RadioButton would usually
     // be part of a higher level component, such as a raw with text, and that component would need
@@ -54,12 +54,12 @@ fun RadioButtonSample() {
         RadioButton(
             selected = state,
             onClick = { state = true },
-            modifier = Modifier.semantics { contentDescription = "Localized Description" }
+            modifier = Modifier.semantics { contentDescription = "Localized Description" },
         )
         RadioButton(
             selected = !state,
             onClick = { state = false },
-            modifier = Modifier.semantics { contentDescription = "Localized Description" }
+            modifier = Modifier.semantics { contentDescription = "Localized Description" },
         )
     }
 }
@@ -69,30 +69,29 @@ fun RadioButtonSample() {
 @Composable
 fun RadioGroupSample() {
     val radioOptions = listOf("Calls", "Missed", "Friends")
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+    val (selectedOption, onOptionSelected) = rememberSaveable { mutableStateOf(radioOptions[0]) }
     // Note that Modifier.selectableGroup() is essential to ensure correct accessibility behavior
     Column(Modifier.selectableGroup()) {
         radioOptions.forEach { text ->
             Row(
-                Modifier
-                    .fillMaxWidth()
+                Modifier.fillMaxWidth()
                     .height(56.dp)
                     .selectable(
                         selected = (text == selectedOption),
                         onClick = { onOptionSelected(text) },
-                        role = Role.RadioButton
+                        role = Role.RadioButton,
                     )
                     .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 RadioButton(
                     selected = (text == selectedOption),
-                    onClick = null // null recommended for accessibility with screenreaders
+                    onClick = null, // null recommended for accessibility with screenreaders
                 )
                 Text(
                     text = text,
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(start = 16.dp)
+                    modifier = Modifier.padding(start = 16.dp),
                 )
             }
         }

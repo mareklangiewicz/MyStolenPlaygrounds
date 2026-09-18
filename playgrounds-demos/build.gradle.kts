@@ -29,4 +29,9 @@ dependencies {
     "androidMainImplementation"(project(":playgrounds-samples"))
     "androidMainImplementation"(AndroidX.Compose.Material3.material3)
     "androidMainImplementation"(AndroidX.Navigation.compose)
+    // Not covered by LibCompose.withComposeMaterialIconsExtended -- only
+    // defaultBuildTemplateForComposeMppLib reads that flag (MppBuildTemplates.kt:412), and this is
+    // an andro lib. The stolen material3 samples/demos use Icons.* on almost every screen: it was
+    // 937 of the 1451 errors here.
+    "androidMainImplementation"(AndroidX.Compose.Material.icons_extended)
 }

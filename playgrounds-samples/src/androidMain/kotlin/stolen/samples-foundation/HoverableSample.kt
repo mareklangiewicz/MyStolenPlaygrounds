@@ -23,7 +23,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -41,11 +41,11 @@ fun HoverableSample() {
 
     // the color will change depending on the presence of a hover
     Box(
-        modifier = Modifier
-            .size(128.dp)
-            .background(if (isHovered) Color.Red else Color.Blue)
-            .hoverable(interactionSource = interactionSource),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier.size(128.dp)
+                .background(if (isHovered) Color.Red else Color.Blue)
+                .hoverable(interactionSource = interactionSource),
+        contentAlignment = Alignment.Center,
     ) {
         Text(if (isHovered) "Hovered" else "Unhovered")
     }

@@ -267,16 +267,66 @@ sourceFun {
     // 'actual' declaration in module '<commonMain> for JVM'". Upstream's desktopMain is this
     // module's jvmMain.
     val stealComposeSourcesTestUtilsJvm by regSteal(composePath / "test-utils/src/desktopMain/kotlin/androidx/compose/testutils", stolenBasicJvmKotlinPath / "compose-testutils")
-    val stealComposeSamplesUi by regSteal(composePath / "ui/ui/samples/src/main/java/androidx/compose/ui/samples", stolenSamplesKotlinPath / "samples-ui")
+    // androidx's sample modules ship their own res/, and several samples draw from it
+    // (R.drawable.yt_profile and friends) or from an android layout XML. Those resources are not
+    // stolen -- only the kotlin is -- so `R` cannot resolve. Dropping the files that use it is the
+    // honest option; the alternative is inventing drawables that make the samples render something
+    // other than what they are samples OF.
+    val samplesNeedingAndroidxRes = setOf(
+        "SharedTransitionSamples.kt",
+        "ContextMenuSample.kt",
+        "AndroidViewSample.kt",
+        "BlurSample.kt",
+        "NestedScrollInteropSamples.kt",
+        "PainterSample.kt",
+    )
+    fun Pair<Path, Path>.dropIfNeedsRes(content: String) =
+        if (first.name in samplesNeedingAndroidxRes) null else content
+
+    val stealComposeSamplesUi by regSteal(composePath / "ui/ui/samples/src/main/java/androidx/compose/ui/samples", stolenSamplesKotlinPath / "samples-ui") { dropIfNeedsRes(it) }
     val stealComposeSamplesUiGraphics by regSteal(composePath / "ui/ui-graphics/samples/src/main/java/androidx/compose/ui/graphics/samples", stolenSamplesKotlinPath / "samples-ui-graphics")
-    val stealComposeSamplesFoundation by regSteal(srcFoundation / "samples/src/main/java/androidx/compose/foundation/samples", stolenSamplesKotlinPath / "samples-foundation")
+    val stealComposeSamplesFoundation by regSteal(srcFoundation / "samples/src/main/java/androidx/compose/foundation/samples", stolenSamplesKotlinPath / "samples-foundation") { dropIfNeedsRes(it) }
     val stealComposeSamplesAnimationCore by regSteal(composePath / "animation/animation-core/samples/src/main/java/androidx/compose/animation/core/samples", stolenSamplesKotlinPath / "samples-animation-core")
-    val stealComposeSamplesAnimation by regSteal(composePath / "animation/animation/samples/src/main/java/androidx/compose/animation/samples", stolenSamplesKotlinPath / "samples-animation")
+    val stealComposeSamplesAnimation by regSteal(composePath / "animation/animation/samples/src/main/java/androidx/compose/animation/samples", stolenSamplesKotlinPath / "samples-animation") { dropIfNeedsRes(it) }
     val m3 = composePath / "material3/material3"
-    val stealComposeMaterial3Samples by regSteal(m3 / "samples/src/main/java/androidx/compose/material3/samples", stolenDemosKotlinPath / "material3-samples")
+    // Demo/sample files that cannot compile out of context, each for a stated reason:
+    //  - Carousel*: draw from androidx's own res/ (R.drawable.*), which is not stolen.
+    //  - AppBarSamples / NavigationSuiteScaffoldDemo: need
+    //    androidx.compose.material3.adaptive.navigationsuite, which is not in DepsKt's catalog at
+    //    all, plus sample functions from that artifact's own samples module.
+    val excludedDemos = setOf(
+        "CarouselDemos.kt",
+        "CarouselSamples.kt",
+        "AppBarSamples.kt",
+        "NavigationSuiteScaffoldDemo.kt",
+        // Slider's API moved: valueRange and onValueChangeFinished are gone from the overloads
+        // these use. Ordinary drift, not a missing dependency.
+        "SliderSamples.kt",
+        "SliderDemos.kt",
+        // ScrollField's content lambda gained a third parameter. Drift again.
+        "ScrollFieldSamples.kt",
+        // ListDemos indexes a paging demo from androidx.paging, which this repo does not depend on.
+        "ListDemos.kt",
+        // CASCADE, and the one exclusion that costs something real: Material3Demos.kt is the INDEX
+        // of the material3 demo set, so it names every demo above that was excluded. The demos
+        // themselves are still stolen and usable; what is lost is androidx's own menu of them.
+        "Material3Demos.kt",
+        // Same cascade on the foundation side: the index names LazyListDemos, which lives under
+        // the lazy/ demos that are not stolen.
+        "FoundationDemos.kt",
+    )
+    fun Pair<Path, Path>.dropIfExcludedDemo(content: String) =
+        if (first.name in excludedDemos) null else content
+
+    val stealComposeMaterial3Samples by regSteal(m3 / "samples/src/main/java/androidx/compose/material3/samples", stolenDemosKotlinPath / "material3-samples") { dropIfExcludedDemo(it) }
     val stealComposeMaterial3Catalog by regSteal(m3 / "integration-tests/material3-catalog/src/main/java/androidx/compose/material3/catalog", stolenDemosKotlinPath / "material3-catalog")
-    val stealComposeMaterial3Demos by regSteal(m3 / "integration-tests/material3-demos/src/main/java/androidx/compose/material3/demos", stolenDemosKotlinPath / "material3-demos")
-    val stealComposeFoundationDemos by regSteal(srcFoundation / "integration-tests/foundation-demos/src/main/java/androidx/compose/foundation/demos", stolenDemosKotlinPath / "foundation-demos")
+    val stealComposeMaterial3Demos by regSteal(m3 / "integration-tests/material3-demos/src/main/java/androidx/compose/material3/demos", stolenDemosKotlinPath / "material3-demos") { dropIfExcludedDemo(it) }
+    // text/ goes for the same reason it goes everywhere else in this file: its demos are built on
+    // sample functions that live in androidx's text samples module, which is not stolen.
+    val stealComposeFoundationDemos by regSteal(srcFoundation / "integration-tests/foundation-demos/src/main/java/androidx/compose/foundation/demos", stolenDemosKotlinPath / "foundation-demos") {
+        // text2/ is the newer BasicTextField demo set and goes for the same reason as text/.
+        if (first.inAnyDirOf("text", "text2")) null else dropIfExcludedDemo(it)
+    }
     val stealComposeCommonDemos by regSteal(composePath / "integration-tests/demos/common/src/main/java/androidx/compose/integration/demos/common", stolenDemosKotlinPath / "common-demos")
     val stealComposeSourcesAll by reg { dependsOn(
         stealComposeSourcesJava,
@@ -293,7 +343,11 @@ sourceFun {
     ) }
     val stealComposeMaterial3All by reg { dependsOn(
         stealComposeMaterial3Samples,
-        stealComposeMaterial3Catalog,
+        // stealComposeMaterial3Catalog is registered but NOT wired in here. The material3 catalog
+        // is a whole APP -- Home, ThemePicker, Components, its own top app bar -- and it is built
+        // on androidx's res/ and on material3-adaptive, neither of which this repo steals. It is
+        // not a demo library that can be dropped into another app. Add it back the day its
+        // resources come with it.
         stealComposeMaterial3Demos,
         stealComposeFoundationDemos,
         stealComposeCommonDemos,

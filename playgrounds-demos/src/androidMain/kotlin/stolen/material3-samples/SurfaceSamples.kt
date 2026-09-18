@@ -17,7 +17,6 @@
 package androidx.compose.material3.samples
 
 import androidx.annotation.Sampled
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,42 +32,27 @@ import androidx.compose.ui.tooling.preview.Preview
 @Sampled
 @Composable
 fun SurfaceSample() {
-    Surface {
-        Text("Text on Surface")
-    }
+    Surface { Text("Text on Surface") }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Sampled
 @Composable
 fun ClickableSurfaceSample() {
     var count by remember { mutableStateOf(0) }
-    Surface(
-        onClick = { count++ },
-    ) {
-        Text("Clickable Surface. Count: $count")
-    }
+    Surface(onClick = { count++ }) { Text("Clickable Surface. Count: $count") }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Sampled
 @Composable
 fun SelectableSurfaceSample() {
     var selected by remember { mutableStateOf(false) }
-    Surface(
-        selected = selected,
-        onClick = { selected = !selected },
-    ) {
-        Text(
-            text = if (selected) "Selected" else "Not Selected",
-            textAlign = TextAlign.Center
-        )
+    Surface(selected = selected, onClick = { selected = !selected }) {
+        Text(text = if (selected) "Selected" else "Not Selected", textAlign = TextAlign.Center)
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Sampled
 @Composable
@@ -77,15 +61,13 @@ fun ToggleableSurfaceSample() {
     Surface(
         checked = checked,
         onCheckedChange = { checked = !checked },
-        color = if (checked) {
-            MaterialTheme.colorScheme.surfaceVariant
-        } else {
-            MaterialTheme.colorScheme.surface
-        }
+        color =
+            if (checked) {
+                MaterialTheme.colorScheme.surfaceVariant
+            } else {
+                MaterialTheme.colorScheme.surface
+            },
     ) {
-        Text(
-            text = if (checked) "ON" else "OFF",
-            textAlign = TextAlign.Center
-        )
+        Text(text = if (checked) "ON" else "OFF", textAlign = TextAlign.Center)
     }
 }

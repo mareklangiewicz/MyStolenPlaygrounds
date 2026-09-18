@@ -22,3 +22,15 @@ val lib = gradle.extLib.let { it.copy(info = it.info.copy(namespace = "androidx.
 
 defaultBuildTemplateForAndroLib(lib, publish = LibPublish(androVariant = "debug"))
 
+
+// The KMP android target names its configurations per SOURCE SET, so `implementation` does not
+// exist here -- same shape playgrounds-demos already uses.
+//
+// material-icons-extended is NOT covered by LibCompose.withComposeMaterialIconsExtended: only
+// defaultBuildTemplateForComposeMppLib reads that flag (MppBuildTemplates.kt:412), and this is an
+// andro lib, whose defaultComposeAndroDeps has no icons entry at all. Setting the flag repo-wide
+// would look like it configured something and would not, so the dependency is stated where it is
+// used. The stolen androidx samples reach for Icons.Filled.* / Icons.Rounded.* throughout.
+dependencies {
+    "androidMainImplementation"(AndroidX.Compose.Material.icons_extended)
+}

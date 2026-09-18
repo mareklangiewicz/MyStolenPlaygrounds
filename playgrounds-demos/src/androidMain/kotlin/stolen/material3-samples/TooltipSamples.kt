@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Android Open Source Project
+ * Copyright 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +23,31 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.PlainTooltipBox
+import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.Text
-import androidx.compose.material3.TooltipState
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.paneTitle
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -44,16 +56,26 @@ import kotlinx.coroutines.launch
 @Sampled
 @Composable
 fun PlainTooltipSample() {
-    PlainTooltipBox(
-        tooltip = { Text("Add to favorites") }
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip(
+                modifier =
+                    Modifier.semantics {
+                        // TODO(b/496338253): Remove this modifier once bug where tooltip text is
+                        //  not announced by a11y screen readers is resolved.
+                        liveRegion = LiveRegionMode.Assertive
+                        paneTitle = "Add to favorites"
+                    }
+            ) {
+                Text("Add to favorites")
+            }
+        },
+        state = rememberTooltipState(),
     ) {
-        IconButton(
-            onClick = { /* Icon button's click event */ }
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Favorite,
-                contentDescription = null
-            )
+        IconButton(onClick = { /* Icon button's click event */ }) {
+            Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Localized Description")
         }
     }
 }
@@ -63,26 +85,376 @@ fun PlainTooltipSample() {
 @Sampled
 @Composable
 fun PlainTooltipWithManualInvocationSample() {
-    val tooltipState = remember { TooltipState() }
+    val tooltipState = rememberTooltipState()
     val scope = rememberCoroutineScope()
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        PlainTooltipBox(
-            tooltip = { Text("Add to list") },
-            tooltipState = tooltipState
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        TooltipBox(
+            positionProvider =
+                TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+            tooltip = {
+                PlainTooltip(
+                    modifier =
+                        Modifier.semantics {
+                            // TODO(b/496338253): Remove this modifier once bug where tooltip text
+                            // is not
+                            // announced
+                            //  by a11y screen readers is resolved.
+                            liveRegion = LiveRegionMode.Assertive
+                            paneTitle = "Add to list"
+                        }
+                ) {
+                    Text("Add to list")
+                }
+            },
+            state = tooltipState,
         ) {
-            Icon(
-                imageVector = Icons.Filled.AddCircle,
-                contentDescription = null
-            )
+            IconButton(onClick = { /* Icon button's click event */ }) {
+                Icon(
+                    imageVector = Icons.Filled.AddCircle,
+                    contentDescription = "Localized Description",
+                )
+            }
         }
         Spacer(Modifier.requiredHeight(30.dp))
-        OutlinedButton(
-            onClick = { scope.launch { tooltipState.show() } }
-        ) {
+        OutlinedButton(onClick = { scope.launch { tooltipState.show() } }) {
             Text("Display tooltip")
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Sampled
+@Composable
+fun PlainTooltipWithCaret() {
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip(
+                modifier =
+                    Modifier.semantics {
+                        // TODO(b/496338253): Remove this modifier once bug where tooltip text is
+                        //  not announced by a11y screen readers is resolved.
+                        liveRegion = LiveRegionMode.Assertive
+                        paneTitle = "Add to favorites"
+                    }
+            ) {
+                Text("Add to favorites")
+            }
+        },
+        state = rememberTooltipState(),
+    ) {
+        IconButton(onClick = { /* Icon button's click event */ }) {
+            Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Localized Description")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Sampled
+@Composable
+fun PlainTooltipWithCaretBelowAnchor() {
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Below),
+        tooltip = {
+            PlainTooltip(
+                modifier =
+                    Modifier.semantics {
+                        // TODO(b/496338253): Remove this modifier once bug where tooltip text is
+                        //  not announced by a11y screen readers is resolved.
+                        liveRegion = LiveRegionMode.Assertive
+                        paneTitle = "Add to favorites"
+                    },
+                caretShape = TooltipDefaults.caretShape(),
+            ) {
+                Text("Add to favorites")
+            }
+        },
+        state = rememberTooltipState(),
+    ) {
+        IconButton(onClick = { /* Icon button's click event */ }) {
+            Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Localized Description")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Sampled
+@Composable
+fun PlainTooltipWithCaretLeftOfAnchor() {
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Left),
+        tooltip = {
+            PlainTooltip(
+                modifier =
+                    Modifier.semantics {
+                        // TODO(b/496338253): Remove this modifier once bug where tooltip text is
+                        //  not announced by a11y screen readers is resolved.
+                        liveRegion = LiveRegionMode.Assertive
+                        paneTitle = "Add to favorites"
+                    },
+                caretShape = TooltipDefaults.caretShape(),
+            ) {
+                Text("Add to favorites")
+            }
+        },
+        state = rememberTooltipState(),
+    ) {
+        IconButton(onClick = { /* Icon button's click event */ }) {
+            Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Localized Description")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Sampled
+@Composable
+fun PlainTooltipWithCaretRightOfAnchor() {
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Right),
+        tooltip = {
+            PlainTooltip(
+                modifier =
+                    Modifier.semantics {
+                        // TODO(b/496338253): Remove this modifier once bug where tooltip text is
+                        //  not announced by a11y screen readers is resolved.
+                        liveRegion = LiveRegionMode.Assertive
+                        paneTitle = "Add to favorites"
+                    },
+                caretShape = TooltipDefaults.caretShape(),
+            ) {
+                Text("Add to favorites")
+            }
+        },
+        state = rememberTooltipState(),
+    ) {
+        IconButton(onClick = { /* Icon button's click event */ }) {
+            Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Localized Description")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Sampled
+@Composable
+fun PlainTooltipWithCaretStartOfAnchor() {
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Start),
+        tooltip = {
+            PlainTooltip(
+                modifier =
+                    Modifier.semantics {
+                        // TODO(b/496338253): Remove this modifier once bug where tooltip text is
+                        //  not announced by a11y screen readers is resolved.
+                        liveRegion = LiveRegionMode.Assertive
+                        paneTitle = "Add to favorites"
+                    },
+                caretShape = TooltipDefaults.caretShape(),
+            ) {
+                Text("Add to favorites")
+            }
+        },
+        state = rememberTooltipState(),
+    ) {
+        IconButton(onClick = { /* Icon button's click event */ }) {
+            Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Localized Description")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Sampled
+@Composable
+fun PlainTooltipWithCaretEndOfAnchor() {
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.End),
+        tooltip = {
+            PlainTooltip(
+                modifier =
+                    Modifier.semantics {
+                        // TODO(b/496338253): Remove this modifier once bug where tooltip text is
+                        //  not announced by a11y screen readers is resolved.
+                        liveRegion = LiveRegionMode.Assertive
+                        paneTitle = "Add to favorites"
+                    },
+                caretShape = TooltipDefaults.caretShape(),
+            ) {
+                Text("Add to favorites")
+            }
+        },
+        state = rememberTooltipState(),
+    ) {
+        IconButton(onClick = { /* Icon button's click event */ }) {
+            Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Localized Description")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Sampled
+@Composable
+fun PlainTooltipWithCustomCaret() {
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip(
+                modifier =
+                    Modifier.semantics {
+                        // TODO(b/496338253): Remove this modifier once bug where tooltip text is
+                        //  not announced by a11y screen readers is resolved.
+                        liveRegion = LiveRegionMode.Assertive
+                        paneTitle = "Add to favorites"
+                    },
+                caretShape = TooltipDefaults.caretShape(DpSize(24.dp, 12.dp)),
+            ) {
+                Text("Add to favorites")
+            }
+        },
+        state = rememberTooltipState(),
+    ) {
+        IconButton(onClick = { /* Icon button's click event */ }) {
+            Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Localized Description")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Sampled
+@Composable
+fun RichTooltipSample() {
+    val tooltipState = rememberTooltipState(isPersistent = true)
+    val scope = rememberCoroutineScope()
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            RichTooltip(
+                title = { Text(richTooltipSubheadText) },
+                action = {
+                    TextButton(onClick = { scope.launch { tooltipState.dismiss() } }) {
+                        Text(richTooltipActionText)
+                    }
+                },
+            ) {
+                Text(richTooltipText)
+            }
+        },
+        hasAction = true,
+        state = tooltipState,
+    ) {
+        IconButton(onClick = { /* Icon button's click event */ }) {
+            Icon(imageVector = Icons.Filled.Info, contentDescription = "Localized Description")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Sampled
+@Composable
+fun RichTooltipWithManualInvocationSample() {
+    val tooltipState = rememberTooltipState(isPersistent = true)
+    val scope = rememberCoroutineScope()
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        TooltipBox(
+            positionProvider =
+                TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+            tooltip = {
+                RichTooltip(
+                    title = { Text(richTooltipSubheadText) },
+                    action = {
+                        TextButton(onClick = { scope.launch { tooltipState.dismiss() } }) {
+                            Text(richTooltipActionText)
+                        }
+                    },
+                ) {
+                    Text(richTooltipText)
+                }
+            },
+            hasAction = true,
+            state = tooltipState,
+        ) {
+            IconButton(onClick = { /* Icon button's click event */ }) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "Localized Description")
+            }
+        }
+        Spacer(Modifier.requiredHeight(30.dp))
+        OutlinedButton(onClick = { scope.launch { tooltipState.show() } }) {
+            Text("Display tooltip")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Sampled
+@Composable
+fun RichTooltipWithCaretSample() {
+    val tooltipState = rememberTooltipState(isPersistent = true)
+    val scope = rememberCoroutineScope()
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            RichTooltip(
+                title = { Text(richTooltipSubheadText) },
+                action = {
+                    TextButton(onClick = { scope.launch { tooltipState.dismiss() } }) {
+                        Text(richTooltipActionText)
+                    }
+                },
+                caretShape = TooltipDefaults.caretShape(),
+            ) {
+                Text(richTooltipText)
+            }
+        },
+        hasAction = true,
+        state = tooltipState,
+    ) {
+        IconButton(onClick = { /* Icon button's click event */ }) {
+            Icon(imageVector = Icons.Filled.Info, contentDescription = "Localized Description")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Sampled
+@Composable
+fun RichTooltipWithCustomCaretSample() {
+    val tooltipState = rememberTooltipState(isPersistent = true)
+    val scope = rememberCoroutineScope()
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            RichTooltip(
+                title = { Text(richTooltipSubheadText) },
+                action = {
+                    TextButton(onClick = { scope.launch { tooltipState.dismiss() } }) {
+                        Text(richTooltipActionText)
+                    }
+                },
+                caretShape = TooltipDefaults.caretShape(DpSize(32.dp, 16.dp)),
+            ) {
+                Text(richTooltipText)
+            }
+        },
+        hasAction = true,
+        state = tooltipState,
+    ) {
+        IconButton(onClick = { /* Icon button's click event */ }) {
+            Icon(imageVector = Icons.Filled.Info, contentDescription = "Localized Description")
+        }
+    }
+}
+
+const val richTooltipSubheadText = "Permissions"
+const val richTooltipText =
+    "Configure permissions for selected service accounts. " +
+        "You can add and remove service account members and assign roles to them. " +
+        "Visit go/permissions for details"
+const val richTooltipActionText = "Request Access"

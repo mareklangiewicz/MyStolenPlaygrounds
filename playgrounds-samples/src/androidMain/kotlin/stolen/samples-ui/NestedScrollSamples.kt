@@ -30,8 +30,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,9 +47,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import kotlin.OptIn
 import kotlin.math.roundToInt
 
 @Sampled
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NestedScrollConnectionSample() {
     // here we use LazyColumn that has build-in nested scroll, but we want to act like a
@@ -57,9 +60,7 @@ fun NestedScrollConnectionSample() {
     val toolbarHeight = 48.dp
     val toolbarHeightPx = with(LocalDensity.current) { toolbarHeight.roundToPx().toFloat() }
     // our offset to collapse toolbar
-    val toolbarOffsetHeightPx =
-
-        remember { mutableStateOf(0f) }
+    val toolbarOffsetHeightPx = remember { mutableStateOf(0f) }
     // now, let's create connection to the nested scroll system and listen to the scroll
     // happening inside child LazyColumn
     val nestedScrollConnection = remember {
@@ -77,8 +78,7 @@ fun NestedScrollConnectionSample() {
         }
     }
     Box(
-        Modifier
-            .fillMaxSize()
+        Modifier.fillMaxSize()
             // attach as a parent to the nested scroll system
             .nestedScroll(nestedScrollConnection)
     ) {
@@ -89,10 +89,11 @@ fun NestedScrollConnectionSample() {
             }
         }
         TopAppBar(
-            modifier = Modifier
-                .height(toolbarHeight)
-                .offset { IntOffset(x = 0, y = toolbarOffsetHeightPx.value.roundToInt()) },
-            title = { Text("toolbar offset is ${toolbarOffsetHeightPx.value}") }
+            modifier =
+                Modifier.height(toolbarHeight).offset {
+                    IntOffset(x = 0, y = toolbarOffsetHeightPx.value.roundToInt())
+                },
+            title = { Text("toolbar offset is ${toolbarOffsetHeightPx.value}") },
         )
     }
 }
@@ -126,7 +127,7 @@ fun NestedScrollDispatcherSample() {
             override fun onPostScroll(
                 consumed: Offset,
                 available: Offset,
-                source: NestedScrollSource
+                source: NestedScrollSource,
             ): Offset {
                 // we have no fling, so we're interested in the regular post scroll cycle
                 // let's try to consume what's left if we need and return the amount consumed
@@ -137,43 +138,43 @@ fun NestedScrollDispatcherSample() {
         }
     }
     Box(
-        Modifier
-            .size(100.dp)
+        Modifier.size(100.dp)
             .background(Color.LightGray)
             // attach ourselves to nested scroll system
             .nestedScroll(connection = nestedScrollConnection, dispatcher = nestedScrollDispatcher)
             .draggable(
                 orientation = Orientation.Vertical,
-                state = rememberDraggableState { delta ->
-                    // here's regular drag. Let's be good citizens and ask parents first if they
-                    // want to pre consume (it's a nested scroll contract)
-                    val parentsConsumed = nestedScrollDispatcher.dispatchPreScroll(
-                        available = Offset(x = 0f, y = delta),
-                        source = NestedScrollSource.Drag
-                    )
-                    // adjust what's available to us since might have consumed smth
-                    val adjustedAvailable = delta - parentsConsumed.y
-                    // we consume
-                    val weConsumed = onNewDelta(adjustedAvailable)
-                    // dispatch as a post scroll what's left after pre-scroll and our consumption
-                    val totalConsumed = Offset(x = 0f, y = weConsumed) + parentsConsumed
-                    val left = adjustedAvailable - weConsumed
-                    nestedScrollDispatcher.dispatchPostScroll(
-                        consumed = totalConsumed,
-                        available = Offset(x = 0f, y = left),
-                        source = NestedScrollSource.Drag
-                    )
-                    // we won't dispatch pre/post fling events as we have no flinging here, but the
-                    // idea is very similar:
-                    // 1. dispatch pre fling, asking parents to pre consume
-                    // 2. fling (while dispatching scroll events like above for any fling tick)
-                    // 3. dispatch post fling, allowing parent to react to velocity left
-                }
+                state =
+                    rememberDraggableState { delta ->
+                        // here's regular drag. Let's be good citizens and ask parents first if they
+                        // want to pre consume (it's a nested scroll contract)
+                        val parentsConsumed =
+                            nestedScrollDispatcher.dispatchPreScroll(
+                                available = Offset(x = 0f, y = delta),
+                                source = NestedScrollSource.UserInput,
+                            )
+                        // adjust what's available to us since might have consumed smth
+                        val adjustedAvailable = delta - parentsConsumed.y
+                        // we consume
+                        val weConsumed = onNewDelta(adjustedAvailable)
+                        // dispatch as a post scroll what's left after pre-scroll and our
+                        // consumption
+                        val totalConsumed = Offset(x = 0f, y = weConsumed) + parentsConsumed
+                        val left = adjustedAvailable - weConsumed
+                        nestedScrollDispatcher.dispatchPostScroll(
+                            consumed = totalConsumed,
+                            available = Offset(x = 0f, y = left),
+                            source = NestedScrollSource.UserInput,
+                        )
+                        // we won't dispatch pre/post fling events as we have no flinging here, but
+                        // the
+                        // idea is very similar:
+                        // 1. dispatch pre fling, asking parents to pre consume
+                        // 2. fling (while dispatching scroll events like above for any fling tick)
+                        // 3. dispatch post fling, allowing parent to react to velocity left
+                    },
             )
     ) {
-        Text(
-            "State: ${basicState.value.roundToInt()}",
-            modifier = Modifier.align(Alignment.Center)
-        )
+        Text("State: ${basicState.value.roundToInt()}", modifier = Modifier.align(Alignment.Center))
     }
 }

@@ -58,8 +58,8 @@ defaultBuildTemplateForAndroApp(lib) {
   implementation(Langiewicz.uwidgets_demo)
   implementation(AndroidX.Browser.browser)
   implementation(project(":playgrounds-basic"))
-  // implementation(project(":playgrounds-samples"))
-  // implementation(project(":playgrounds-demos"))
+  implementation(project(":playgrounds-samples"))
+  implementation(project(":playgrounds-demos"))
   // Device-test deps, spelled out. templatefun's defaultAndroTestDeps would cover this, but it is
   // a `context(LibFlags, LibAndro)` function and Gradle compiles build scripts WITHOUT
   // -Xcontext-parameters, so a .gradle.kts file cannot call it at all (see DepsKt deps/build.gradle.kts:61).
