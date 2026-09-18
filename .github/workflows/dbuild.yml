@@ -10,22 +10,15 @@ on:
     - 'main'
   pull_request: {}
   workflow_dispatch: {}
-env:
-  MYKOTLIBS_signing_keyId: '${{ secrets.MYKOTLIBS_signing_keyId }}'
-  MYKOTLIBS_signing_password: '${{ secrets.MYKOTLIBS_signing_password }}'
-  MYKOTLIBS_signing_key: '${{ secrets.MYKOTLIBS_signing_key }}'
-  MYKOTLIBS_ossrhUsername: '${{ secrets.MYKOTLIBS_ossrhUsername }}'
-  MYKOTLIBS_ossrhPassword: '${{ secrets.MYKOTLIBS_ossrhPassword }}'
-  MYKOTLIBS_sonatypeStagingProfileId: '${{ secrets.MYKOTLIBS_sonatypeStagingProfileId }}'
 jobs:
   build-for-UbuntuLatest:
     runs-on: 'ubuntu-latest'
     steps:
     - id: 'step-0'
-      uses: 'actions/checkout@v4'
+      uses: 'actions/checkout@v7'
     - id: 'step-1'
       name: 'Set up JDK'
-      uses: 'actions/setup-java@v4'
+      uses: 'actions/setup-java@v5'
       with:
         java-version: '23'
         distribution: 'zulu'
