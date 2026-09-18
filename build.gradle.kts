@@ -72,18 +72,28 @@ val androidxPath = myCodeRootPath / "kotlin/compose-multiplatform-core"
 
 val composePath = androidxPath / "compose"
 
+// Both ends of every steal moved to the KMP source-set layout, for two independent reasons that
+// happen to have produced the same names:
+//  - the DESTINATIONS, because since AGP 9 an android module is a KMP module, so playgrounds-basic
+//    is androidMain/androidHostTest/androidDeviceTest now. The sources were moved during that
+//    migration but these path constants were not, so `stealAll` would have written into dead
+//    directories and compiled ZERO files while still reporting BUILD SUCCESSFUL.
+//  - the SOURCES, because upstream androidx did the same migration: src/test -> src/androidHostTest
+//    and src/androidAndroidTest -> src/androidDeviceTest.
 val srcAppKotlinPath = playgroundsAppPath / "src/main/kotlin"
-val srcBasicKotlinPath = playgroundsBasicPath / "src/main/kotlin"
-val srcBasicJavaPath = playgroundsBasicPath / "src/main/java"
-val srcSamplesKotlinPath = playgroundsSamplesPath / "src/main/kotlin"
-val srcDemosKotlinPath = playgroundsDemosPath / "src/main/kotlin"
+val srcBasicKotlinPath = playgroundsBasicPath / "src/androidMain/kotlin"
+val srcBasicJavaPath = playgroundsBasicPath / "src/androidMain/java"
+val srcSamplesKotlinPath = playgroundsSamplesPath / "src/androidMain/kotlin"
+val srcDemosKotlinPath = playgroundsDemosPath / "src/androidMain/kotlin"
 
+val srcBasicCommonKotlinPath = playgroundsBasicPath / "src/commonMain/kotlin"
+val stolenBasicCommonKotlinPath = srcBasicCommonKotlinPath / "stolen"
 val stolenBasicKotlinPath = srcBasicKotlinPath / "stolen"
 val stolenBasicJavaPath = srcBasicJavaPath // java files have to be in directories same as packages :(
 val stolenSamplesKotlinPath = srcSamplesKotlinPath / "stolen"
 val stolenDemosKotlinPath = srcDemosKotlinPath / "stolen"
-val stolenBasicUnitTestsPath = playgroundsBasicPath / "src/test/kotlin/stolen"
-val stolenBasicAndroTestsPath = playgroundsBasicPath / "src/androidTest/kotlin/stolen"
+val stolenBasicUnitTestsPath = playgroundsBasicPath / "src/androidHostTest/kotlin/stolen"
+val stolenBasicAndroTestsPath = playgroundsBasicPath / "src/androidDeviceTest/kotlin/stolen"
 val templatesAppSrcKotlinPath = srcAppKotlinPath / "templates"
 
 fun String.containsOneOf(vararg substrings: String) = substrings.any { it in this }
@@ -105,11 +115,11 @@ sourceFun {
     val srcFoundation = composePath / "foundation/foundation"
     val srcFoundationLayout = composePath / "foundation/foundation-layout"
 
-    val srcUiUT = srcUiUi / "src/test/kotlin/androidx/compose/ui"
-    val srcUiGraphicsAT = srcUiGraphics / "src/androidAndroidTest/kotlin/androidx/compose/ui/graphics"
-    val srcFoundationUT = srcFoundation / "src/test/kotlin/androidx/compose/foundation"
-    val srcFoundationAT = srcFoundation / "src/androidAndroidTest/kotlin/androidx/compose/foundation"
-    val srcFoundationLayoutAT = srcFoundationLayout / "src/androidAndroidTest/kotlin/androidx/compose/foundation/layout"
+    val srcUiUT = srcUiUi / "src/androidHostTest/kotlin/androidx/compose/ui"
+    val srcUiGraphicsAT = srcUiGraphics / "src/androidDeviceTest/kotlin/androidx/compose/ui/graphics"
+    val srcFoundationUT = srcFoundation / "src/androidHostTest/kotlin/androidx/compose/foundation"
+    val srcFoundationAT = srcFoundation / "src/androidDeviceTest/kotlin/androidx/compose/foundation"
+    val srcFoundationLayoutAT = srcFoundationLayout / "src/androidDeviceTest/kotlin/androidx/compose/foundation/layout"
 
     val stealComposeUiUnitTests by regSteal(srcUiUT, stolenBasicUnitTestsPath / "ui-tests") { it.withInternalAccessIssuesSuppressed() }
     val stealComposeFoundationUnitTests by regSteal(srcFoundationUT, stolenBasicUnitTestsPath / "foundation-tests") { it.withInternalAccessIssuesSuppressed() }
@@ -133,7 +143,7 @@ sourceFun {
 
     val stealComposeAnnotations by regSteal(androidxPath / "annotation/annotation-sampled/src/main/java/androidx/annotation", stolenSamplesKotlinPath / "androidx-annotation")
     val stealComposeSourcesJava by regSteal(composePath / "ui/ui-android-stubs/src/main/java/android/view", stolenBasicJavaPath / "android/view")
-    val stealComposeSourcesTestUtilsCommon by regSteal(composePath / "test-utils/src/commonMain/kotlin/androidx/compose/testutils", stolenBasicKotlinPath / "compose-testutils")
+    val stealComposeSourcesTestUtilsCommon by regSteal(composePath / "test-utils/src/commonMain/kotlin/androidx/compose/testutils", stolenBasicCommonKotlinPath / "compose-testutils")
     val stealComposeSourcesTestUtilsAndro by regSteal(composePath / "test-utils/src/androidMain/kotlin/androidx/compose/testutils", stolenBasicKotlinPath / "compose-testutils") {
         if ("Screenshot" in name) null else it
     }
