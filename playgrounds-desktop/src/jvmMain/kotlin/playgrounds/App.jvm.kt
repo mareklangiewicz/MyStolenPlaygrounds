@@ -1,8 +1,6 @@
 package pl.mareklangiewicz.playgrounds
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -22,8 +20,10 @@ fun main() = application {
  */
 @Composable
 private fun App() = PlaygroundsTheme {
-  Surface {
-    Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) {
+  // Bounded, not scrolling: MyFancyFrame and School's Canvas both fillMaxSize(), which inside
+  // verticalScroll gets an unbounded height and collapses the Canvas to a clipped strip.
+  Surface(Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxSize().padding(16.dp)) {
       Text("MyStolenPlaygrounds on the desktop", style = MaterialTheme.typography.headlineSmall)
       Spacer(Modifier.height(16.dp))
       MyFancyFrameTheme {
