@@ -500,11 +500,11 @@ val ureSampledFunHeader = ure {
     1 of atBOLine
     // FIXME_later: sth like ureInAnyOrder...
     1 of (ureText("@Sampled") or ureText("@Composable"))
-    1..MAX of chSpace
+    1..MAX of chWhiteSpace
     1 of (ureText("@Sampled") or ureText("@Composable"))
-    1..MAX of chSpace
+    1..MAX of chWhiteSpace
     1 of ureText("fun")
-    1..MAX of chSpace
+    1..MAX of chWhiteSpace
     1 of ure("funName") {
         1 of chUpper
         0..MAX of (chWord or chDigit)
@@ -524,7 +524,7 @@ val ureAnnotations = ure {
         1 of ch('@')
         1 of ureIdent(chUpper)
         0..1 of ureParamsNotNested
-        1..MAX of chSpace
+        1..MAX of chWhiteSpace
     }
 }
 
@@ -532,7 +532,7 @@ val ureAnnotationsWithComposable = ure {
     1 of ureAnnotations
     1 of ure {
         1 of ureText("@Composable")
-        1..100 of chSpace
+        1..100 of chWhiteSpace
     }.lookBehind()
 }
 
@@ -553,11 +553,11 @@ val ureIndentedLine = ure {
 
 val ureComposableFunTemplate = ure {
     1 of ureAnnotationsWithComposable
-    0..MAX of chSpace // annotations can contain ending spaces too
+    0..MAX of chWhiteSpace // annotations can contain ending spaces too
     1 of atBOLine // we have to start from new line to easier find ending brace }
     1 of ureText("fun")
     1 of chSpace
-    1 of ure { 1 of ureIdent(chUpper) }.withName("funName")
+    1 of ure { 1 of ureIdent(chUpper, withWordBoundaries = false) }.withName("funName") // no \b: "Template" follows directly
     1 of ureText("Template")
     1 of ureParamsNotNested
     1 of chSpace

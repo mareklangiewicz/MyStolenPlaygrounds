@@ -111,7 +111,9 @@ abstract class BuildDetailsGenTask : DefaultTask() {
     return out.toString().trim()
   }
 
-  @TaskAction fun generate() = outputDir.get().run {
+  // The output dir is an asset ROOT (addGeneratedSourceDirectory), so the files go one level down:
+  // the app reads them as MySimpleAssets("build-details").
+  @TaskAction fun generate() = outputDir.get().dir("build-details").run {
     asFile.mkdirs()
     file("build.time").asFile.writeText(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
     file("build.git.commit.hash").asFile.writeText(git("rev-parse", "HEAD"))
@@ -122,7 +124,7 @@ abstract class BuildDetailsGenTask : DefaultTask() {
 val generateBuildDetails = tasks.register<BuildDetailsGenTask>("generateBuildDetails") {
   // UntrackedTask in spirit: build time and git state are external, so this must not go UP-TO-DATE.
   outputs.upToDateWhen { false }
-  outputDir.set(layout.buildDirectory.dir("generated-assets/build-details"))
+  outputDir.set(layout.buildDirectory.dir("generated-assets/build-details-root"))
   repoDir.set(rootProject.layout.projectDirectory)
 }
 
