@@ -325,7 +325,36 @@ sourceFun {
     }
 
     val stealComposeMaterial3Samples by regSteal(m3 / "samples/src/main/java/androidx/compose/material3/samples", stolenDemosKotlinPath / "material3-samples") { dropIfExcludedDemo(it) }
-    val stealComposeMaterial3Catalog by regSteal(m3 / "integration-tests/material3-catalog/src/main/java/androidx/compose/material3/catalog", stolenDemosKotlinPath / "material3-catalog")
+    // The catalog is the material3 samples again, dressed as an app: model/Examples.kt wraps 311
+    // sample functions, model/Components.kt groups those lists into catalog screens. Measured at the
+    // pinned tag, the 55 samples this repo does not have fall into exactly these components, and
+    // each one loses ALL of its examples: Adaptive + NavigationSuiteScaffold need material3-adaptive
+    // (not in DepsKt), and the rest are the Carousel/AppBar/Slider/ScrollField samples excluded
+    // above. So each goes whole: off the home screen, its examples list emptied, and the sample
+    // imports that leaves unused dropped.
+    val catalogCutComponents = listOf("Adaptive", "BottomAppBars", "Carousel", "NavigationSuiteScaffold", "ScrollField", "Sliders", "TopAppBar")
+    // Compile, but crash the app the moment they open (found by opening every catalog example on a
+    // device): each keeps a TimePickerDisplayMode in rememberSaveable, and the material3 this repo
+    // resolves cannot put that in a Bundle ("MutableState containing Picker cannot be saved").
+    val catalogCrashingExamples = listOf("TimePickerSwitchableSample", "VibrantTimePickerSwitchableSample", "VibrantTimePickerScrollSample")
+    val catalogPath = m3 / "integration-tests/material3-catalog/src/main"
+    val stealComposeMaterial3Catalog by regSteal(catalogPath / "java/androidx/compose/material3/catalog", stolenDemosKotlinPath / "material3-catalog") {
+        when (first.name) {
+            "Components.kt" -> it.withoutExactLines(catalogCutComponents.map { c -> "        $c," }, at = first)
+            "Examples.kt" -> it
+                .withoutDemoEntries(catalogCrashingExamples, at = first)
+                .withEmptiedExampleLists(catalogCutComponents.map { c -> "${c}Examples" }, at = first)
+            else -> it
+        }
+    }
+    // Verbatim: strings and two drawables the catalog's R.* calls need. regSteal skips non-source
+    // files, hence a plain copy. The output dir holds nothing else; the task only writes, never deletes.
+    val stealComposeMaterial3CatalogRes by reg {
+        doNotTrackState("FIXME_later: getting false positives: UP-TO-DATE")
+        src = catalogPath / "res"
+        out = playgroundsDemosPath / "src/androidMain/res"
+        setTransformFun { it }
+    }
     val stealComposeMaterial3Demos by regSteal(m3 / "integration-tests/material3-demos/src/main/java/androidx/compose/material3/demos", stolenDemosKotlinPath / "material3-demos") { dropIfExcludedDemo(it) }
     // text/ goes for the same reason it goes everywhere else in this file: its demos are built on
     // sample functions that live in androidx's text samples module, which is not stolen.
@@ -349,11 +378,8 @@ sourceFun {
     ) }
     val stealComposeMaterial3All by reg { dependsOn(
         stealComposeMaterial3Samples,
-        // stealComposeMaterial3Catalog is registered but NOT wired in here. The material3 catalog
-        // is a whole APP -- Home, ThemePicker, Components, its own top app bar -- and it is built
-        // on androidx's res/ and on material3-adaptive, neither of which this repo steals. It is
-        // not a demo library that can be dropped into another app. Add it back the day its
-        // resources come with it.
+        stealComposeMaterial3Catalog,
+        stealComposeMaterial3CatalogRes,
         stealComposeMaterial3Demos,
         stealComposeFoundationDemos,
         stealComposeCommonDemos,
@@ -403,12 +429,13 @@ sourceFun {
 
 /**
  * Cuts whole `ComposableDemo("title") { .. }` / `DemoCategory("title", ..)` entries out of an androidx
- * demo index, by title. Each title must match exactly ONE entry: a cut that silently matched
- * nothing would leave the index naming a missing demo, which fails far away, as an unresolved
- * reference in a file nobody edited.
+ * demo index, or `Example(name = "title", ..) { .. }` entries out of the material3 catalog, by title.
+ * Each title must match exactly ONE entry: a cut that silently matched nothing would leave the
+ * index naming a missing demo, which fails far away, as an unresolved reference in a file nobody
+ * edited.
  */
 fun String.withoutDemoEntries(titles: List<String>, at: Path? = null): String = titles.fold(this) { content, title ->
-    val starts = Regex("""\n[ \t]*(ComposableDemo|DemoCategory)\(\s*"${Regex.escape(title)}"""").findAll(content).toList()
+    val starts = Regex("""\n[ \t]*(?:(?:ComposableDemo|DemoCategory)\(\s*|Example\(\s*name = )"${Regex.escape(title)}"""").findAll(content).toList()
     check(starts.size == 1) { "Demo entry \"$title\" found ${starts.size} times (expected 1) in ${at ?: "<unknown path>"}" }
     val start = starts.single().range.first
     // Balanced scan over the call's parens, then over a trailing lambda if one follows. Titles and
@@ -425,6 +452,42 @@ fun String.withoutDemoEntries(titles: List<String>, at: Path? = null): String = 
     if (afterParens.startsWith("{")) end = closeOf(content.indexOf('{', end)) + 1
     if (content.getOrNull(end) == ',') end++
     content.removeRange(start, end)
+}
+
+/** Removes each given line, which must occur exactly once as a whole line. */
+fun String.withoutExactLines(lines: List<String>, at: Path? = null): String = lines.fold(this) { content, line ->
+    val n = content.lines().count { it == line }
+    check(n == 1) { "Line \"$line\" found $n times (expected 1) in ${at ?: "<unknown path>"}" }
+    content.replace("\n$line\n", "\n")
+}
+
+/**
+ * Replaces each `val <name> =\n    listOf(..)` in the catalog's Examples.kt with an empty list, then drops
+ * the samples imports nothing references any more. The count of dropped imports is printed: it is
+ * the one number that shows the cut took exactly the samples it was meant to.
+ */
+fun String.withEmptiedExampleLists(names: List<String>, at: Path? = null): String {
+    val emptied = names.fold(this) { content, name ->
+        val starts = Regex("""\nval ${Regex.escape(name)} =\s*listOf\(""").findAll(content).toList()
+        check(starts.size == 1) { "Examples list $name found ${starts.size} times (expected 1) in ${at ?: "<unknown path>"}" }
+        val open = starts.single().range.last
+        var depth = 0
+        var close = -1
+        for (i in open until content.length) {
+            when (content[i]) { '(', '{' -> depth++; ')', '}' -> if (--depth == 0) { close = i; break } }
+        }
+        check(close > 0) { "Unbalanced examples list $name in ${at ?: "<unknown path>"}" }
+        content.replaceRange(starts.single().range.first, close + 1, "\nval $name = emptyList<Example>()")
+    }
+    val sampleImport = Regex("""^import androidx\.compose\.material3\.(?:samples|adaptive[\w.]*)\.(\w+)$""")
+    val body = emptied.lines().filterNot { sampleImport.matches(it) }.joinToString("\n")
+    var dropped = 0
+    val result = emptied.lines().filterNot { line ->
+        val simple = sampleImport.matchEntire(line)?.groupValues?.get(1) ?: return@filterNot false
+        (!Regex("""\b${Regex.escape(simple)}\b""").containsMatchIn(body)).also { if (it) dropped++ }
+    }.joinToString("\n")
+    println("withEmptiedExampleLists: emptied ${names.size} lists, dropped $dropped now-unused sample imports in ${at?.name}")
+    return result
 }
 
 fun String.withInternalAccessIssuesSuppressed(at: Path? = null): String {

@@ -10,7 +10,7 @@ import androidx.compose.foundation.demos.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.integration.demos.common.*
 import androidx.compose.material3.*
-// import androidx.compose.material3.catalog.library.*
+import androidx.compose.material3.catalog.library.*
 import androidx.compose.material3.demos.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.*
@@ -60,8 +60,7 @@ fun MainContent() = UWidgetsSki {
             },
             "AX Demos" to {
                 UTabs(
-                    // TODO: "Material 3 Catalog" to { Material3CatalogApp() },
-                    //   needs stealComposeMaterial3Catalog wired in, with its res/ (see build.gradle.kts).
+                    "Material 3 Catalog" to { Material3CatalogApp(initialFavoriteRoute = null) },
                     "Material 3 Demos" to { MyDemosSelector(Material3Demos) },
                     "Foundation Demos" to { MyDemosSelector(FoundationDemos) },
                 )

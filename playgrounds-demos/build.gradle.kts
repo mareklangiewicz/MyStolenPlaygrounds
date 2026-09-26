@@ -38,9 +38,20 @@ dependencies {
     "androidMainImplementation"(project(":playgrounds-samples"))
     "androidMainImplementation"(AndroidX.Compose.Material3.material3)
     "androidMainImplementation"(AndroidX.Navigation.compose)
+    // The stolen material3 catalog keeps its theme choice in a preferences DataStore.
+    "androidMainImplementation"(AndroidX.DataStore.preferences)
     // Not covered by LibCompose.withComposeMaterialIconsExtended -- only
     // defaultBuildTemplateForComposeMppLib reads that flag (MppBuildTemplates.kt:412), and this is
     // an andro lib. The stolen material3 samples/demos use Icons.* on almost every screen: it was
     // 937 of the 1451 errors here.
     "androidMainImplementation"(AndroidX.Compose.Material.icons_extended)
+}
+
+// The stolen material3 catalog draws its strings and icons from R (res/ is stolen alongside it).
+// The KMP android-library target generates no R unless asked, and defaultBuildTemplateForAndroLib
+// does not ask, so without this every R.* reference in the catalog is unresolved.
+kotlin {
+    extensions.configure<KotlinMultiplatformAndroidLibraryTarget> {
+        androidResources { enable = true }
+    }
 }
