@@ -17,3 +17,8 @@
 local.properties
 /.idea/androidTestResultsUserPreferences.xml
 /.idea/deploymentTargetDropDown.xml
+# Android Studio sync output and per-user panel state: no project decisions in them.
+/.idea/artifacts
+/.idea/runConfigurations.xml
+/.idea/AndroidProjectSystem.xml
+/.idea/appInsightsSettings.xml
