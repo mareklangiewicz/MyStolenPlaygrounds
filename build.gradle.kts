@@ -307,16 +307,22 @@ sourceFun {
         "ScrollFieldSamples.kt",
         // ListDemos indexes a paging demo from androidx.paging, which this repo does not depend on.
         "ListDemos.kt",
-        // CASCADE, and the one exclusion that costs something real: Material3Demos.kt is the INDEX
-        // of the material3 demo set, so it names every demo above that was excluded. The demos
-        // themselves are still stolen and usable; what is lost is androidx's own menu of them.
-        "Material3Demos.kt",
-        // Same cascade on the foundation side: the index names LazyListDemos, which lives under
-        // the lazy/ demos that are not stolen.
-        "FoundationDemos.kt",
     )
-    fun Pair<Path, Path>.dropIfExcludedDemo(content: String) =
-        if (first.name in excludedDemos) null else content
+    // The two INDEX files (the DemoCategory trees the app's "AX Demos" tab shows) name some of the
+    // demos excluded above, so they are stolen with exactly those entries cut out, by title,
+    // rather than dropped whole. Measured at the pinned tag: 3 of 13 material3 entries and 1 of 32
+    // foundation entries go; every other entry resolves against the stolen demos and samples.
+    val demoIndexCuts = mapOf(
+        // Carousel*, SliderDemos and NavigationSuiteScaffoldDemo are excluded above.
+        "Material3Demos.kt" to listOf("Carousel", "Sliders", "Navigation Suite Scaffold"),
+        // LazyListDemos lives in ListDemos.kt, excluded above.
+        "FoundationDemos.kt" to listOf("Lazy lists"),
+    )
+    fun Pair<Path, Path>.dropIfExcludedDemo(content: String) = when (first.name) {
+        in excludedDemos -> null
+        in demoIndexCuts -> content.withoutDemoEntries(demoIndexCuts.getValue(first.name), at = first)
+        else -> content
+    }
 
     val stealComposeMaterial3Samples by regSteal(m3 / "samples/src/main/java/androidx/compose/material3/samples", stolenDemosKotlinPath / "material3-samples") { dropIfExcludedDemo(it) }
     val stealComposeMaterial3Catalog by regSteal(m3 / "integration-tests/material3-catalog/src/main/java/androidx/compose/material3/catalog", stolenDemosKotlinPath / "material3-catalog")
@@ -393,6 +399,32 @@ sourceFun {
             }
         }
     }
+}
+
+/**
+ * Cuts whole `ComposableDemo("title") { .. }` / `DemoCategory("title", ..)` entries out of an androidx
+ * demo index, by title. Each title must match exactly ONE entry: a cut that silently matched
+ * nothing would leave the index naming a missing demo, which fails far away, as an unresolved
+ * reference in a file nobody edited.
+ */
+fun String.withoutDemoEntries(titles: List<String>, at: Path? = null): String = titles.fold(this) { content, title ->
+    val starts = Regex("""\n[ \t]*(ComposableDemo|DemoCategory)\(\s*"${Regex.escape(title)}"""").findAll(content).toList()
+    check(starts.size == 1) { "Demo entry \"$title\" found ${starts.size} times (expected 1) in ${at ?: "<unknown path>"}" }
+    val start = starts.single().range.first
+    // Balanced scan over the call's parens, then over a trailing lambda if one follows. Titles and
+    // arguments in these index files carry no brackets inside string literals, so plain counting holds.
+    fun closeOf(open: Int): Int {
+        var depth = 0
+        for (i in open until content.length) {
+            when (content[i]) { '(', '{' -> depth++; ')', '}' -> if (--depth == 0) return i }
+        }
+        error("Unbalanced demo entry \"$title\" in ${at ?: "<unknown path>"}")
+    }
+    var end = closeOf(content.indexOf('(', start)) + 1
+    val afterParens = content.substring(end).trimStart(' ')
+    if (afterParens.startsWith("{")) end = closeOf(content.indexOf('{', end)) + 1
+    if (content.getOrNull(end) == ',') end++
+    content.removeRange(start, end)
 }
 
 fun String.withInternalAccessIssuesSuppressed(at: Path? = null): String {
