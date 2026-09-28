@@ -35,10 +35,6 @@ val lib = gradle.extLib.let { it.copy(info = it.info.copy(namespace = newNamespa
 
 // publishVariant = "debug" was a per-REPO andro setting; it is a publishing decision, so it is
 // LibPublish.androVariant now, stated by the module that publishes.
-// Compose Multiplatform does not release in lockstep, so each artifact carries its OWN version,
-// and the policy is verLastBeta -- newest beta-or-better. Same rule templatefun's internal
-// ComposeJb object applies; it is internal, so it is restated here rather than reached into.
-fun Dep.jb() = withVer(verLastBeta)
 
 defaultBuildTemplateForFullMppLib(lib, publish = LibPublish(androVariant = "debug")) {
 // workaround for crazy gradle bugs like this one or similar:
@@ -53,20 +49,20 @@ defaultBuildTemplateForFullMppLib(lib, publish = LibPublish(androVariant = "debu
   // these files. Its consumers here are both androidHostTest (2 files) and androidDeviceTest (20),
   // and those two source sets have no shared android-aware parent to hold it, so main it is, and
   // main needs the test libraries on its own compile classpath.
-  implementation(Org.JetBrains.Compose.Ui.test.jb())
+  implementation(ComposeJb.uiTest)
   implementation(KotlinX.coroutines_test)
   // ui-test-junit4 belongs in commonMain, not only androidMain: the stolen
   // ParameterizedComposeTestRule.kt is a COMMON file and it builds on ComposeTestRule /
   // ComposeContentTestRule / createComposeRule. This module's targets are jvm and android, both of
   // which have that artifact. It did not surface from compileAndroidMain -- only `assemble`, which
   // reaches the jvm compilation, sees commonMain compiled on its own.
-  implementation(Org.JetBrains.Compose.Ui.test_junit4.jb())
+  implementation(ComposeJb.uiTestJUnit4)
 
   // The shared Compose surface moved here from playgrounds-app (MyFancyFrame, Themes,
   // school/Examples), so commonMain now needs the MULTIPLATFORM @Preview. androidx's
   // androidx.compose.ui.tooling.preview is android-only; compose-multiplatform publishes its own
   // under org.jetbrains.compose.ui.tooling.preview for exactly this.
-  implementation(Org.JetBrains.Compose.Components.ui_tooling_preview.jb())
+  implementation(ComposeJb.componentsPreview)
 }
 
 // Workaround needed for preview in android studio e.g. in MyExaminedLayoutPreview.kt
