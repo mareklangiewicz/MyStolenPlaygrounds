@@ -48,7 +48,7 @@ plugins {
     // against it.
     plug(plugs.VannikPublish) apply false
     // plug(plugs.SourceFun)
-    id("pl.mareklangiewicz.sourcefun") version "0.4.70"
+    id("pl.mareklangiewicz.sourcefun") version "0.4.71"
     // https://plugins.gradle.org/search?term=pl.mareklangiewicz
 }
 
